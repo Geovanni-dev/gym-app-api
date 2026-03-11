@@ -8,56 +8,106 @@
 </p>
 
 ## 📋 Sobre
-API para geração de treinos automáticos e montagem de treinos personalizados.
 
-## 📌 Principais funções
+API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR).
 
-- ✅ Gerar treinos automáticos baseado em objetivo e dias
-- ✅ Criar e salvar seus próprios treinos personalizados
-- ✅ Registrar execuções com peso e repetições
-- ✅ Acompanhar histórico completo
-- ✅ Calcular recordes pessoais (PR)
-  
-## 📡 Endpoints
+## 🚀 Instalação e Execução
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | `/users/register` | Criar conta |
-| POST | `/users/login` | Fazer login |
-| POST | `/workouts/generate` | Gerar treino |
-| POST | `/workouts/log` | Registrar treino |
-| GET | `/workouts/my-workouts` | Ver planos |
-| GET | `/workouts/history` | Histórico completo |
-| GET | `/workouts/history/:exercise` | Histórico por exercício |
-| GET | `/workouts/pr` | Recorde pessoal |
+```bash
+# 1. Clone o repositório
+git clone https://github.com/Geovanni-dev/training-api.git
 
-## 📦 Exemplos
+# 2. Instale as dependências
+npm install
 
-```http
-# Gerar treino
-POST /workouts/generate
-{ "goal": "hipertrofia", "days": 4 }
+# 3. Configure o arquivo .env
+# Crie um arquivo .env na raiz com as seguintes chaves:
+PORT=3000
+DATABASE_URL=mongodb://127.0.0.1:27017/workout-api
+JWT_SECRET=sua_chave_secreta
+EMAIL_USER=seu_email@gmail.com
+EMAIL_PASS=sua_senha_de_app
 
-# Registrar treino
-POST /workouts/log
+# 4. Inicie o servidor
+npm start
+```
+
+> ⚠️ *Nota: Todos os endpoints de `/workouts` e `/exercises` exigem o Header:*  
+> `Authorization: Bearer <seu_token_jwt>`
+
+---
+
+## 📡 Guia de Endpoints & Payloads
+
+### 🔐 Autenticação e Usuário (`/users`)
+
+| Rota | Método | Payload (Body) | Descrição |
+|------|--------|----------------|-----------|
+| `/register` | POST | `{"name": "Geo", "email": "a@a.com", "password": "123"}` | Cria nova conta |
+| `/verify-email` | POST | `{"email": "a@a.com", "code": "123456"}` | Valida o e-mail |
+| `/login` | POST | `{"email": "a@a.com", "password": "123"}` | Retorna o Token JWT |
+| `/forgot-password` | POST | `{"email": "a@a.com"}` | Envia token de recuperação |
+| `/reset-password/:token` | POST | `{"password": "nova_senha"}` | Define nova senha |
+
+---
+
+### 🏋️ Gestão de Treinos (`/workouts`)
+
+#### 1. Gerar Treino Automático
+**`POST /workouts/generate`**
+```json
+{
+  "goal": "hipertrofia",
+  "days": 4
+}
+```
+
+#### 2. Registrar Execução (Histórico)
+**`POST /workouts/log`**
+```json
 {
   "exercises": [
     {
-      "name": "Supino",
+      "name": "Supino Reto",
       "sets": [
-        { "reps": 10, "weight": 60 },
-        { "reps": 8, "weight": 70 }
+        { "reps": 12, "weight": 60 },
+        { "reps": 10, "weight": 70 }
       ]
     }
   ]
 }
+```
 
-# Ver PR
-GET /workouts/pr?exercise=Supino
+#### 3. Consultas de Histórico e PR
+- **Histórico Completo:** `GET /workouts/history`
+- **Histórico por Exercício:** `GET /workouts/history/Supino`
+- **Recorde Pessoal (PR):** `GET /workouts/pr?exercise=Supino`
+- **Meus Planos:** `GET /workouts/my-workouts`
 
-````
-## 🚀 Instalação
+---
 
-```bash
-npm install
+### 📚 Biblioteca de Exercícios (`/exercises`)
 
+| Rota | Método | Payload (Body) | Descrição |
+|------|--------|----------------|-----------|
+| `/` | POST | `{"name": "Leg Press", "muscle": "Pernas"}` | Cadastra exercício base |
+| `/` | GET | Nenhum | Lista todos os exercícios |
+
+---
+
+## 🛠 Tecnologias
+
+- **Node.js & Express:** Ambiente de execução e framework web.
+- **MongoDB & Mongoose:** Banco de dados NoSQL e modelagem de dados.
+- **Bcrypt.js:** Hash de senhas para segurança.
+- **JSON Web Token (JWT):** Autenticação baseada em tokens.
+- **Nodemailer:** Disparo de e-mails para verificação e recuperação.
+
+---
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white"/>
+  <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white"/>
+</p>
