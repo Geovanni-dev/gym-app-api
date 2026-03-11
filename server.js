@@ -51,8 +51,8 @@ app.listen(PORT, () => {
 
 // CONEXÃO COM O BANCO
 
-// CORREÇÃO: Removidas as opções obsoletas
-mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/workout-api")
+// Conecta ao MongoDB usando a URL definida nas variáveis de ambiente
+mongoose.connect(process.env.DATABASE_URL|| "mongodb://127.0.0.1:27017/workout-api")
 .then(() => {
 
   // confirmação de conexão bem-sucedida com o MongoDB
