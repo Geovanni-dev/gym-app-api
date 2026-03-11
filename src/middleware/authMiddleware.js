@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 
 // Chave secreta utilizada para assinar e validar os tokens
-const SECRET = "geovani_api_segura";
+const SECRET = process.env.JWT_SECRET;
 
 
 // Middleware responsável por verificar se é um usuário autenticado
