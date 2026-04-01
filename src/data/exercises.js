@@ -1,30 +1,31 @@
 const exercises = {
-  // PEITO (Push)
-  chest: ["Supino Reto (Barra/Halter)", "Supino Inclinado (Barra/Halter)", "Supino Declinado", "Crucifixo Reto", "Peck Deck (Voador)", "Cross Over (Polia Alta/Baixa)", "Flexão de Braços"],
-
-  // COSTAS (Pull)
-  back: ["Puxada Alta Aberta", "Puxada Triângulo", "Remada Curvada (Barra/Halter)", "Remada Cavalinho", "Remada Baixa (Polia)", "Pull Down (Corda)", "Barra Fixa", "Levantamento Terra"],
-
-  // OMBROS (Push)
-  shoulders: ["Desenvolvimento (Halter/Barra)", "Elevação Lateral", "Elevação Frontal", "Crucifixo Inverso", "Desenvolvimento Arnold", "Encolhimento de Ombros", "Face Pull"],
-
-  // BRAÇOS - BÍCEPS (Pull)
-  biceps: ["Rosca Direta (Barra W)", "Rosca Alternada", "Rosca Martelo", "Rosca Concentrada", "Rosca Scott", "Rosca Inversa"],
-
-  // BRAÇOS - TRÍCEPS (Push)
-  triceps: ["Tríceps Corda", "Tríceps Testa", "Tríceps Pulley (Barra)", "Tríceps Francês", "Mergulho no Banco", "Extensão de Tríceps Coice"],
-
-  // PERNAS - QUADRÍCEPS (Lower)
-  quads: ["Agachamento Livre", "Leg Press 45°", "Cadeira Extensora", "Afundo/Passada", "Agachamento Sumô", "Hack Machine"],
-
-  // PERNAS - POSTERIOR (Lower)
-  hamstrings: ["Mesa Flexora", "Cadeira Flexora", "Stiff", "Flexora em Pé", "Good Morning"],
-
-  // GLÚTEOS E PANTURRILHA (Lower)
-  glutes_calf: ["Elevação Pélvica", "Abdução de Quadril", "Panturrilha em Pé", "Panturrilha Sentado (Sólio)"],
-
-  // CORE
-  core: ["Prancha Abdominal", "Abdominal Supra", "Abdominal Infra", "Abdominal de Canivete", "Russian Twist"]
+  upper: [
+    "Supino Reto (Barra/Halter)", "Supino Inclinado", "Crucifixo Reto", 
+    "Puxada Alta Aberta", "Remada Curvada", "Remada Baixa", 
+    "Desenvolvimento (Halter/Barra)", "Elevação Lateral", "Face Pull",
+    "Rosca Direta", "Tríceps Corda", "Mergulho no Banco"
+  ],
+  lower: [
+    "Agachamento Livre", "Leg Press 45°", "Cadeira Extensora", 
+    "Stiff", "Mesa Flexora", "Cadeira Flexora", 
+    "Afundo/Passada", "Agachamento Sumô", "Panturrilha em Pé", 
+    "Panturrilha Sentado", "Elevação Pélvica"
+  ],
+  push: [
+    "Supino Reto", "Supino Inclinado", "Peck Deck (Voador)", 
+    "Desenvolvimento Arnold", "Elevação Lateral", "Elevação Frontal", 
+    "Tríceps Corda", "Tríceps Testa", "Tríceps Pulley", "Flexão de Braços"
+  ],
+  pull: [
+    "Puxada Alta Aberta", "Puxada Triângulo", "Barra Fixa", 
+    "Remada Curvada", "Remada Cavalinho", "Pull Down (Corda)", 
+    "Crucifixo Inverso", "Rosca Direta", "Rosca Alternada", "Rosca Martelo"
+  ],
+  legs: [
+    "Agachamento Livre", "Leg Press 45°", "Hack Machine", 
+    "Cadeira Extensora", "Mesa Flexora", "Stiff", 
+    "Abdução de Quadril", "Panturrilha em Pé", "Panturrilha Sentado"
+  ]
 };
 
-module.exports = exercises;
+module.exports = exercises; 

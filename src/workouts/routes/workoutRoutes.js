@@ -46,7 +46,7 @@ router.get("/my-workouts", authMiddleware, workoutController.getMyWorkouts);
 //Adicionado rota para PR
 router.get("/pr", authMiddleware, workoutController.getPR);
 
-//Rota para buscar histórico (caso queira usar o getWorkoutHistory do workoutController também)
+//Rota para buscar histórico
 router.get("/history-alt", authMiddleware, workoutController.getWorkoutHistory);
 
 // Exporta o router para uso no servidor principal
