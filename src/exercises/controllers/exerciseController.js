@@ -1,95 +1,78 @@
-
 // Modelo responsável pelos exercícios cadastrados no sistema
 const Exercise = require("../../models/Exercise");
+const { z } = require("zod"); 
+
+
+//scheema para criar/buscar exercicios
+const createExerciseSchema = z.object({
+  name: z.string().min(1, "O nome do exercício é obrigatório"),
+  muscle: z.string().optional(),
+});
+
+// schema para deletar exercício
+const deleteExerciseSchema = z.object({
+  id: z.string().min(1, "O ID do exercício é obrigatório"),
+});
+
+
+//========================================= Exercicios do usuário
 
 
 
-// CRIAÇÃO DE EXERCÍCIO.
+// CRIAÇÃO DE EXERCÍCIO. (validado com zod)
 exports.createExercise = async (req, res) => {
 
-  // Dados enviados pelo usuário na requisição
-  const { name, muscle } = req.body;
-
   try {
-
-    /* Cria um novo exercício associado ao user autenticado
-     req.user.id vem do middleware de autenticação (JWT)*/
-    const exercise = new Exercise({
+    const validateData = createExerciseSchema.parse(req.body);// Cria um novo exercício associando ao usuário logado
+    const exercise = await Exercise.create({
       user: req.user.id,
-      name,
-      muscle
+      ...validateData
     });
 
-    // Salva o exercício no banco
-    await exercise.save();
-
-    res.json({
-      message: "Exercício criado",
+    res.status(201).json({
+      message: "Exercício criado com sucesso",
       exercise
     });
-
   } catch (error) {
-
-    // Caso alguma coisa dê errado durante o processo de criação
-    res.status(500).json({
-      message: "Erro ao criar exercício"
-    });
-
+    if (error instanceof z.ZodError) { // se o erro for do zod
+      return res.status(400).json({ error: "Erro de validação", 
+          detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
+      });
+      }
+      console.log(error); // se n for do zod
+      return res.status(500).json({ message: "Erro ao criar exercício" });
   }
-
 };
-
-
 
 
 // LISTAR EXERCÍCIOS DO USUÁRIO
 exports.getExercises = async (req, res) => {
-
   try {
+  const exercises = await Exercise.find({ user: req.user.id });
+  const validExercises = z.array(createExerciseSchema).parse(exercises); // validação dos dados com zod
 
-    /*Busca só os exercícios pertencentes ao usuário logado.
-     Isso evita q um user consiga acessar exercícios de outro*/
-    const exercises = await Exercise.find({ user: req.user.id });
-
-    res.json(exercises);
-
+  res.json(validExercises);
   } catch (error) {
-
-    res.status(500).json({
-      message: "Erro ao buscar exercícios"
-    });
-
+    console.log(error);
+    return res.status(500).json({ message: "Erro ao listar exercícios" });
   }
-
 };
 
 
 
 // DELETAR EXERCÍCIO.
 exports.deleteExercise = async (req, res) => {
-
-  // ID do exercício enviado pela rota
-  const { id } = req.params;
-
   try {
-
-    // Camada de segurança pra impedir exclusão de dados de outros usuários
-    await Exercise.deleteOne({
-      _id: id,
-      user: req.user.id
-    });
-
-    res.json({
-      message: "Exercício deletado"
-    });
-
-  } catch (error) {
-
-    // erro durante a exclusão
-    res.status(500).json({
-      message: "Erro ao deletar exercício"
-    });
-
+    const { id } = deleteExerciseSchema.parse(req.params); // validação dos dados com zod
+    await Exercise.findByIdAndDelete(id);
+    res.json({ message: "Exercício deletado com sucesso" });
+  }catch (error) {
+    if (error instanceof z.ZodError) { // se o erro for do zod
+      return res.status(400).json({ error: "Erro de validação", 
+          detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
+      });
+      }
+      console.log(error); // se n for do zod
+      return res.status(500).json({ message: "Erro ao deletar exercício" });
   }
-
 };

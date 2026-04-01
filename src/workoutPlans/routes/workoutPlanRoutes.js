@@ -12,7 +12,7 @@ const workoutPlanController = require("../controllers/workoutPlanController");
 const authMiddleware = require("../../middleware/authMiddleware");
 
 
-// ROTAS DE PLANO DE TREINO
+//==================================rotas relacionadas aos planos de treino
 
 
 // Adiciona um exercício a um plano específico, planId vem pela URL

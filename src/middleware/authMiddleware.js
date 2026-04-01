@@ -4,46 +4,29 @@ const jwt = require("jsonwebtoken");
 // Chave secreta utilizada para assinar e validar os tokens
 const SECRET = process.env.JWT_SECRET;
 
-
 // Middleware responsável por verificar se é um usuário autenticado
 const authMiddleware = (req, res, next) => {
-
-  // O token geralmente vem no header Authorization
-  const authHeader = req.headers.authorization;
-
-  // Se não houver token na requisição o acesso é negado
+  const authHeader = req.headers.authorization; // O token geralmente vem no header Authorization
   if (!authHeader) {
+    // Se não houver token na requisição o acesso é negado
     return res.status(401).json({
-      message: "Token não fornecido"
+      message: "Token não fornecido",
     });
   }
-
-  /* O header normalmente vem no formato:
-   "Bearer TOKEN_AQUI"
-    então temos q separar o token da palavra "Bearer" com um espaço*/
-  const token = authHeader.split(" ")[1];
-
+  const token =
+    authHeader.split(" ")[1]; /* O header normalmente vem no formato:
+    "Bearer TOKEN_AQUI" então temos q separar o token da palavra "Bearer" com um espaço*/
   try {
-
-    // Verifica se o token é válido usando a chave secreta
-    const decoded = jwt.verify(token, SECRET);
-
-    /* Salva os dados do usuário dentro da requisição,
+    const decoded = jwt.verify(token, SECRET); // Verifica se o token é válido usando a chave secreta
+    req.user = decoded; /* Salva os dados do usuário dentro da requisição,
      assim outras partes da aplicação conseguem acessar */
-    req.user = decoded;
-
-    // Passa o controle para o próximo middleware ou controller
-    next();
-
+    next(); // Passa o controle para o próximo middleware ou controller
   } catch (error) {
-
-    // Se o token estiver inválido ou expirado a requisição vai ser bloqueada
     return res.status(401).json({
-      message: "Token inválido"
+      // Se o token estiver inválido ou expirado a requisição vai ser bloqueada
+      message: "Token inválido",
     });
-
   }
-
 };
 
 // Exporta o middleware para ser usado nas rotas protegidas

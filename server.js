@@ -1,7 +1,6 @@
 // Carrega variáveis de ambiente do arquivo .env
 require("dotenv").config();
 
-
 // Importa bibliotecas principais da aplicação
 const mongoose = require("mongoose");
 const express = require("express");
@@ -9,18 +8,14 @@ const express = require("express");
 // Cria a aplicação Express
 const app = express();
 
-
 // Middleware que permite receber JSON no body das requisições
 app.use(express.json());
 
-
 // Importação das rotas da aplicação
-const userRoutes = require("./src/routes/userRoutes");
+const userRoutes = require("./src/users/routes/userRoutes");
 const workoutRoutes = require("./src/workouts/routes/workoutRoutes");
 const exerciseRoutes = require("./src/exercises/routes/exerciseRoutes");
 const workoutPlanRoutes = require("./src/workoutPlans/routes/workoutPlanRoutes");
-
-
 
 // REGISTRO DAS ROTAS
 
@@ -47,27 +42,21 @@ app.listen(PORT, () => {
 });
 
 
-
-
 // CONEXÃO COM O BANCO
 
 // Conecta ao MongoDB usando a URL definida nas variáveis de ambiente
-mongoose.connect(process.env.DATABASE_URL|| "mongodb://127.0.0.1:27017/workout-api")
-.then(() => {
-
-  // confirmação de conexão bem-sucedida com o MongoDB
-  console.log("MongoDB conectado");
-
-})
-.catch((err) => {
-
-  // erro caso a conexão com o banco falhe
-  console.log("Erro ao conectar no MongoDB:", err);
-
-});
+mongoose
+  .connect(process.env.DATABASE_URL || "mongodb://127.0.0.1:27017/workout-api")
+  .then(() => {
+    // confirmação de conexão bem-sucedida com o MongoDB
+    console.log("MongoDB conectado");
+  })
+  .catch((err) => {
+    // erro caso a conexão com o banco falhe
+    console.log("Erro ao conectar no MongoDB:", err);
+  });
 
 // Tratamento de erros não capturados
-process.on('unhandledRejection', (error) => {
-  console.error('Erro não tratado:', error);
+process.on("unhandledRejection", (error) => {
+  console.error("Erro não tratado:", error);
 });
-
