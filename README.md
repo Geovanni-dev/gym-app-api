@@ -5,11 +5,12 @@
   <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white"/>
   <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white"/>
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Zod-3E6B9E?style=for-the-badge&logo=zod&logoColor=white"/>
 </p>
 
 ## 📋 Sobre
 
-API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR).
+API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR). O projeto agora conta com validação de dados utilizando **Zod**, garantindo maior segurança e integridade das informações recebidas pela API.
 
 ## 🚀 Instalação e Execução
 
@@ -102,6 +103,6 @@ npm start
 - **Bcrypt.js:** Hash de senhas para segurança.
 - **JSON Web Token (JWT):** Autenticação baseada em tokens.
 - **Nodemailer:** Disparo de e-mails para verificação e recuperação.
-
+- **Zod:** Validação de schemas e tipagem estática para garantir a integridade dos dados recebidos pela API.
 ---
 
