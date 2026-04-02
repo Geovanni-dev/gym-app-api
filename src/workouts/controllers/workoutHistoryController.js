@@ -1,12 +1,23 @@
 // Model responsável por armazenar o histórico de execuções de exercícios
 const Workout = require("../../models/WorkoutHistory");
+const { z } = require("zod");// importa o zod
+
+//===============================validação de dados com zod
+
+// schema para validar a consulta do historico de um exercicio especifico
+const getExerciseHistorySchema = z.object({
+  exerciseName: z.string().min(1, "O nome do exercício é obrigatório").transform((val) => decodeURIComponent(val)) // decodifica o nome do exercício
+});
+
 
 //============================= histórico de treinos e exercícios
+
+
 
 // HISTÓRICO DE TREINOS
 exports.getWorkoutHistory = async (req, res) => {
   try {
-    // Busca todos os treinos do usuário logado
+
     const workouts = await Workout.find({
       user: req.user.id,
     }).sort({ date: -1 }); 
@@ -21,39 +32,24 @@ exports.getWorkoutHistory = async (req, res) => {
   }
 };
 
-// HISTÓRICO DE UM EXERCÍCIO
+// HISTÓRICO DE UM EXERCÍCIO (validado com zod)
 exports.getExerciseHistory = async (req, res) => {
   try {
-    const { exerciseName } = req.params;
-
-    //  Validação básica
-    if (!exerciseName) {
-      return res.status(400).json({
-        message: "Nome do exercício é obrigatório",
-      });
-    }
-
-    // Tratamento para decodeURIComponent
-    let decodedExerciseName;
-    try {
-      decodedExerciseName = decodeURIComponent(exerciseName);
-    } catch (decodeError) {
-      return res.status(400).json({
-        message: "Nome do exercício inválido",
-      });
-    }
-
-    // Busca todos os registros do exercício específico do usuário
-    const history = await Workout.find({
+    const { exerciseName } = getExerciseHistorySchema.parse(req.query); // validação com zod
+    const history = await Workout.find({  // busca pelo nome do exercício e usuário
       user: req.user.id,
-      exerciseName: decodedExerciseName,
+      exerciseName: exerciseName,
     }).sort({ date: -1 });  //mantido date que é o campo correto
 
     res.json(history);
   } catch (error) {
-    console.error("Erro ao buscar histórico do exercício:", error); //  adicionado log
-    res.status(500).json({
-      message: "Erro ao buscar histórico do exercício",
-    });
-  }
+       if (error instanceof z.ZodError) { // se o erro for do zod
+            return res.status(400).json({ error: "Erro de validação", 
+                detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
+        });
+        }
+        console.log(error); // se n for do zod
+        res.status(500).json({ error: "Erro ao buscar histórico de exercícios" });
+    }
 };
+

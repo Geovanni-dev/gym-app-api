@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const exerciseSchema = new mongoose.Schema({
   user: {
     /* Referência ao usuário dono do exercício.
-     Cada exercício pertence a um usuário específico*/
+    Cada exercício pertence a um usuário específico*/
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
