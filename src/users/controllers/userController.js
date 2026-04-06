@@ -42,7 +42,6 @@ name: z.string(),
 email: z.string().email(),
 isVerified: z.boolean()
 });
-const listUsersSchema = z.array(userSchema);
 
 // schema para verificçao de email
 const verifyEmailSchema = z.object({
@@ -50,14 +49,22 @@ const verifyEmailSchema = z.object({
   code: z.string().length(6, "O código de verificação deve conter exatamente 6 caracteres")
 });
 
-// schema para recuperação de senha
+// schema para recuperação de senha (publico)
 const forgotPasswordSchema = z.object({
   email: z.string().email("Email inválido")
 });
 
-// schema para redefinição de senha
+// schema para redefinição de senha (publico)
 const resetPasswordSchema = z.object({
+  code: z.string().length(6, "O código de redefinição deve conter exatamente 6 caracteres"),
+  email: z.string().email("Email inválido"),
   password: z.string().min(6, "A senha deve conter pelo menos 6 caracteres")
+});
+
+// schema para redefinição de senha (logado)
+const updatePasswordSchema = z.object({
+  oldPassword: z.string().min(6, "A senha atual deve conter pelo menos 6 caracteres"),
+  newPassword: z.string().min(6, "A nova senha deve conter pelo menos 6 caracteres")
 });
 
 
@@ -71,8 +78,7 @@ const resetPasswordSchema = z.object({
 // REGISTRO DE USUÁRIO
 exports.registerUser = async (req, res) => {
   try {
-    const validatUser = registerSchema.parse(req.body); // Validação dos dados recebidos
-    const { name, email, password } = validatUser;
+   const { name, email, password } = registerSchema.parse(req.body);  // Valida os dados recebidos
     const userExists = await User.findOne({ email }); // Verifica se o email ja existe no banco de dados
     if (userExists) { // Se o email já estiver cadastrado, retorna um erro
       return res.status(400).json({
@@ -80,13 +86,14 @@ exports.registerUser = async (req, res) => {
       });
     }
     const hashedPassword = await bcrypt.hash(password, 10); // Criptografia da senha utilizando bcrypt com um salt de 10 rounds
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Código de verificação gerado aleatoriamente
-    const newUser = new User({
-      ...validatUser,
-      password: hashedPassword,
-      verificationCode,
-      isVerified: false // usuário so podera logar após confirmar o codigo
-    });
+    const verificationCode = emailService.generateVerificationCode(); // Gera um código de verificação utilizando o serviço de email
+    const newUser = new User({ // Cria um novo usuário com os dados fornecidos e o código de verificação gerado
+  name,
+  email,
+  password: hashedPassword,
+  verificationCode,
+  isVerified: false
+});
       await newUser.save();
     try { // Envia o email de verificação
       await emailService.sendEmail(
@@ -111,76 +118,10 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-
-
-// LOGIN DO USUÁRIO.
-exports.loginUser = async (req, res) => {
-try {
-  const { email, password } = loginSchema.parse(req.body);
-  const user = await User.findOne({ email });
-    if (!user) { // Se o email não for encontrado, retorna um erro de autenticação
-      return res.status(401).json({
-        message: "Email ou senha inválidos"
-      });
-    }
-    if (!user.isVerified) { // Verifica se o email do usuário foi verificado
-      return res.status(403).json({
-        message: "Verifique seu email antes de fazer login"
-      });
-    }
-    const isMatch = await bcrypt.compare(password, user.password); // Compara a senha fornecida com a senha armazenada no banco de dados utilizando bcrypt
-    if (!isMatch) {
-      return res.status(401).json({
-        message: "Email ou senha inválidos"
-      });
-    }
-    const token = jwt.sign(
-      { id: user._id },
-      SECRET,
-      { expiresIn: "1h" } // token válido por 1 hora
-    );
-    res.json({
-      message: "Login realizado com sucesso",
-      token
-    });
-  } catch (error) {
-       if (error instanceof z.ZodError) { // se o erro for do zod
-            return res.status(400).json({ error: "Erro de validação", 
-                detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
-        });
-        }
-        console.log(error); // se n for do zod
-        res.status(500).json({ error: "Erro ao realizar o login" });
-    }
-};
-
-
-
-// LISTAR USUÁRIOS.
-exports.getUsers = async (req, res) => {
-  try {
-    // Retorna todos os usuários cadastrados no banco
-    const users = await User.find();
-    const validateUsers = listUsersSchema.parse(users);
-    res.json(validateUsers);
-  } catch (error) {
-       if (error instanceof z.ZodError) { // se o erro for do zod
-            return res.status(400).json({ error: "Erro de validação", 
-                detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
-        });
-        }
-        console.log(error); // se n for do zod
-        res.status(500).json({ error: "Erro ao listar os usuarios" });
-    }
-};
-
-
-
-// VERIFICAÇÃO DE EMAIL.
+// VERIFICAÇÃO DE CODIGO DE VERIFICAÇÃO PELO EMAIL
 exports.verifyEmail = async (req, res) => {
 try {
-    const validatEmail = verifyEmailSchema.parse(req.body);
-    const { email, code } = validatEmail;
+    const { email, code } = verifyEmailSchema.parse(req.body); // Valida os dados recebidos
     const user = await User.findOne({ email }); // Busca o usuário pelo email fornecido 
     if (!user) { // Se o usuário não for encontrado, retorna um erro
       return res.status(404).json({
@@ -210,34 +151,76 @@ try {
 };
 
 
+// LOGIN DO USUÁRIO.
+exports.loginUser = async (req, res) => {
+try {
+  const { email, password } = loginSchema.parse(req.body);
+  const user = await User.findOne({ email });
+    if (!user) { // Se o email não for encontrado, retorna um erro de autenticação
+      return res.status(401).json({
+        message: "Email ou senha inválidos"
+      });
+    }
+    if (!user.isVerified) { // Verifica se o email do usuário foi verificado
+      return res.status(403).json({
+        message: "Verifique seu email antes de fazer login"
+      });
+    }
+    const isMatch = await bcrypt.compare(password, user.password); // Compara a senha fornecida com a senha armazenada no banco de dados utilizando bcrypt
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Email ou senha inválidos"
+      });
+    }
+    const token = jwt.sign(
+      { id: user._id },
+      SECRET,
+      { expiresIn: "365d" } // token válido por 1 ano
+    );
+    res.json({
+      message: "Login realizado com sucesso",
+      token
+    });
+  } catch (error) {
+       if (error instanceof z.ZodError) { // se o erro for do zod
+            return res.status(400).json({ error: "Erro de validação", 
+                detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
+        });
+        }
+        console.log(error); // se n for do zod
+        res.status(500).json({ error: "Erro ao realizar o login" });
+    }
+};
 
-// SOLICITAÇÃO DE RECUPERAÇÃO DE SENHA.
+
+
+// SOLICITAÇÃO DE RECUPERAÇÃO DE SENHA (publico).
 exports.forgotPassword = async (req, res) => {
   try {
-    const validatEmail = forgotPasswordSchema.parse(req.body);
-    const { email } = validatEmail;
+    const{ email } = forgotPasswordSchema.parse(req.body);
     const user = await User.findOne({ email }); // Busca o usuário pelo email fornecido
     if (!user) { // Se o usuário nao for encontrado, retorna um erro
       return res.status(200).json({
-        message: "Se o email estiver cadastrado, um link de recuperação será enviado."
+        message: "Se o email estiver cadastrado, um codigo de recuperação será enviado."
       });
     }
-    const resetToken = crypto.randomBytes(32).toString("hex"); // Gera um token aleatório para recuperação de senha utilizando o módulo crypto do Node.js
-    user.resetPasswordToken = resetToken; // Armazena token ---- tempo de expiração 1hr
-    user.resetPasswordExpires = Date.now() + 3600000; 
-    await user.save(); // Salva as informações do token e tempo de expiração no banco de dados
-    const resetLink = `http://localhost:3000/reset-password/${resetToken}`; // Link de recuperação de senha que será enviado por email, contendo o token gerado
+    
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera um código de recuperação aleatório
+    user.resetPasswordCode = resetCode; // Armazena o código de recuperação no banco de dados
+    user.resetPasswordExpires = Date.now() +  300000; // tempo de redefiniçao de 5 minutos
+    await user.save();
+    
     try { // Envia o email de recuperação de senha utilizando o serviço de email
     await emailService.sendEmail( // Envia o email de recuperação de senha utilizando o serviço de email
       email,
       "Recuperação de senha",
-      `Clique no link para redefinir sua senha: ${resetLink}`
+      `Seu código de recuperação é: ${resetCode}\n\nO código expira em 5 minutos.`
     );
     } catch (emailError) {
       console.log("Erro ao enviar email de recuperação:", emailError);
     }
     res.json({
-      message: "Email de recuperação enviado"
+      message: "Código de recuperação enviado para seu email"
     });
   } catch (error) {
        if (error instanceof z.ZodError) { // se o erro for do zod
@@ -250,27 +233,31 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-
-
-// REDEFINIÇÃO DE SENHA.
+// REDEFINIÇÃO DE SENHA (publico).
 exports.resetPassword = async (req, res) => {
   try {
     
-    const { password } = resetPasswordSchema.parse(req.body); // Validação dos dados recebidos e extração da senha 
-    const { token } = req.params; // Recebe o token de recuperação de senha a partir dos parâmetros da URL
-    const user = await User.findOne({ // Busca usuário com token válido e n expirado (1hr)
-      resetPasswordToken: token,
+    const { password,email, code} = resetPasswordSchema.parse(req.body); // Validação dos dados recebidos e extração da senha 
+    const user = await User.findOne({  // busca o usuário pelo email fornecido e codigo de recuperação nao expirado
+      email,
+      resetPasswordCode: code,
       resetPasswordExpires: { $gt: Date.now() }
     });
 
     if (!user) {
       return res.status(400).json({
-        message: "Token inválido ou expirado"
+        message: "Usuário não encontrado ou código inválido ou expirado"
       });
-    } // Criptografa a nova senha
+    }
+      const isSamePassword = await bcrypt.compare(password, user.password);
+    if (isSamePassword) { // Verifica se a nova senha eh igual a senha atual
+      return res.status(400).json({
+        message: "A nova senha deve ser diferente da senha atual"
+      });
+    } 
     const hashedPassword = await bcrypt.hash(password, 10); // Criptografa a nova senha
     user.password = hashedPassword; // Atualiza a senha do usuário
-    user.resetPasswordToken = null;// Remove o token de recuperação de senha após o uso
+    user.resetPasswordCode = null;// Remove o token de recuperação de senha após o uso
     user.resetPasswordExpires = null;
     await user.save();
     res.json({
@@ -281,6 +268,40 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ error: "Erro de validação", 
                 detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
         });
+        }
+        console.log(error); // se n for do zod
+        res.status(500).json({ error: "Erro ao redefinir senha" });
+    }
+};
+
+
+// redefiniçao de senha logado
+exports.updatePassword = async (req, res) => {
+  try {
+      const { oldPassword, newPassword } = updatePasswordSchema.parse(req.body); // Validação dos dados recebidos e extração da senha 
+      const user = await User.findById(req.user.id); // Busca usuário com token válido e n expirado (1hr)
+      
+      if (!user) { // Adicionado: Garantia que o usuário logado existe no banco
+        return res.status(404).json({
+          message: "Usuário não encontrado"
+        });
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password); // Compara a senha fornecida com a senha armazenada no banco de dados utilizando bcrypt
+      if (!isMatch) {
+        return res.status(401).json({
+          message: "Senha antiga incorreta"
+        });
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10); // Criptografa a nova senha
+      user.password = hashedPassword; // Atualiza a senha do usuário
+      await user.save();
+      res.json({
+        message: "Senha redefinida com sucesso"
+      });
+  } catch (error) {
+       if (error instanceof z.ZodError) { // se o erro for do zod
+            return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
         }
         console.log(error); // se n for do zod
         res.status(500).json({ error: "Erro ao redefinir senha" });

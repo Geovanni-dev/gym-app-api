@@ -4,9 +4,13 @@ require("dotenv").config();
 // Importa bibliotecas principais da aplicação
 const mongoose = require("mongoose");
 const express = require("express");
+const cors = require("cors");
 
 // Cria a aplicação Express
 const app = express();
+
+// Configura o middleware CORS
+app.use(cors());
 
 // Middleware que permite receber JSON no body das requisições
 app.use(express.json());
@@ -46,10 +50,10 @@ app.listen(PORT, () => {
 
 // Conecta ao MongoDB usando a URL definida nas variáveis de ambiente
 mongoose
-  .connect(process.env.DATABASE_URL || "mongodb://127.0.0.1:27017/workout-api")
+  .connect(process.env.DATABASE_URL)
   .then(() => {
     // confirmação de conexão bem-sucedida com o MongoDB
-    console.log("MongoDB conectado");
+    console.log("Atlas conectado");
   })
   .catch((err) => {
     // erro caso a conexão com o banco falhe

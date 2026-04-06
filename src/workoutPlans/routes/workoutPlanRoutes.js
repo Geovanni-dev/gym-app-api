@@ -12,25 +12,40 @@ const workoutPlanController = require("../controllers/workoutPlanController");
 const authMiddleware = require("../../middleware/authMiddleware");
 
 
-//==================================rotas relacionadas aos planos de treino
+// ==================================rotas relacionadas aos planos de treino
 
-
-// Adiciona um exercício a um plano específico, planId vem pela URL
+// Adiciona um exercício a um plano específico
 router.post("/:planId/exercise", authMiddleware, workoutPlanController.addExerciseToPlan);
 
+// Adicionar dia ao plano 
+router.post("/:planId/day", authMiddleware, workoutPlanController.addDayToPlan);
 
-/* Atualiza o peso de um exercício dentro do plano,
-  recebe o plano, o dia e o nome do exercício pela rota*/
-router.put("/:planId/:day/:exerciseName", authMiddleware, workoutPlanController.updateExerciseWeight);
+// Deletar dia do plano 
+router.delete("/:planId/day/:dayName", authMiddleware, workoutPlanController.deleteDayFromPlan);
 
+// Editar nome do dia
+router.put("/:planId/day/:day", authMiddleware, workoutPlanController.updateDayInPlan);
+
+// Editar nome do plano 
+router.put("/:planId/name", authMiddleware, workoutPlanController.updateWorkoutPlanName);
+
+// Editar exercício completo do plano 
+router.put("/:planId/:day/:exerciseName", authMiddleware, workoutPlanController.updateExerciseInPlan);
+
+// Reordenar dias do plano
+router.put("/:planId/reorder", authMiddleware, workoutPlanController.reorderDaysInPlan);
 
 // Cria um novo plano de treino para o usuário
 router.post("/", authMiddleware, workoutPlanController.createWorkoutPlan);
 
-
 // Retorna todos os planos do user logado
 router.get("/", authMiddleware, workoutPlanController.getWorkoutPlans);
 
+// Deleta um plano de treino pelo ID
+router.delete("/:planId", authMiddleware, workoutPlanController.deleteWorkoutPlan);
 
-// Exporta o router para ser usado no servidor principal
+// Deleta um exercício do plano de treino
+router.delete("/:planId/:day/:exerciseName", authMiddleware, workoutPlanController.deleteExercisePlan);
+
+// Exporta o router para uso no servidor principal
 module.exports = router;

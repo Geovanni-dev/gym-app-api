@@ -19,35 +19,27 @@ router.post("/generate", authMiddleware, workoutController.generateWorkout);
 // Registra a execução de um treino realizado pelo usuario
 router.post("/log", authMiddleware, workoutController.logWorkout);
 
-// Retorna o histórico completo de treinos do usuário
-// usar o controller correto para histórico
-router.get(
-  "/history",
-  authMiddleware,
-  (req, res, next) => {
-    console.log("ROTA /workouts/history FOI CHAMADA");
-    next();
-  },
-  workoutHistoryController.getWorkoutHistory, 
-);
-
-// Retorna o histórico de um exercício específico
-router.get(
-  "/history/:exerciseName",
-  authMiddleware,
-  workoutHistoryController.getExerciseHistory,
-);
+// Retorna o PR de um exercício
+// o nome do exercício é enviado via query
+// Adicionado rota para PR (Movido para cima para evitar conflito)
+router.get("/pr", authMiddleware, workoutController.getPR);
 
 // Lista todos os treinos gerados ou registrados pelo user
 router.get("/my-workouts", authMiddleware, workoutController.getMyWorkouts);
 
-/* Retorna o PR de um exercício
-  o nome do exercício é enviado via query*/
-//Adicionado rota para PR
-router.get("/pr", authMiddleware, workoutController.getPR);
+// Retorna o histórico completo de treinos do usuário
+// usar o controller correto para histórico
+router.get("/history", authMiddleware, workoutHistoryController.getWorkoutHistory);
 
-//Rota para buscar histórico
+// Rota para buscar histórico
 router.get("/history-alt", authMiddleware, workoutController.getWorkoutHistory);
+
+// Retorna o histórico de um exercício específico
+// O ":" indica que qualquer coisa vinda após /history/ será tratada como uma variável
+router.get("/history/:exerciseName", authMiddleware, workoutHistoryController.getExerciseHistory);
+
+// Rota para deletar um treino
+router.delete("/:Id", authMiddleware, workoutController.deleteWorkouts);
 
 // Exporta o router para uso no servidor principal
 module.exports = router;

@@ -35,21 +35,23 @@ exports.getWorkoutHistory = async (req, res) => {
 // HISTÓRICO DE UM EXERCÍCIO (validado com zod)
 exports.getExerciseHistory = async (req, res) => {
   try {
-    const { exerciseName } = getExerciseHistorySchema.parse(req.query); // validação com zod
+    const { exerciseName } = getExerciseHistorySchema.parse(req.params); // validação com zod
+
     const history = await Workout.find({  // busca pelo nome do exercício e usuário
       user: req.user.id,
-      exerciseName: exerciseName,
+      // Usando RegExp com "i" para a busca não ser sensível a maiúsculas/minúsculas
+      exerciseName: new RegExp(`^${exerciseName}$`, "i"), 
     }).sort({ date: -1 });  //mantido date que é o campo correto
 
     res.json(history);
   } catch (error) {
-       if (error instanceof z.ZodError) { // se o erro for do zod
-            return res.status(400).json({ error: "Erro de validação", 
-                detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
-        });
-        }
-        console.log(error); // se n for do zod
-        res.status(500).json({ error: "Erro ao buscar histórico de exercícios" });
+    if (error instanceof z.ZodError) { // se o erro for do zod
+      return res.status(400).json({ 
+        error: "Erro de validação", 
+        detalhes: error.flatten().fieldErrors // funçao para imprimir os erros
+      });
     }
+    console.log(error); // se n for do zod
+    return res.status(500).json({ error: "Erro ao buscar histórico de exercícios" });
+  }
 };
-

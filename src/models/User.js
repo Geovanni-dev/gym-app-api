@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema({
     default: false, // Obs: por padrão todo usuário começa como n verificado
   },
 
-  // Token gerado quando o usuário solicita recuperação de senha
-  resetPasswordToken: String,
+  // codigo gerado quando o usuário solicita recuperação de senha
+  resetPasswordCode: String,
 
   /* Data de expiração do token de recuperação,
   depois desse tempo o link deixa de funcionar*/

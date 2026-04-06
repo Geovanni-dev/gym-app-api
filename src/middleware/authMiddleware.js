@@ -30,4 +30,4 @@ const authMiddleware = (req, res, next) => {
 };
 
 // Exporta o middleware para ser usado nas rotas protegidas
-module.exports = authMiddleware;
+module.exports =  authMiddleware ;

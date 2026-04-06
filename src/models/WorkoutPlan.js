@@ -23,7 +23,7 @@ const exerciseSchema = new mongoose.Schema({
 
 // Cada plano pode possuir vários dias (ex: Push, Pull, Legs)
 const daySchema = new mongoose.Schema({
-  day: String, // nome do dia ou divisão de treino
+  name: String, // nome do dia ou divisão de treino
 
   // lista de exercícios daquele dia
   exercises: [exerciseSchema],

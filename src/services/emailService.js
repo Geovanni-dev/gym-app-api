@@ -17,6 +17,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+// Função para gerar um código de verificação aleatório
+const generateVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // Gera 6 dígitos
+};
+
 /*Função responsável por enviar emails da aplicação, 
 tbm pode ser usada para verificação de conta, recuperação de senha, etc etc*/
 exports.sendEmail = async (to, subject, text) => {
@@ -38,4 +44,10 @@ exports.sendEmail = async (to, subject, text) => {
     console.error("Erro ao enviar e-mail:", error);
     throw error;
   }
+};
+
+// 
+module.exports = { // Exporta as funções para serem usadas em outros arquivos
+  sendEmail: exports.sendEmail, 
+  generateVerificationCode     
 };

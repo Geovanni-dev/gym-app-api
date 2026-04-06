@@ -9,7 +9,7 @@ const router = express.Router();
 const exerciseController = require("../controllers/exerciseController");
 
 // Middleware de autenticação q verifica se o usuário possui um token JWT válido
-const authMiddleware = require("../../middleware/authMiddleware");
+const authMiddleware  = require("../../middleware/authMiddleware");
 
 
 // ROTAS DE EXERCÍCIOS
