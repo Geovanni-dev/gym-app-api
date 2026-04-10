@@ -19,7 +19,7 @@ const deleteExerciseSchema = z.object({
 
 
 
-// CRIAÇÃO DE EXERCÍCIO. (validado com zod)
+// CRIAÇÃO DE EXERCÍCIO
 exports.createExercise = async (req, res) => {
 
   try {

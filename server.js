@@ -17,7 +17,7 @@ app.use(express.json());
 
 // Importação das rotas da aplicação
 const userRoutes = require("./src/users/routes/userRoutes");
-const workoutRoutes = require("./src/workouts/routes/workoutRoutes");
+const workoutRoutes = require("./src/workouts/routes/workoutsRoutes");
 const exerciseRoutes = require("./src/exercises/routes/exerciseRoutes");
 const workoutPlanRoutes = require("./src/workoutPlans/routes/workoutPlanRoutes");
 

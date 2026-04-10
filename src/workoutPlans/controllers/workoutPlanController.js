@@ -453,10 +453,7 @@ exports.updateExerciseInPlan = async (req, res) => {
 // EDITAR NOME DE UM DIA ESPECÍFICO DO PLANO
 exports.updateDayInPlan = async (req, res) => {
   try {
-    // USANDO O SCHEMA CORRETO PARA OS PARAMS
     const { planId, day } = updateDayParamsSchema.parse(req.params);
-    
-    // USANDO O SCHEMA QUE VOCÊ JÁ TEM PARA O BODY
     const { name: newDayName } = updateDaySchema.parse(req.body);
     
     const workoutPlan = await WorkoutPlan.findOne({
