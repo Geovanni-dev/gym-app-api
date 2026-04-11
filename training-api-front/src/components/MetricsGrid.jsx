@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trophy, Activity, CheckSquare, ClipboardList } from 'lucide-react';
 
-const MetricsGrid = ({
+const MetricsGridAuto = ({
   stats = { maxWeight: 0, sessionVolume: 0, completedCount: 0 },
   plans = [],
   generatedWorkouts = [],
@@ -15,40 +15,47 @@ const MetricsGrid = ({
 
   const cards = [
     {
-      title: 'Max Carga',
-      value: `${safeStats.maxWeight}kg`,
-      icon: Trophy,
-      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800',
-      onClick: () => setIsPRSearchOpen(true),
-      position: 'bg-center',
-    },
-    {
-      title: 'Volume Total',
-      value: `${safeStats.sessionVolume}kg`,
-      icon: Activity,
-      image: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800',
-      position: 'bg-center',
-    },
-    {
-      title: 'Concluídos',
+      title: 'EXERCÍCIOS',
       value: (
-        <div className="flex items-baseline gap-1">
-          <span className="text-xl font-black text-white italic">{safeStats.completedCount}</span>
-          <span className="text-[10px] font-medium text-white/70 uppercase">Exercícios</span>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xl font-black text-white italic tracking-tighter">
+            {safeStats.completedCount}
+          </span>
+          <span className="text-sm font-black text-white/70 uppercase tracking-[0.15em]">
+            FEITOS
+          </span>
         </div>
       ),
       icon: CheckSquare,
-      image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1728486145245-d4cb0c9c3470?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // academia aestethic
+      image: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      
+      position: 'bg-top',
+    },
+    {
+      title: 'MAX CARGA',
+      value: `${safeStats.maxWeight}kg`,
+      icon: Trophy,
+      image: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800', // levantamento terra
+      image: 'https://images.unsplash.com/photo-1546817372-628669db4655?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',// mulher agachamento
+      onClick: () => setIsPRSearchOpen(true),
+      position: 'bg-[position:50%_20%]',
+    },
+    {
+      title: 'VOLUME TOTAL',
+      value: `${safeStats.sessionVolume}kg`,
+      icon: Activity,
+      image: 'https://images.unsplash.com/photo-1605296867424-35fc25c9212a?q=80&w=500&auto=format&fit=crop', // homem fazendo barra
       position: 'bg-center',
     },
     {
-      title: 'Planos',
+      title: 'PLANOS',
       value:
         (Array.isArray(plans) ? plans.length : 0) +
         (Array.isArray(generatedWorkouts) ? generatedWorkouts.length : 0),
       icon: ClipboardList,
-      image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=800',
-      position: 'bg-top',
+      image: 'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?q=80&w=800', //mulher fazendo agachamento
+      position: 'bg-center',
     },
   ];
 
@@ -79,11 +86,14 @@ const MetricsGrid = ({
             </div>
 
             {/* Textos */}
-            <div className="flex flex-col text-left min-w-0">
-              <p className="text-[10px] text-[#ff6600] uppercase tracking-wider font-black opacity-90 truncate">
-                {card.title}
-              </p>
-              <div className="text-xl font-black text-white italic uppercase tracking-tighter truncate drop-shadow-lg">
+            <div className="flex flex-col text-left min-w-0 justify-center">
+              <div className="relative mb-2">
+                <p className="text-[12px] text-white uppercase tracking-[0.15em] font-black opacity-90 truncate transition-all duration-300 group-hover:scale-105 group-hover:origin-left">
+                  {card.title}
+                </p>
+                <div className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-[#ff6600] shadow-[0_0_6px_#ff6600] transition-all duration-300 group-hover:w-full" />
+              </div>
+              <div className="text-xl font-black text-white italic uppercase tracking-tighter truncate drop-shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:origin-left">
                 {card.value}
               </div>
             </div>
@@ -97,4 +107,4 @@ const MetricsGrid = ({
   );
 };
 
-export default MetricsGrid;
+export default MetricsGridAuto;

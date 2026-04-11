@@ -15,44 +15,47 @@ const MetricsGridAuto = ({
 
   const cards = [
     {
-      title: 'Max Carga',
+      title: 'EXERCÍCIOS',
+      value: (
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xl font-black text-white italic tracking-tighter">
+            {safeStats.completedCount}
+          </span>
+          <span className="text-sm font-black text-white/70 uppercase tracking-[0.15em]">
+            FEITOS
+          </span>
+        </div>
+      ),
+      icon: CheckSquare,
+      image: 'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?q=80&w=800', // mulher fazendo remada 
+      position: 'bg-center',
+    },
+    {
+      title: 'MAX CARGA',
       value: `${safeStats.maxWeight}kg`,
       icon: Trophy,
-      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800', // homem fazendo rosca direta 
       onClick: () => setIsPRSearchOpen(true),
       position: 'bg-center',
     },
     {
-      title: 'Volume Total',
+      title: 'VOLUME TOTAL',
       value: `${safeStats.sessionVolume}kg`,
       icon: Activity,
-      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800',
-      position: 'bg-center',
+      image: 'https://images.unsplash.com/photo-1637430308606-86576d8fef3c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      position: 'bg-[position:50%_80%]', // academia aestetchic
     },
     {
-  title: 'Exercícios Concluídos',
-  value: (
-    <div className="flex items-baseline gap-1.5">
-      <span className="text-3xl font-black text-white italic tracking-tighter leading-none">
-        {safeStats.completedCount}
-      </span>
-      <span className="text-[10px] font-black text-white/100 uppercase tracking-[0.15em] italic">
-        Exercícios
-      </span>
-    </div>
-  ),
-  icon: CheckSquare,
-  image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=800',
-  position: 'bg-center',
-},
-    {
-      title: 'Planos',
+      title: 'PLANOS',
       value:
         (Array.isArray(plans) ? plans.length : 0) +
         (Array.isArray(generatedWorkouts) ? generatedWorkouts.length : 0),
       icon: ClipboardList,
-      image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=800',
-      position: 'bg-top',
+      
+       image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800',
+      position: 'bg-center', //homen fazendo levantamento terra
+       image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=800',
+      position: 'bg-center', // mulher no crossfit 
     },
   ];
 
@@ -83,11 +86,14 @@ const MetricsGridAuto = ({
             </div>
 
             {/* Textos */}
-            <div className="flex flex-col text-left min-w-0">
-              <p className="text-[10px] text-[#ff6600] uppercase tracking-wider font-black opacity-90 truncate">
-                {card.title}
-              </p>
-              <div className="text-xl font-black text-white italic uppercase tracking-tighter truncate drop-shadow-lg">
+            <div className="flex flex-col text-left min-w-0 justify-center">
+              <div className="relative mb-2">
+                <p className="text-[12px] text-white uppercase tracking-[0.15em] font-black opacity-90 truncate transition-all duration-300 group-hover:scale-105 group-hover:origin-left">
+                  {card.title}
+                </p>
+                <div className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-[#ff6600] shadow-[0_0_6px_#ff6600] transition-all duration-300 group-hover:w-full" />
+              </div>
+              <div className="text-xl font-black text-white italic uppercase tracking-tighter truncate drop-shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:origin-left">
                 {card.value}
               </div>
             </div>
