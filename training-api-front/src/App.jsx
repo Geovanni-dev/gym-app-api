@@ -780,17 +780,18 @@ function MainContent() {
         <div
           className={`min-h-screen ${theme.colors.background} text-white pb-24 md:pt-24 px-4 relative overflow-x-hidden`}
         >
-          {!selectedPlan && activeTab === 'dashboard' && !isCreatingPlan && (
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-40 grayscale-[0.2]"
-                style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=2000&auto=format&fit=crop')`,
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black" />
-            </div>
-          )}
+          {!selectedPlan && !isCreatingPlan && (
+  <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-[100vh] h-[100svh]">
+    <div
+      className="absolute inset-0 bg-cover bg-center opacity-60"
+      style={{
+        backgroundImage: `url('https://images.unsplash.com/photo-1728486145245-d4cb0c9c3470?q=80&w=2070&auto=format&fit=crop')`,
+      }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/100 via-black/65 to-black/70" />
+    <div className="absolute inset-0 bg-black/30" />
+  </div>
+)}
           <Navbar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -912,7 +913,7 @@ function MainContent() {
           )}
 
           <main className="max-w-7xl mx-auto pt-28 pb-8 md:pt-8 relative z-10 overflow-y-auto">
-            <StatusMessage type={uiMessage.type} message={uiMessage.text} />
+            <StatusMessage type={uiMessage.type} message={uiMessage.text} /> 
             {activeTab === 'dashboard' ? (
               <div className="space-y-8">
                 {selectedPlan ? (
@@ -964,7 +965,7 @@ function MainContent() {
                         <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
                           PLANOS <br /> DE TREINO
                         </div>
-                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.4em]">
+                        <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
                           Crie e gerencie seus treinos manuais
                         </p>
                       </div>
@@ -1187,7 +1188,7 @@ isGenerated={true}
                         <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
                           TREINOS <br /> AUTOMÁTICOS
                         </div>
-                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.4em]">
+                        <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
                           Protocolos Automatizados de Alta Performance
                         </p>
                       </div>
@@ -1379,7 +1380,7 @@ isGenerated={true}
       <div className="mt-2 md:absolute md:top-0 md:right-0 md:mt-0">
         <span 
           onClick={() => setIsHistoryResetOpen(true)}
-          className="text-[9px] font-black italic uppercase tracking-[0.2em] text-gray-700 hover:text-red-500 transition-colors cursor-pointer"
+          className="text-[9px] font-black italic uppercase tracking-[0.2em] text-gray/85 hover:text-red-500 transition-colors cursor-pointer"
         >
           Limpar histórico
         </span>
@@ -1438,7 +1439,7 @@ isGenerated={true}
         <Activity size={32} />
       </div>
       <p className="text-gray-500 font-bold uppercase text-[10px] tracking-[0.3em]">
-        Ainda não há historico de exercicios.
+        Ainda não há histórico de exercicios.
       </p>
     </div>
   ) : (
@@ -1473,7 +1474,7 @@ isGenerated={true}
                     setSelectedExerciseHistory({ name: log.exerciseName || log.name, logs: res.data });
                   } catch(e) { console.error(e); }
                 }}
-                className="group relative p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#ff6600]/30 transition-all flex items-center justify-between overflow-hidden cursor-pointer"
+                className="group relative p-4 rounded-2xl bg-black/1 backdrop-blur-sm border border-white/10 hover:border-[#ff6600]/60 transition-all flex items-center justify-between overflow-hidden cursor-pointer shadow-2xl"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ff6600]/10 group-hover:bg-[#ff6600] transition-all"></div>
                 

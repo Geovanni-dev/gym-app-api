@@ -21,7 +21,7 @@ const MetricsGridAuto = ({
           <span className="text-xl font-black text-white italic tracking-tighter">
             {safeStats.completedCount}
           </span>
-          <span className="text-sm font-black text-white/70 uppercase tracking-[0.15em]">
+          <span className="text-sm font-black text-white uppercase tracking-[0.15em]">
             FEITOS
           </span>
         </div>
@@ -29,7 +29,6 @@ const MetricsGridAuto = ({
       icon: CheckSquare,
       image: 'https://images.unsplash.com/photo-1728486145245-d4cb0c9c3470?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // academia aestethic
       image: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      
       position: 'bg-top',
     },
     {

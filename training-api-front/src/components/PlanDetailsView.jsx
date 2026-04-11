@@ -570,6 +570,7 @@ export const PlanDetailsView = ({
                           key={eIdx}
                           className={`group relative min-h-[140px] sm:min-h-[150px] rounded-2xl border overflow-hidden transition-all duration-300 w-full ${isCompleted ? 'border-[#ff6600] scale-[0.99] shadow-[0_0_20px_rgba(255,102,0,0.15)] bg-[#050505]' : 'border-white/20 bg-white/[0.03] hover:border-[#ff6600]/40 shadow-lg'}`}
                         >
+                          
                           <div
                             className={`absolute inset-0 transition-colors duration-500 ${isCompleted ? 'bg-[#050505]' : 'bg-gradient-to-br from-[#0a0a0a] via-black to-[#0d0d0d] group-hover:via-[#111111]'}`}
                           />
