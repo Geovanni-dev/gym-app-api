@@ -111,6 +111,7 @@ function MainContent() {
     return saved ? JSON.parse(saved) : null;
   });
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
+  const [showCreatePlan, setShowCreatePlan] = useState(false);
 
   const [history, setHistory] = useState([]);
   const [selectedExerciseHistory, setSelectedExerciseHistory] = useState(null);
@@ -478,6 +479,13 @@ const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleTabChange = (newTab) => {
   if (newTab === activeTab) return;
+
+
+  setIsGeneratingCustom(false); 
+  setShowCreatePlan(false);     
+  setSelectedPlan(null);         
+
+
   setIsTransitioning(true);
   setTimeout(() => {
     setActiveTab(newTab);
@@ -646,6 +654,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     try {
       await api.post('/workout-plans', data);
       setIsCreatingPlan(false);
+      setShowCreatePlan(false);
       formPlan.reset();
       fetchPlans();
     } catch (e) {
@@ -803,9 +812,9 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     <div className="absolute inset-0 bg-black/30" />
   </div>
 )}
-         <Navbar
+          <Navbar
   activeTab={activeTab}
-  setActiveTab={handleTabChange}  // <--- MUDE PARA handleTabChange
+  setActiveTab={handleTabChange}
   onOpenProfile={() => setIsProfileOpen(true)}
 />
           <ProfileSideMenu
@@ -881,10 +890,10 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   <div className="w-12 h-12 bg-[#ff6600]/10 text-[#ff6600] rounded-2xl flex items-center justify-center mx-auto mb-2">
                     <Search size={24} />
                   </div>
-                  <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
-                    Scanner de Recorde
+                  <h3 className="text-2xl font-black italic uppercase tracking-tighter text-[#ff6600]">
+                    PR DO FRANGO
                   </h3>
-                  <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                  <p className="text-gray text-[10px] font-bold uppercase tracking-widest">
                     Busca o PR de qualquer exercício
                   </p>
                 </div>
@@ -927,7 +936,92 @@ const [isTransitioning, setIsTransitioning] = useState(false);
   <StatusMessage type={uiMessage.type} message={uiMessage.text} />
   
   <div className={`transition-all duration-200 ease-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-    {activeTab === 'dashboard' ? (
+    
+{showCreatePlan ? (
+  /* CONTAINER DO MODAL */
+  <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl overflow-y-auto">
+    
+    {/* Alinhamento flex-col com items-center, mas SEM o justify-center para não descer o card */}
+    <div className="min-h-full flex flex-col items-center p-4">
+      
+      <div className="w-full max-w-[380px] flex flex-col">
+        
+        {/* CABEÇALHO - Mantido com o pt-24 que você enviou */}
+        <div className="flex items-center gap-3 pt-21 sm:pt-24 px-1">
+          <button
+            onClick={() => setShowCreatePlan(false)}
+            className="text-gray-500 hover:text-white transition-colors p-1"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white leading-none">
+              CRIAR TREINO <span className="text-[#ff6600]"><br/>DE FRANGO</span>
+            </h1>
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
+              CONSTRUÇÃO MANUAL DE ELITE
+            </p>
+          </div>
+        </div>
+        
+        <form onSubmit={formPlan.handleSubmit(onPlanSubmit)} className="w-full">
+          {/* AJUSTE DE POSIÇÃO AQUI: 
+              Mude o mt-[20px] para o valor que deixe o card na altura original.
+          */}
+          <div className={`mt-[20px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+            
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">NOVO PLANO</h3>
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">ADICIONE DIAS E EXERCÍCIOS</p>
+            </div>
+
+            <InputField
+              label="NOME DO PLANO"
+              placeholder="Ex: PPL UPPER LOWER"
+              {...formPlan.register('name')}
+              error={formPlan.formState.errors.name?.message}
+            />
+
+            <div className="space-y-4 pt-4 border-t border-white/5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-[10px] font-black italic uppercase text-white tracking-widest">TREINOS</h2>
+                <button
+                  type="button"
+                  onClick={() => appendDay({ name: '', exercises: [] })}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 text-[9px] font-black uppercase text-[#ff6600] border border-[#ff6600]/20 hover:bg-[#ff6600]/10 hover:border-[#ff6600]/40 transition-all"
+                >
+                  <Plus size={14} /> Adicionar Dia
+                </button>
+              </div>
+              <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1 no-scrollbar">
+                {dayFields.map((day, index) => (
+                  <DayAccordion key={day.id} dayIndex={index} register={formPlan.register} removeDay={removeDay} control={formPlan.control} />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 pt-2">
+              <button 
+                disabled={loading} 
+                type="submit" 
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all"
+              >
+                {loading ? 'SINCRONIZANDO...' : 'SALVAR TREINO'}
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setShowCreatePlan(false)} 
+                className="w-full py-2 text-gray text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
+              >
+                VOLTAR
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+) : activeTab === 'dashboard' ? (
       <div className="space-y-8">
         {selectedPlan ? (
           <PlanDetailsView
@@ -979,7 +1073,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               </div>
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setIsCreatingPlan(true)}
+                  onClick={() => setShowCreatePlan(true)}
                   className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff6600] transition-all shadow-xl active:scale-95"
                 >
                   <Plus size={16} strokeWidth={3} /> Criar treino
@@ -1082,7 +1176,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                     <h3 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white">
                       CRIE UM PLANO DE TREINO
                     </h3>
-                    <p className="text-gray-500 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                    <p className="text-gray-500 text-[20px] sm:text-[10px] font-bold uppercase tracking-widest leading-relaxed">
                       ADICIONE DIAS E EXERCÍCIOS NO PLANO
                     </p>
                   </div>
@@ -1264,57 +1358,120 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           </>
         )}
 
-        {isGeneratingCustom && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-[#111111] border border-white/5 p-5 rounded-2xl w-full max-w-[95%] sm:max-w-[450px] md:max-w-[500px] shadow-2xl relative max-h-[80vh] overflow-y-auto my-auto">
-              <button
-                onClick={() => setIsGeneratingCustom(false)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors"
-              >
-                <X size={18} />
-              </button>
-              <div className="text-center space-y-1 mb-4">
-                <h3 className="text-lg sm:text-xl font-black italic uppercase tracking-tighter text-white">
-                  GERAR TREINO AUTOMÁTICO
-                </h3>
-                <p className="text-gray-500 text-[8px] sm:text-[9px] font-bold uppercase tracking-widest leading-relaxed">
-                  ESCOLHA SEU OBJETIVO E FREQUÊNCIA
-                </p>
-              </div>
-              <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[9px] uppercase font-black text-gray-500 tracking-widest ml-1">OBJETIVO</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button type="button" onClick={() => setSelectedGoal('hipertrofia')} className={`py-2 rounded-xl border-2 font-black italic uppercase text-[9px] tracking-widest transition-all ${selectedGoal === 'hipertrofia' ? 'bg-[#ff6600] border-[#ff6600] text-black shadow-[0_0_20px_rgba(255,102,0,0.3)]' : 'bg-black/40 border-white/5 text-gray-500 hover:border-white/20'}`}>HIPERTROFIA</button>
-                    <button type="button" onClick={() => setSelectedGoal('força')} className={`py-2 rounded-xl border-2 font-black italic uppercase text-[9px] tracking-widest transition-all ${selectedGoal === 'força' ? 'bg-[#ff6600] border-[#ff6600] text-black shadow-[0_0_20px_rgba(255,102,0,0.3)]' : 'bg-black/40 border-white/5 text-gray-500 hover:border-white/20'}`}>FORÇA</button>
-                    <button type="button" onClick={() => setSelectedGoal('resistência')} className={`py-2 rounded-xl border-2 font-black italic uppercase text-[9px] tracking-widest transition-all ${selectedGoal === 'resistência' ? 'bg-[#ff6600] border-[#ff6600] text-black shadow-[0_0_20px_rgba(255,102,0,0.3)]' : 'bg-black/40 border-white/5 text-gray-500 hover:border-white/20'}`}>RESISTÊNCIA</button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[9px] uppercase font-black text-gray-500 tracking-widest ml-1">FREQUÊNCIA SEMANAL (DIAS)</label>
-                  <div className="flex items-center justify-between bg-black/40 p-1.5 rounded-xl border border-white/5">
-                    {[2, 3, 4, 5, 6].map((num) => (
-                      <button key={num} type="button" onClick={() => formGenerate.setValue('days', num)} className={`w-10 h-10 rounded-lg font-black italic transition-all ${formGenerate.watch('days') === num ? 'bg-white text-black scale-105' : 'text-gray-600 hover:text-white'}`}>{num}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex gap-2 pt-3">
-                  <button type="button" onClick={() => setIsGeneratingCustom(false)} className="flex-1 py-2 bg-white/5 text-gray-400 font-black uppercase text-[9px] tracking-widest rounded-lg hover:bg-white/10 transition-all">CANCELAR</button>
-                  <button disabled={loading} type="submit" className="flex-1 py-2 bg-[#ff6600] text-black font-black uppercase text-[9px] tracking-widest rounded-lg hover:bg-[#ff5500] transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1">{loading ? '...' : 'GERAR'} <ChevronRight size={12} /></button>
-                </div>
-              </form>
+   {isGeneratingCustom && (
+  <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl flex flex-col">
+    
+    {/* 1. CABEÇALHO FIXO - Alinhado logo abaixo do header real */}
+    <div className="w-full pt-25 sm:pt-24 pb-4 px-6 flex justify-center animate-in fade-in slide-in-from-top-2">
+      <div className="w-full max-w-[380px] flex items-center gap-3">
+        <button
+          onClick={() => setIsGeneratingCustom(false)}
+          className="text-gray-500 hover:text-white p-1 -ml-1 transition-colors"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white leading-none">
+            GERAR <span className="text-[#ff6600]">TREINO <br/>de frango</span>
+          </h1>
+          <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mt-1">
+            TREINOS AUTOMATIZADOS
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* 2. ÁREA DO CARD */}
+    <div className="flex-1 overflow-y-auto flex flex-col items-center px-4 pb-10 no-scrollbar">
+      <div className="w-full max-w-[380px] mt-2">
+        <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }}>
+          <div className={` p-6 rounded-[2.5rem] ${theme.colors.surfaceLight} border ${theme.colors.border} space-y-10 shadow-2xl relative overflow-hidden`}>
+            
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#ff6600]/10 blur-[80px] pointer-events-none" />
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">
+                objetivo e dias
+              </h3>
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                DEFINA SEU FOCO e dias de treino 
+              </p>
             </div>
+
+            {/* Objetivos */}
+            <div className="grid grid-cols-3 gap-2">
+              {['hipertrofia', 'força', 'resistência'].map((goal) => (
+                <button
+                  key={goal}
+                  type="button"
+                  onClick={() => setSelectedGoal(goal)}
+                  className={`py-4 rounded-2xl border-2 font-black italic uppercase text-[11px] tracking-tighter transition-all ${
+                    selectedGoal === goal 
+                      ? 'bg-[#ff6600] border-[#ff6600] text-black shadow-[0_0_15px_rgba(255,102,0,0.3)]' 
+                      : 'bg-black/40 border-white/10 text-gray-500 hover:border-white/20'
+                  }`}
+                >
+                  {goal}
+                </button>
+              ))}
+            </div>
+
+            {/* Dias */}
+            <div className="flex items-center justify-between bg-black/40 p-1.5 rounded-2xl border border-white/10">
+              {[2, 3, 4, 5, 6].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => formGenerate.setValue('days', num)}
+                  className={`w-10 h-10 rounded-xl font-black italic text-sm transition-all ${
+                    formGenerate.watch('days') === num 
+                      ? 'bg-white text-black scale-105 shadow-lg' 
+                      : 'text-gray-500 hover:text-white'
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+
+            {/* AÇÕES - PADRONIZADO COM O MANUAL E NEON BRILHANTE */}
+            <div className="flex flex-col gap-3 pt-2">
+              <button
+                disabled={loading}
+                type="submit"
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_25px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <><Zap size={14} /> GERAR TREINO</>
+                )}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setIsGeneratingCustom(false)}
+                className="w-full py-2 text-gray-600 text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
+              >
+                VOLTAR
+              </button>
+            </div>
+            
           </div>
-        )}
+        </form>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     ) : (
       <div className="max-w-4xl mx-auto space-y-8 animate-in zoom-in duration-500 px-2 pb-10">
         <div className="text-center space-y-2 relative flex flex-col items-center">
-          <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white">EVOLUÇÃO</h1>
+          <h1 className="text-5xl font-black italic uppercase tracking-tighter text-[#ff6600]">EVOLUÇÃO</h1>
           <p className="text-gray-500 font-bold uppercase text-xs tracking-[0.3em]">Seu registro de força</p>
           {history.length > 0 && (
             <div className="mt-2 md:absolute md:top-0 md:right-0 md:mt-0">
-              <span onClick={() => setIsHistoryResetOpen(true)} className="text-[9px] font-black italic uppercase tracking-[0.2em] text-gray/85 hover:text-red-500 transition-colors cursor-pointer">Limpar histórico</span>
+              <span onClick={() => setIsHistoryResetOpen(true)} className="text-[10px] font-black italic uppercase tracking-[0.2em] text-gray/85 hover:text-red-500 transition-colors cursor-pointer">Limpar histórico</span>
             </div>
           )}
         </div>
@@ -1413,6 +1570,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
         )}
       </div>
     )}
+    
   </div>
 </main>
         </div>
@@ -1546,35 +1704,98 @@ export default function App() {
   useScrollToInput();
   return (
     <AuthProvider>
-      <style>{`
+     <style>{`
+  /* Reset básico para mobile */
+  html, body {
+    height: 100%;
+    /* Remove o bounce elástico do iOS que faz a barra piscar */
+    overscroll-behavior-y: none; 
+    background-color: #000;
+  }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .no-spinners::-webkit-inner-spin-button, .no-spinners::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .no-spinners { -moz-appearance: textfield; }
-        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 1000px #0a0a0a inset !important;
-            -webkit-text-fill-color: white !important;
-            transition: background-color 5000s ease-in-out 0s;
-        }
-        input.day-name-input:-webkit-autofill { -webkit-text-fill-color: #ff6600 !important; }
-        .overflow-visible { overflow: visible !important; }
-        .whitespace-nowrap { white-space: nowrap; }
+  /* Garante que inputs não deem zoom (causador do bug 2) */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 
-        @media (max-width: 768px) {
-          body.keyboard-open {
-            padding-bottom: 200px;
-          }
-        }
- html, body {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  /* Classe para o container principal */
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh; /* Altura dinâmica real */
+    width: 100%;
+    position: relative;
+  }
+
+  /* Onde o treino acontece */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2rem;
+  }
+
+  /* Ajuste quando o teclado abre */
+  body.keyboard-open .scroll-content {
+    padding-bottom: 50vh; /* Abre espaço pro teclado sem empurrar o layout */
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Remove as setinhas (spinners) no Chrome, Safari, Edge e Firefox */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
-html::-webkit-scrollbar, body::-webkit-scrollbar {
-  display: none;
+
+input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield;
 }
 
-      `}</style>
+/* AJUSTE PARA TELAS MUITO FINAS (ANDROID E IPHONE) */
+@media (max-height: 700px) {
+  .fixed.inset-0.z-200 .my-8 {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .fixed.inset-0.z-200 .p-6 {
+    padding: 1rem !important;
+  }
+  
+  .fixed.inset-0.z-200 .space-y-6 {
+    gap: 0.75rem !important;
+  }
+  
+  .fixed.inset-0.z-200 .py-3.5 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .fixed.inset-0.z-200 .w-12.h-12 {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+}
+
+@media (max-height: 600px) {
+  .fixed.inset-0.z-200 .my-8 {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .fixed.inset-0.z-200 .p-6 {
+    padding: 0.75rem !important;
+  }
+  
+  .fixed.inset-0.z-200 .gap-3 {
+    gap: 0.5rem !important;
+  }
+}
+`}</style>
       <MainContent />
     </AuthProvider>
   );

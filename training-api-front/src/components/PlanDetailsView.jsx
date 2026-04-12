@@ -590,125 +590,70 @@ export const PlanDetailsView = ({
 
                           <div className="relative z-10 h-full p-4 sm:p-5 flex items-center justify-between gap-3 w-full">
                             {isEditingEx ? (
-                              <div className="w-full space-y-3 animate-in fade-in zoom-in-95 duration-200">
-                                {!isGenerated ? (
-                                  <>
-                                    <input
-                                      className="w-full bg-black/60 border border-[#ff6600]/30 rounded-xl p-2 text-white font-black uppercase italic outline-none focus:border-[#ff6600] text-sm"
-                                      value={editingExercise.data.name}
-                                      onChange={(e) =>
-                                        setEditingExercise({
-                                          ...editingExercise,
-                                          data: { ...editingExercise.data, name: e.target.value },
-                                        })
-                                      }
-                                    />
-                                    <div className="grid grid-cols-3 gap-2">
-                                      <div className="space-y-0.5">
-                                        <label className="text-[8px] uppercase font-black text-gray-500">
-                                          Sets
-                                        </label>
-                                        <input
-                                          type="number"
-                                          className="w-full bg-black/60 border border-white/10 rounded-lg p-2 text-center text-white font-bold no-spinners text-sm"
-                                          value={editingExercise.data.sets}
-                                          onChange={(e) =>
-                                            setEditingExercise({
-                                              ...editingExercise,
-                                              data: {
-                                                ...editingExercise.data,
-                                                sets: Number(e.target.value),
-                                              },
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                      <div className="space-y-0.5">
-                                        <label className="text-[8px] uppercase font-black text-gray-500">
-                                          Reps
-                                        </label>
-                                        <input
-                                          className="w-full bg-black/60 border border-white/10 rounded-lg p-2 text-center text-white font-bold text-sm"
-                                          value={editingExercise.data.reps}
-                                          onChange={(e) =>
-                                            setEditingExercise({
-                                              ...editingExercise,
-                                              data: {
-                                                ...editingExercise.data,
-                                                reps: e.target.value,
-                                              },
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                      <div className="space-y-0.5">
-                                        <label className="text-[8px] uppercase font-black text-gray-500">
-                                          Peso
-                                        </label>
-                                        <input
-                                          type="number"
-                                          className="w-full bg-black/60 border border-[#ff6600]/20 rounded-lg p-2 text-center text-[#ff6600] font-black no-spinners text-sm"
-                                          value={editingExercise.data.weight}
-                                          onChange={(e) =>
-                                            setEditingExercise({
-                                              ...editingExercise,
-                                              data: {
-                                                ...editingExercise.data,
-                                                weight: Number(e.target.value),
-                                              },
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <div className="space-y-0.5">
-                                    <label className="text-[8px] uppercase font-black text-[#ff6600] tracking-widest">
-                                      Ajustar PR (Carga)
-                                    </label>
-                                    <input
-                                      type="number"
-                                      autoFocus
-                                      className="w-full bg-black/60 border border-[#ff6600]/20 rounded-lg p-2 text-center text-[#ff6600] font-black text-xl no-spinners"
-                                      value={editingExercise.data.weight}
-                                      onChange={(e) =>
-                                        setEditingExercise({
-                                          ...editingExercise,
-                                          data: {
-                                            ...editingExercise.data,
-                                            weight: Number(e.target.value),
-                                          },
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                )}
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={() => setEditingExercise(null)}
-                                    className="flex-grow py-2 rounded-lg bg-white/5 text-gray-400 font-black uppercase text-[9px] tracking-widest"
-                                  >
-                                    Cancelar
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      onUpdateExercise(
-                                        plan._id || plan.id,
-                                        day.name,
-                                        ex.name,
-                                        editingExercise.data,
-                                        isGenerated
-                                      );
-                                      setEditingExercise(null);
-                                    }}
-                                    className="flex-grow py-2 rounded-lg bg-[#ff6600] text-black font-black uppercase text-[9px] tracking-widest"
-                                  >
-                                    {isGenerated ? 'Salvar PR' : 'Salvar'}
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
+  <div className="w-full space-y-4 animate-in fade-in zoom-in-95 duration-200">
+    <div className="space-y-3">
+      {!isGenerated ? (
+        <>
+          {/* MODO MANUAL: EDITAR TUDO */}
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Exercício</span>
+            <input
+              autoFocus
+              className="w-full bg-black/40 border border-[#ff6600]/30 rounded-xl p-2.5 text-white font-black uppercase italic outline-none focus:border-[#ff6600] text-sm"
+              value={editingExercise.data.name}
+              onChange={(e) => setEditingExercise({ ...editingExercise, data: { ...editingExercise.data, name: e.target.value } })}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Sets</span>
+              <input type="number" className="w-full bg-black/40 border border-white/10 rounded-xl p-2.5 text-center text-white font-black text-sm outline-none no-spinners" value={editingExercise.data.sets} onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, sets: Number(e.target.value)}})} />
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Reps</span>
+              <input className="w-full bg-black/40 border border-white/10 rounded-xl p-2.5 text-center text-white font-black text-sm outline-none" value={editingExercise.data.reps} onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, reps: e.target.value}})} />
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Carga</span>
+              <input type="number" className="w-full bg-black/40 border border-[#ff6600]/20 rounded-xl p-2.5 text-center text-[#ff6600] font-black text-sm outline-none no-spinners" value={editingExercise.data.weight} onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, weight: Number(e.target.value)}})} />
+            </div>
+          </div>
+        </>
+      ) : (
+        /* MODO AUTOMÁTICO: EDITAR SÓ PR */
+        <div className="space-y-1.5">
+          <span className="text-[11px] font-black text-[#ff6600] uppercase tracking-widest ml-1">Ajustar Recorde Pessoal (KG)</span>
+          <input
+            type="number"
+            autoFocus
+            className="w-full bg-black/60 border border-[#ff6600]/20 rounded-xl p-3.5 text-center text-[#ff6600] font-black text-2xl outline-none no-spinners"
+            value={editingExercise.data.weight}
+            onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, weight: Number(e.target.value)}})}
+          />
+        </div>
+      )}
+    </div>
+
+    {/* AÇÕES CENTRALIZADAS */}
+    <div className="flex justify-center gap-8 px-1 pt-1">
+      <span 
+        onClick={() => setEditingExercise(null)}
+        className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white cursor-pointer transition-colors"
+      >
+        Cancelar
+      </span>
+      <span 
+        onClick={() => {
+          onUpdateExercise(plan._id || plan.id, day.name, ex.name, editingExercise.data, isGenerated);
+          setEditingExercise(null);
+        }}
+        className="text-[11px] font-black uppercase tracking-[0.2em] text-[#ff6600] hover:text-[#ff8533] cursor-pointer transition-colors"
+      >
+        Confirmar
+      </span>
+    </div>
+  </div>
+) : (
                               <>
                                 <div
                                   className="flex items-center gap-3 sm:gap-4 flex-grow min-w-0 cursor-pointer"
