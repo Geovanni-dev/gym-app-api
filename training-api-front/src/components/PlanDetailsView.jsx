@@ -56,13 +56,9 @@ export const PlanDetailsView = ({
     return saved ? JSON.parse(saved) : {};
   });
 
-  useEffect(() => {
-    const currentScrollY = window.scrollY;
-    const timer = setTimeout(() => {
-      window.scrollTo(0, currentScrollY);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, []);
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
   const toggleDayVisibility = (dayName) => {
     setOpenDays((prev) => {
