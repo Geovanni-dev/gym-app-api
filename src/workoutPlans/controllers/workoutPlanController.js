@@ -4,6 +4,27 @@ const { z } = require("zod");
 const mongoose = require("mongoose");
 
 
+
+
+
+//==============================================funçaos auxiliares
+
+/*tentei criar a funçao direto no model usando "default" mas ele nao aceita funçoes assíncronas, optei por criar aqui mesmo no controller ao inves de deixar o default gerar um valor padrao temporario "ex PENDENTE" e depois atualizar com o valor correto do shareCode apos gerar o plano de treino, assim garantimos que o shareCode seja unico e no formato correto antes de salvar o plano no banco de dados*/
+function gerarCodigoFormatado() {
+  const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let codigo = '';
+  
+  for (let i = 0; i < 12; i++) {
+    codigo += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  
+  const part1 = codigo.slice(0, 4);
+  const part2 = codigo.slice(4, 8);
+  const part3 = codigo.slice(8, 12);
+  
+  return `${part1}-${part2}-${part3}`;
+}
+
 //=============================================validação de dados com zod
 
 
@@ -100,15 +121,33 @@ const deleteDaySchema = z.object({
   dayName: z.string().min(1, "O nome do dia é obrigatório")
 });
 
+
+// schema para validaçao do shereCode
+const shareCodeSchema = z.object({
+  shareCode: z.string().regex(/^[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}$/, "Formato de código inválido")
+});
+
+
 //=============================================criar planos de treinos
 
 // CRIAR PLANO DE TREINO
 exports.createWorkoutPlan = async (req, res) => {
     try {
     const validateData = createPlanSchema.parse(req.body ); // validação dos dados com zod
-    const plan = await WorkoutPlan.create({
+
+    let codigoUnico;
+    let codigoExiste = true;
+
+    while (codigoExiste) {
+  codigoUnico = gerarCodigoFormatado();
+  const planoExistente = await WorkoutPlan.findOne({ shareCode: codigoUnico });
+  codigoExiste = !!planoExistente; // se existir, repete o loop
+}
+      const plan = await WorkoutPlan.create({
       user: req.user.id,
-      ...validateData
+      name: validateData.name,
+      days: validateData.days,
+      shareCode: codigoUnico 
     });
     res.status(201).json({
       message: "Plano de treino criado com sucesso",
@@ -629,3 +668,42 @@ exports.deleteDayFromPlan = async (req, res) => {
     return res.status(500).json({ message: "Erro ao excluir dia" });
   }
 };
+
+
+//  COPIAR PLANO DE TREINO USANDO O SHARE CODE (nova função)
+exports.createPlanShareCode = async (req, res) => {
+  try { 
+    const {shareCode} = shareCodeSchema.parse(req.params); // validação do shareCode com zod
+    const workoutPlan = await WorkoutPlan.findOne({ shareCode })
+    if (!workoutPlan) {
+      return res.status(404).json({ message: "Plano de treino nao encontrado" });
+    }
+    // cria uma copia de plano de trei no para o usuario atual
+    const daysCopy = workoutPlan.days.map(day => {
+      return {
+        name: day.name,
+        exercises: day.exercises.map(exer => {
+          return {
+            name: exer.name,
+            sets: exer.sets,
+            reps: exer.reps,
+            weight: exer.weight,
+            pr: null // tirei o PR (Personal Record) da copia pq e algo individual de pessoa pra pessoa
+          }
+        })
+      }
+    });
+    const newPlan = await WorkoutPlan.create({ // cria o plano de treino com os dados copiados e o usuário logado
+      user: req.user.id,
+      name: workoutPlan.name,
+      days: daysCopy
+    });
+    res.status(201).json({ message: "Plano de treino criado com sucesso!", plan: newPlan }); // retorna o plano criado
+  } catch (error) {
+    if (error instanceof z.ZodError) { // se o erro for do zod
+      return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
+    }
+    console.log(error);
+    return res.status(500).json({ message: "Erro ao criar plano de treino" }); // retorna erro genérico para outros erros
+  }
+}

@@ -56,7 +56,6 @@ export const PlanDetailsView = ({
     return saved ? JSON.parse(saved) : {};
   });
 
-  // IMPEDE A PÁGINA DE SUBIR AO ABRIR O PLANO - MANTÉM A POSIÇÃO DO CLIQUE
   useEffect(() => {
     const currentScrollY = window.scrollY;
     const timer = setTimeout(() => {
@@ -73,7 +72,6 @@ export const PlanDetailsView = ({
     });
   };
 
-  // Função para verificar se um dia específico tem algum exercício concluído
   const hasDayCompletedExercises = (dayIdx) => {
     const day = plan.days[dayIdx];
     if (!day) return false;
@@ -84,7 +82,6 @@ export const PlanDetailsView = ({
     });
   };
 
-  // Função para finalizar apenas os exercícios concluídos de um dia específico
   const handleFinishDayWorkout = async (dayIdx) => {
     const day = plan.days[dayIdx];
     if (!day) return;
@@ -108,7 +105,6 @@ export const PlanDetailsView = ({
     try {
       await api.post('/workouts/log', { exercises: entriesToLog });
 
-      // DESMARCAR OS EXERCÍCIOS DO DIA USANDO A FUNÇÃO DO PAI
       if (onClearDayExercises) {
         onClearDayExercises(planId, dayIdx);
       }
@@ -308,7 +304,6 @@ export const PlanDetailsView = ({
   <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/98 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
     <div className="relative p-[2px] rounded-[32px] overflow-hidden w-full max-w-[340px] transition-all duration-300 my-auto">
       
-      {/* Borda neon vermelha */}
       <div 
         className="absolute inset-0 transition-opacity duration-300"
         style={{
@@ -319,7 +314,6 @@ export const PlanDetailsView = ({
 
       <div className="relative bg-[#0a0a0a] p-8 rounded-[30px] z-10 border border-white/5 overflow-hidden">
         
-        {/* Marca d'água vermelha */}
         <div className="absolute -right-10 -bottom-10 opacity-10">
           {confirmTarget.type === 'plan' ? (
             <Dumbbell size={140} strokeWidth={1} className="text-[#dc2626]" />
@@ -372,7 +366,6 @@ export const PlanDetailsView = ({
                 : 'shadow-none'
               }`}
           >
-            {/* Preenchimento vermelho */}
             <div 
               className="absolute inset-y-0 left-0 bg-[#dc2626] transition-all duration-75 ease-linear shadow-[5px_0_15px_rgba(0,0,0,0.3)]"
               style={{ width: `${holdProgress}%` }}
@@ -389,6 +382,107 @@ export const PlanDetailsView = ({
   </div>
 )}
 
+      {/* MODAL EDITAR EXERCÍCIO */}
+      {editingExercise && (
+        <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl w-full max-w-[420px] space-y-6 shadow-2xl">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-[#ff6600]/10 text-[#ff6600] rounded-2xl flex items-center justify-center mx-auto mb-2">
+                <Edit3 size={24} />
+              </div>
+              <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">
+                EDITAR EXERCÍCIO
+              </h3>
+              <p className="text-gray-500 text-[9px] font-bold uppercase tracking-widest leading-relaxed">
+                MODIFIQUE OS PARÂMETROS DO EXERCÍCIO
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {!isGenerated ? (
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">
+                      Nome do Exercício
+                    </label>
+                    <input
+                      autoFocus
+                      className="w-full bg-black/40 border border-[#ff6600]/30 rounded-xl p-3.5 text-white font-black uppercase italic outline-none focus:border-[#ff6600] text-sm"
+                      value={editingExercise.data.name}
+                      onChange={(e) => setEditingExercise({ ...editingExercise, data: { ...editingExercise.data, name: e.target.value } })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">
+                        Séries
+                      </label>
+                      <input 
+                        type="number" 
+                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3.5 text-center text-white font-black text-sm outline-none no-spinners" 
+                        value={editingExercise.data.sets} 
+                        onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, sets: Number(e.target.value)}})} 
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">
+                        Reps
+                      </label>
+                      <input 
+                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3.5 text-center text-white font-black text-sm outline-none" 
+                        value={editingExercise.data.reps} 
+                        onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, reps: e.target.value}})} 
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">
+                        Carga (KG)
+                      </label>
+                      <input 
+                        type="number" 
+                        className="w-full bg-black/40 border border-[#ff6600]/20 rounded-xl p-3.5 text-center text-[#ff6600] font-black text-sm outline-none no-spinners" 
+                        value={editingExercise.data.weight} 
+                        onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, weight: Number(e.target.value)}})} 
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[#ff6600] uppercase tracking-widest ml-1">
+                    Recorde Pessoal (KG)
+                  </label>
+                  <input
+                    type="number"
+                    autoFocus
+                    className="w-full bg-black/60 border border-[#ff6600]/20 rounded-xl p-4 text-center text-[#ff6600] font-black text-3xl outline-none no-spinners"
+                    value={editingExercise.data.weight}
+                    onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, weight: Number(e.target.value)}})}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-4 pt-4 border-t border-white/10">
+              <button
+                onClick={() => setEditingExercise(null)}
+                className="px-6 py-3.5 rounded-2xl bg-white/5 text-gray-400 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+              >
+                CANCELAR
+              </button>
+              <button
+                onClick={() => {
+                  onUpdateExercise(plan._id || plan.id, editingExercise.day, editingExercise.exerciseName, editingExercise.data, isGenerated);
+                  setEditingExercise(null);
+                }}
+                className="px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95"
+              >
+                SALVAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CABEÇALHO DO PLANO */}
       <div className="flex items-center justify-between px-2 gap-2 sm:gap-4 -mt-5">
@@ -559,9 +653,6 @@ export const PlanDetailsView = ({
                     {day.exercises?.map((ex, eIdx) => {
                       const checkKey = `${plan._id || plan.id}-${dIdx}-${eIdx}`;
                       const isCompleted = !!completedExercises[checkKey];
-                      const isEditingEx =
-                        editingExercise?.day === day.name &&
-                        editingExercise?.exerciseName === ex.name;
                       const DecorativeIcon =
                         eIdx % 3 === 0 ? Dumbbell : eIdx % 3 === 1 ? Zap : Flame;
 
@@ -570,8 +661,6 @@ export const PlanDetailsView = ({
                           key={eIdx}
                           className={`group relative min-h-[140px] sm:min-h-[150px] rounded-2xl border overflow-hidden transition-all duration-300 w-full ${isCompleted ? 'border-[#ff6600] scale-[0.99] shadow-[0_0_20px_rgba(255,102,0,0.15)] bg-[#050505]' : 'border-white/20 bg-white/[0.03] hover:border-[#ff6600]/40 shadow-lg'}`}
                         >
-                      
-                          
                           <div
                             className={`absolute inset-0 transition-colors duration-500 ${isCompleted ? 'bg-[#050505]' : 'bg-gradient-to-br from-[#0a0a0a] via-black to-[#0d0d0d] group-hover:via-[#111111]'}`}
                           />
@@ -589,200 +678,133 @@ export const PlanDetailsView = ({
                           />
 
                           <div className="relative z-10 h-full p-4 sm:p-5 flex items-center justify-between gap-3 w-full">
-                            {isEditingEx ? (
-  <div className="w-full space-y-4 animate-in fade-in zoom-in-95 duration-200">
-    <div className="space-y-3">
-      {!isGenerated ? (
-        <>
-          {/* MODO MANUAL: EDITAR TUDO */}
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Exercício</span>
-            <input
-              autoFocus
-              className="w-full bg-black/40 border border-[#ff6600]/30 rounded-xl p-2.5 text-white font-black uppercase italic outline-none focus:border-[#ff6600] text-sm"
-              value={editingExercise.data.name}
-              onChange={(e) => setEditingExercise({ ...editingExercise, data: { ...editingExercise.data, name: e.target.value } })}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Sets</span>
-              <input type="number" className="w-full bg-black/40 border border-white/10 rounded-xl p-2.5 text-center text-white font-black text-sm outline-none no-spinners" value={editingExercise.data.sets} onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, sets: Number(e.target.value)}})} />
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Reps</span>
-              <input className="w-full bg-black/40 border border-white/10 rounded-xl p-2.5 text-center text-white font-black text-sm outline-none" value={editingExercise.data.reps} onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, reps: e.target.value}})} />
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest ml-1">Carga</span>
-              <input type="number" className="w-full bg-black/40 border border-[#ff6600]/20 rounded-xl p-2.5 text-center text-[#ff6600] font-black text-sm outline-none no-spinners" value={editingExercise.data.weight} onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, weight: Number(e.target.value)}})} />
-            </div>
-          </div>
-        </>
-      ) : (
-        /* MODO AUTOMÁTICO: EDITAR SÓ PR */
-        <div className="space-y-1.5">
-          <span className="text-[11px] font-black text-[#ff6600] uppercase tracking-widest ml-1">Ajustar Recorde Pessoal (KG)</span>
-          <input
-            type="number"
-            autoFocus
-            className="w-full bg-black/60 border border-[#ff6600]/20 rounded-xl p-3.5 text-center text-[#ff6600] font-black text-2xl outline-none no-spinners"
-            value={editingExercise.data.weight}
-            onChange={(e) => setEditingExercise({...editingExercise, data: {...editingExercise.data, weight: Number(e.target.value)}})}
-          />
-        </div>
-      )}
-    </div>
-
-    {/* AÇÕES CENTRALIZADAS */}
-    <div className="flex justify-center gap-8 px-1 pt-1">
-      <span 
-        onClick={() => setEditingExercise(null)}
-        className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white cursor-pointer transition-colors"
-      >
-        Cancelar
-      </span>
-      <span 
-        onClick={() => {
-          onUpdateExercise(plan._id || plan.id, day.name, ex.name, editingExercise.data, isGenerated);
-          setEditingExercise(null);
-        }}
-        className="text-[11px] font-black uppercase tracking-[0.2em] text-[#ff6600] hover:text-[#ff8533] cursor-pointer transition-colors"
-      >
-        Confirmar
-      </span>
-    </div>
-  </div>
-) : (
-                              <>
+                            <>
+                              <div
+                                className="flex items-center gap-3 sm:gap-4 flex-grow min-w-0 cursor-pointer"
+                                onClick={() => toggleCheck(checkKey)}
+                              >
                                 <div
-                                  className="flex items-center gap-3 sm:gap-4 flex-grow min-w-0 cursor-pointer"
-                                  onClick={() => toggleCheck(checkKey)}
+                                  className={`flex-shrink-0 transition-all duration-300 rounded-lg ${isCompleted ? 'text-[#ff6600] scale-110 drop-shadow-[0_0_8px_#ff6600]' : 'text-white/20 group-hover:text-[#ff6600]/50 group-hover:scale-110'}`}
                                 >
-                                  <div
-                                    className={`flex-shrink-0 transition-all duration-300 rounded-lg ${isCompleted ? 'text-[#ff6600] scale-110 drop-shadow-[0_0_8px_#ff6600]' : 'text-white/20 group-hover:text-[#ff6600]/50 group-hover:scale-110'}`}
+                                  <CheckSquare
+                                    className="w-6 h-6 sm:w-7 sm:h-7"
+                                    strokeWidth={2.5}
+                                  />
+                                </div>
+                                <div className="space-y-2 min-w-0 overflow-hidden flex-1">
+                                  <h4
+                                    className={`text-base sm:text-lg md:text-xl font-black uppercase italic tracking-tight transition-all truncate leading-normal py-1 ${isCompleted ? 'text-[#ff6600]' : 'text-white group-hover:text-[#ff6600]'}`}
                                   >
-                                    <CheckSquare
-                                      className="w-6 h-6 sm:w-7 sm:h-7"
-                                      strokeWidth={2.5}
-                                    />
-                                  </div>
-                                  <div className="space-y-2 min-w-0 overflow-hidden flex-1">
-                                    <h4
-                                      className={`text-base sm:text-lg md:text-xl font-black uppercase italic tracking-tight transition-all truncate leading-normal py-1 ${isCompleted ? 'text-[#ff6600]' : 'text-white group-hover:text-[#ff6600]'}`}
-                                    >
-                                      {ex.name}
-                                    </h4>
+                                    {ex.name}
+                                  </h4>
 
-                                    <div className="flex items-start gap-4 sm:gap-8">
-                                      <div className="flex flex-col">
-                                        <p className="text-[8px] sm:text-[9px] font-black text-gray-500 uppercase tracking-widest leading-[1.2]">
-                                          SÉRIES
+                                  <div className="flex items-start gap-4 sm:gap-8">
+                                    <div className="flex flex-col">
+                                      <p className="text-[8px] sm:text-[9px] font-black text-gray-500 uppercase tracking-widest leading-[1.2]">
+                                        SÉRIES
+                                      </p>
+                                      <p
+                                        className={`text-base sm:text-lg md:text-xl font-black italic transition-colors leading-tight ${isCompleted ? 'text-[#ff6600]' : 'text-white'}`}
+                                      >
+                                        {ex.sets}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <p className="text-[8px] sm:text-[9px] font-black text-gray-500 uppercase tracking-widest leading-[1.2]">
+                                        REPS
+                                      </p>
+                                      <p
+                                        className={`text-base sm:text-lg md:text-xl font-black italic transition-colors leading-tight ${isCompleted ? 'text-[#ff6600]' : 'text-white'}`}
+                                      >
+                                        {ex.reps}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col relative group/pr">
+                                      <p className="text-[8px] sm:text-[9px] font-black text-[#ff6600]/60 uppercase tracking-widest leading-[1.2]">
+                                        CARGA
+                                      </p>
+                                      <div className="flex items-center gap-4 overflow-visible">
+                                        <p className="text-base sm:text-lg md:text-xl font-black italic text-[#ff6600] leading-tight whitespace-nowrap overflow-visible">
+                                          {ex.weight}KG
                                         </p>
-                                        <p
-                                          className={`text-base sm:text-lg md:text-xl font-black italic transition-colors leading-tight ${isCompleted ? 'text-[#ff6600]' : 'text-white'}`}
-                                        >
-                                          {ex.sets}
-                                        </p>
-                                      </div>
-                                      <div className="flex flex-col">
-                                        <p className="text-[8px] sm:text-[9px] font-black text-gray-500 uppercase tracking-widest leading-[1.2]">
-                                          REPS
-                                        </p>
-                                        <p
-                                          className={`text-base sm:text-lg md:text-xl font-black italic transition-colors leading-tight ${isCompleted ? 'text-[#ff6600]' : 'text-white'}`}
-                                        >
-                                          {ex.reps}
-                                        </p>
-                                      </div>
-                                      <div className="flex flex-col relative group/pr">
-                                        <p className="text-[8px] sm:text-[9px] font-black text-[#ff6600]/60 uppercase tracking-widest leading-[1.2]">
-                                          CARGA
-                                        </p>
-                                        <div className="flex items-center gap-4 overflow-visible">
-                                          <p className="text-base sm:text-lg md:text-xl font-black italic text-[#ff6600] leading-tight whitespace-nowrap overflow-visible">
-                                            {ex.weight}KG
-                                          </p>
 
-                                          <button
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleSyncPR(day.name, ex.name, ex);
-                                            }}
-                                            className={`p-1 rounded-md transition-all flex-shrink-0 ${
-                                              syncingPR === ex.name 
-                                                ? 'animate-spin bg-[#ff6600]/20 text-[#ff6600]' 
-                                                : 'bg-[#ff6600]/5 hover:bg-[#ff6600]/20 text-[#ff6600]'
-                                            }`}
-                                            title="Sincronizar PR do Histórico"
-                                          >
-                                            <Trophy size={10} className="sm:size-[12px]" />
-                                          </button>
-                                        </div>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSyncPR(day.name, ex.name, ex);
+                                          }}
+                                          className={`p-1 rounded-md transition-all flex-shrink-0 ${
+                                            syncingPR === ex.name 
+                                              ? 'animate-spin bg-[#ff6600]/20 text-[#ff6600]' 
+                                              : 'bg-[#ff6600]/5 hover:bg-[#ff6600]/20 text-[#ff6600]'
+                                          }`}
+                                          title="Sincronizar PR do Histórico"
+                                        >
+                                          <Trophy size={10} className="sm:size-[12px]" />
+                                        </button>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                                <div className="flex flex-col gap-1.5 flex-shrink-0">
-                                  {!isGenerated && (
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setConfirmTarget({
-                                          type: 'exercise',
-                                          planId: plan._id || plan.id,
-                                          day: day.name,
-                                          exercise: ex.name,
-                                        });
-                                      }}
-                                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/5 text-gray-400 flex items-center justify-center hover:bg-red-500/10 hover:text-red-500 transition-all"
-                                    >
-                                      <X size={14} className="sm:size-[16px]" />
-                                    </button>
-                                  )}
+                              </div>
+                              <div className="flex flex-col gap-1.5 flex-shrink-0">
+                                {!isGenerated && (
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setEditingExercise({
+                                      setConfirmTarget({
+                                        type: 'exercise',
+                                        planId: plan._id || plan.id,
                                         day: day.name,
-                                        exerciseName: ex.name,
-                                        data: { ...ex },
+                                        exercise: ex.name,
                                       });
                                     }}
-                                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/5 text-gray-400 flex items-center justify-center hover:bg-[#ff6600]/10 hover:text-[#ff6600] transition-all"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/5 text-gray-400 flex items-center justify-center hover:bg-red-500/10 hover:text-red-500 transition-all"
                                   >
-                                    <Edit3 size={14} className="sm:size-[16px]" />
+                                    <X size={14} className="sm:size-[16px]" />
                                   </button>
-                                  <div
-                                    className={`hidden sm:flex w-7 h-7 sm:w-8 sm:h-8 rounded-xl items-center justify-center transition-all ${isCompleted ? 'bg-[#ff6600]/20 text-[#ff6600]' : 'bg-white/5 text-white/20'}`}
-                                  >
-                                    <Dumbbell size={14} className="sm:size-[16px]" />
-                                  </div>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingExercise({
+                                      day: day.name,
+                                      exerciseName: ex.name,
+                                      data: { ...ex },
+                                    });
+                                  }}
+                                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/5 text-gray-400 flex items-center justify-center hover:bg-[#ff6600]/10 hover:text-[#ff6600] transition-all"
+                                >
+                                  <Edit3 size={14} className="sm:size-[16px]" />
+                                </button>
+                                <div
+                                  className={`hidden sm:flex w-7 h-7 sm:w-8 sm:h-8 rounded-xl items-center justify-center transition-all ${isCompleted ? 'bg-[#ff6600]/20 text-[#ff6600]' : 'bg-white/5 text-white/20'}`}
+                                >
+                                  <Dumbbell size={14} className="sm:size-[16px]" />
                                 </div>
-                              </>
-                            )}
+                              </div>
+                            </>
                           </div>
                         </div>
                       );
                     })}
                   </div>
 
-                  {/* BOTÃO DE FINALIZAR TREINO DO DIA */}
-                 <div className="flex justify-center pt-3">
-  <div
-    onClick={() => hasCompletedInDay && handleFinishDayWorkout(dIdx)}
-    className={`transition-all cursor-pointer ${
-      hasCompletedInDay
-        ? 'text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95'
-        : 'text-gray-600 cursor-not-allowed opacity-10 0'
-    }`}
-  >
-    <div className="flex items-center gap-2">
-      <CheckCircle2 size={16} />
-      <span className="text-xs sm:text-sm font-black uppercase tracking-wider">Finalizar treino</span>
-    </div>
-  </div>
-</div>
+                  <div className="flex justify-center pt-3">
+                    <div
+                      onClick={() => hasCompletedInDay && handleFinishDayWorkout(dIdx)}
+                      className={`transition-all cursor-pointer ${
+                        hasCompletedInDay
+                          ? 'text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95'
+                          : 'text-gray-600 cursor-not-allowed opacity-10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 size={16} />
+                        <span className="text-xs sm:text-sm font-black uppercase tracking-wider">Finalizar treino</span>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
             </div>

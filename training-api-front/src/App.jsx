@@ -1362,7 +1362,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
   <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl flex flex-col">
     
     {/* 1. CABEÇALHO FIXO - Alinhado logo abaixo do header real */}
-    <div className="w-full pt-25 sm:pt-24 pb-4 px-6 flex justify-center animate-in fade-in slide-in-from-top-2">
+    <div className="w-full pt-23 sm:pt-24 pb-4 px-6 flex justify-center animate-in fade-in slide-in-from-top-2">
       <div className="w-full max-w-[380px] flex items-center gap-3">
         <button
           onClick={() => setIsGeneratingCustom(false)}
@@ -1795,6 +1795,7 @@ input[type=number] {
     gap: 0.5rem !important;
   }
 }
+  
 `}</style>
       <MainContent />
     </AuthProvider>
