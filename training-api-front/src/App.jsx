@@ -158,6 +158,8 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     localStorage.setItem('@IronSoul:completed', JSON.stringify(completedExercises));
   }, [completedExercises]);
 
+  
+
   useEffect(() => {
     const checkExpiry = () => {
       const now = Date.now();
@@ -728,8 +730,10 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             />
             <button
               type="submit"
-              className={`w-full py-4 rounded-xl font-black italic text-black uppercase tracking-wider ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all mt-2 disabled:opacity-50`}
-            >
+              className="w-full text-center py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-[#ff6600] transition-colors mt-2 disabled:opacity-50"
+>
+
+            
               Enviar Código
             </button>
           </AuthWrapper>
@@ -812,11 +816,13 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     <div className="absolute inset-0 bg-black/30" />
   </div>
 )}
-          <Navbar
-  activeTab={activeTab}
-  setActiveTab={handleTabChange}
-  onOpenProfile={() => setIsProfileOpen(true)}
-/>
+          {!showCreatePlan && !isGeneratingCustom && (
+  <Navbar
+    activeTab={activeTab}
+    setActiveTab={handleTabChange}
+    onOpenProfile={() => setIsProfileOpen(true)}
+  />
+)}
           <ProfileSideMenu
             isOpen={isProfileOpen}
             onClose={() => setIsProfileOpen(false)}
@@ -845,7 +851,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   />
                   <button
                     type="submit"
-                    className={`w-full py-4 rounded-xl font-black italic text-black uppercase text-[10px] tracking-widest ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all shadow-lg active:scale-95`}
+                    className={`w-full py-4 rounded-xl font-black italic text-black uppercase text-[10px] tracking-widest ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all shadow-lg active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)]`}
                   >
                     {loading ? 'Sincronizando...' : 'Trocar Senha'}
                   </button>
@@ -865,7 +871,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                     setView('forgotPassword');
                     setIsProfileOpen(false);
                   }}
-                  className="w-full py-4 rounded-xl font-bold text-white border border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-[9px] uppercase tracking-[0.2em] active:scale-95"
+                   className="cursor-pointer text-center py-2 text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-[#ff6600] transition-colors flex items-center justify-center gap-2 w-full"
                 >
                   <KeyRound size={14} /> Redefinição via E-mail
                 </button>
@@ -947,7 +953,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
       <div className="w-full max-w-[380px] flex flex-col">
         
         {/* CABEÇALHO - Mantido com o pt-24 que você enviou */}
-        <div className="flex items-center gap-3 pt-21 sm:pt-24 px-1">
+        <div className="flex items-center gap-3 pt-10 sm:pt-24 -ml-5">
           <button
             onClick={() => setShowCreatePlan(false)}
             className="text-gray-500 hover:text-white transition-colors p-1"
@@ -955,11 +961,11 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             <ArrowLeft size={24} />
           </button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white leading-none">
-              CRIAR TREINO <span className="text-[#ff6600]"><br/>DE FRANGO</span>
+            <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none">
+              CRIAR TREINO <span className="text-[#ff6600]"><br/> MANUAL</span>
             </h1>
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
-              CONSTRUÇÃO MANUAL DE ELITE
+            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
+              CRIAÇÃO MANUAL PARA FRANGOS DE ELITE
             </p>
           </div>
         </div>
@@ -968,11 +974,11 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           {/* AJUSTE DE POSIÇÃO AQUI: 
               Mude o mt-[20px] para o valor que deixe o card na altura original.
           */}
-          <div className={`mt-[20px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+          <div className={`mt-[40px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
               <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">NOVO PLANO</h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">ADICIONE DIAS E EXERCÍCIOS</p>
+              
             </div>
 
             <InputField
@@ -1008,16 +1014,15 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               >
                 {loading ? 'SINCRONIZANDO...' : 'SALVAR TREINO'}
               </button>
-              <button 
-                type="button" 
-                onClick={() => setShowCreatePlan(false)} 
-                className="w-full py-2 text-gray text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
-              >
-                VOLTAR
-              </button>
             </div>
           </div>
         </form>
+        {/* MENSAGEM INFORMATIVA */}
+<div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+  <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
+    Criação manual para frangos de elite. Crie o plano com os dias do treino e depois adicione os exercícios dentro do plano.
+  </p>
+</div>
       </div>
     </div>
   </div>
@@ -1068,7 +1073,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   PLANOS <br /> DE TREINO
                 </div>
                 <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
-                  Crie e gerencie seus treinos manuais
+                  Crie seus treinos manualmente e acompanhe sua evolução
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -1215,14 +1220,14 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   </div>
 
                   <div className="flex justify-center">
-                    <button
-                      disabled={loading}
-                      type="submit"
-                      className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95 whitespace-nowrap"
-                    >
-                      {loading ? 'Sincronizando...' : 'SALVAR PLANO'}
-                    </button>
-                  </div>
+  <button
+    disabled={loading}
+    type="submit"
+    className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] whitespace-nowrap"
+  >
+    {loading ? 'Sincronizando...' : 'SALVAR PLANO'}
+  </button>
+</div>
                 </div>
               </form>
             </div>
@@ -1230,7 +1235,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
         )}
       </div>
     ) : activeTab === 'generator' ? (
-      <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700 py-10">
+      <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
         {selectedPlan ? (
           <PlanDetailsView
             plan={selectedPlan}
@@ -1272,12 +1277,12 @@ const [isTransitioning, setIsTransitioning] = useState(false);
         ) : (
           <>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
-              <div className="space-y-1 -mt-11">
+              <div className="space-y-1 -mt-2">
                 <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
                   TREINOS <br /> AUTOMÁTICOS
                 </div>
                 <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
-                  Protocolos Automatizados de Alta Performance
+                  TREINOS GERADOS COM BASE NA BIOMECÂNICA DO SEU OBJETIVO
                 </p>
               </div>
               <div className="inline-block">
@@ -1352,44 +1357,34 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           </>
         )}
 
-   {isGeneratingCustom && (
-  <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl flex flex-col">
-    
-    {/* 1. CABEÇALHO FIXO - Alinhado logo abaixo do header real */}
-    <div className="w-full pt-23 sm:pt-24 pb-4 px-6 flex justify-center animate-in fade-in slide-in-from-top-2">
-      <div className="w-full max-w-[380px] flex items-center gap-3">
-        <button
-          onClick={() => setIsGeneratingCustom(false)}
-          className="text-gray-500 hover:text-white p-1 -ml-1 transition-colors"
-        >
-          <ArrowLeft size={24} />
-        </button>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white leading-none">
-            GERAR <span className="text-[#ff6600]">TREINO <br/>de frango</span>
-          </h1>
-          <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mt-1">
-            TREINOS AUTOMATIZADOS
-          </p>
+  {isGeneratingCustom && (
+  <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl overflow-y-auto">
+    <div className="min-h-full flex flex-col items-center p-4">
+      <div className="w-full max-w-[380px] flex flex-col">
+        
+        {/* CABEÇALHO - IGUAL AO MANUAL */}
+        <div className="flex items-center gap-3 pt-10 sm:pt-24 -ml-5">
+          <button
+            onClick={() => setIsGeneratingCustom(false)}
+            className="text-gray-500 hover:text-white transition-colors p-1"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+           <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none">
+  GERAR TREINO <span className="text-[#ff6600]"><br/> AUTOMÁTICO</span>
+</h1>
+            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
+              PLANOS AUTOMÁTICOS PARA FRANGOS INICIANTES
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
 
-    {/* 2. ÁREA DO CARD */}
-    <div className="flex-1 overflow-y-auto flex flex-col items-center px-4 pb-10 no-scrollbar">
-      <div className="w-full max-w-[380px] mt-2">
-        <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }}>
-          <div className={` p-6 rounded-[2.5rem] ${theme.colors.surfaceLight} border ${theme.colors.border} space-y-10 shadow-2xl relative overflow-hidden`}>
+        <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }} className="w-full">
+          <div className={`mt-[40px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#ff6600]/10 blur-[80px] pointer-events-none" />
-
             <div className="text-center space-y-1">
-              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">
-                objetivo e dias
-              </h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                DEFINA SEU FOCO e dias de treino 
-              </p>
+              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">OBJETIVO E DIAS</h3>
             </div>
 
             {/* Objetivos */}
@@ -1428,12 +1423,12 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               ))}
             </div>
 
-            {/* AÇÕES - PADRONIZADO COM O MANUAL E NEON BRILHANTE */}
+            {/* BOTÃO GERAR */}
             <div className="flex flex-col gap-3 pt-2">
-              <button
-                disabled={loading}
-                type="submit"
-                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_25px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
+              <button 
+                disabled={loading} 
+                type="submit" 
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -1441,18 +1436,17 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   <><Zap size={14} /> GERAR TREINO</>
                 )}
               </button>
-              
-              <button
-                type="button"
-                onClick={() => setIsGeneratingCustom(false)}
-                className="w-full py-2 text-gray-600 text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
-              >
-                VOLTAR
-              </button>
             </div>
             
           </div>
         </form>
+       {/* MENSAGEM INFORMATIVA - PLANOS AUTOMÁTICOS */}
+        <div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+          <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
+            Treinos automatizados de alta performance. Escolha seu objetivo e dias para gerar um plano automático.
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
