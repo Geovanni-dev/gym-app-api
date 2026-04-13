@@ -932,7 +932,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             </div>
           )}
 
-          <main className="max-w-7xl pt-28 pb-8 md:pt-8 relative z-10 overflow-y-auto">
+          <main className="max-w-7xl mx-auto w-full pt-28 pb-8 md:pt-8 relative z-10">
   <StatusMessage type={uiMessage.type} message={uiMessage.text} />
   
   <div className={`transition-all duration-200 ease-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
