@@ -103,6 +103,9 @@ function MainContent() {
   const [uiMessage, setUiMessage] = useState({ type: '', text: '' });
   const [isInternalReset, setIsInternalReset] = useState(false);
 
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+const [importCode, setImportCode] = useState('');
+const [loadingImport, setLoadingImport] = useState(false);
   const [plans, setPlans] = useState([]);
   const [generatedWorkouts, setGeneratedWorkouts] = useState([]);
   const [isCreatingPlan, setIsCreatingPlan] = useState(false);
@@ -158,6 +161,8 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     localStorage.setItem('@IronSoul:completed', JSON.stringify(completedExercises));
   }, [completedExercises]);
 
+  
+
   useEffect(() => {
     const checkExpiry = () => {
       const now = Date.now();
@@ -189,6 +194,18 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     };
   }, [isGeneratingCustom]);
 
+  // Impede o scroll do fundo quando o modal de importar estiver aberto
+useEffect(() => {
+  if (isImportModalOpen) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+  return () => {
+    document.body.style.overflow = 'unset';
+  };
+}, [isImportModalOpen]);
+
   const toggleCheck = (key) => {
     setCompletedExercises((prev) => {
       if (prev[key]) {
@@ -211,6 +228,34 @@ const [isTransitioning, setIsTransitioning] = useState(false);
       return newState;
     });
   };
+
+  useEffect(() => {
+  if (isPRSearchOpen) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+  return () => {
+    document.body.style.overflow = 'unset';
+  };
+}, [isPRSearchOpen]);
+
+const handleImportPlan = async () => {
+  if (!importCode.trim()) return;
+  setLoadingImport(true);
+  try {
+    await api.post(`/workout-plans/copy/${importCode.trim()}`);
+    setUiMessage({ type: 'success', text: 'Plano copiado com sucesso!' });
+    setIsImportModalOpen(false);
+    setImportCode('');
+    fetchPlans();
+  } catch (error) {
+    setUiMessage({ type: 'error', text: error.response?.data?.message || 'Código inválido' });
+    setIsImportModalOpen(false);
+  } finally {
+    setLoadingImport(false);
+  }
+};
 
   const fetchPlans = async () => {
     try {
@@ -728,8 +773,10 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             />
             <button
               type="submit"
-              className={`w-full py-4 rounded-xl font-black italic text-black uppercase tracking-wider ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all mt-2 disabled:opacity-50`}
-            >
+              className="w-full text-center py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-[#ff6600] transition-colors mt-2 disabled:opacity-50"
+>
+
+            
               Enviar Código
             </button>
           </AuthWrapper>
@@ -812,11 +859,13 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     <div className="absolute inset-0 bg-black/30" />
   </div>
 )}
-          <Navbar
-  activeTab={activeTab}
-  setActiveTab={handleTabChange}
-  onOpenProfile={() => setIsProfileOpen(true)}
-/>
+          {!showCreatePlan && !isGeneratingCustom && (
+  <Navbar
+    activeTab={activeTab}
+    setActiveTab={handleTabChange}
+    onOpenProfile={() => setIsProfileOpen(true)}
+  />
+)}
           <ProfileSideMenu
             isOpen={isProfileOpen}
             onClose={() => setIsProfileOpen(false)}
@@ -845,7 +894,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   />
                   <button
                     type="submit"
-                    className={`w-full py-4 rounded-xl font-black italic text-black uppercase text-[10px] tracking-widest ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all shadow-lg active:scale-95`}
+                    className={`w-full py-4 rounded-xl font-black italic text-black uppercase text-[10px] tracking-widest ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all shadow-lg active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)]`}
                   >
                     {loading ? 'Sincronizando...' : 'Trocar Senha'}
                   </button>
@@ -865,7 +914,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                     setView('forgotPassword');
                     setIsProfileOpen(false);
                   }}
-                  className="w-full py-4 rounded-xl font-bold text-white border border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-[9px] uppercase tracking-[0.2em] active:scale-95"
+                   className="cursor-pointer text-center py-2 text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-[#ff6600] transition-colors flex items-center justify-center gap-2 w-full"
                 >
                   <KeyRound size={14} /> Redefinição via E-mail
                 </button>
@@ -874,8 +923,8 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           />
 
           {isPRSearchOpen && (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-              <div className="bg-[#111111] border border-white/5 p-8 rounded-[2rem] w-full max-w-md space-y-6 shadow-2xl relative">
+            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+              <div className="bg-[#111111] border border-white/5 p-8 rounded-[2rem] w-full max-w-md space-y-6 shadow-2xl relative ,my-auto">
                 <button
                   onClick={() => {
                     setIsPRSearchOpen(false);
@@ -890,9 +939,9 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   <div className="w-12 h-12 bg-[#ff6600]/10 text-[#ff6600] rounded-2xl flex items-center justify-center mx-auto mb-2">
                     <Search size={24} />
                   </div>
-                  <h3 className="text-2xl font-black italic uppercase tracking-tighter text-[#ff6600]">
-                    PR DO FRANGO
-                  </h3>
+                 <h3 className="text-2xl font-black italic uppercase tracking-tighter">
+  seu <span className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.2)]">PR MAXIMO</span>
+</h3>
                   <p className="text-gray text-[10px] font-bold uppercase tracking-widest">
                     Busca o PR de qualquer exercício
                   </p>
@@ -947,7 +996,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
       <div className="w-full max-w-[380px] flex flex-col">
         
         {/* CABEÇALHO - Mantido com o pt-24 que você enviou */}
-        <div className="flex items-center gap-3 pt-21 sm:pt-24 px-1">
+        <div className="flex items-center gap-3 pt-2 sm:pt-24 -ml-5">
           <button
             onClick={() => setShowCreatePlan(false)}
             className="text-gray-500 hover:text-white transition-colors p-1"
@@ -955,11 +1004,11 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             <ArrowLeft size={24} />
           </button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white leading-none">
-              CRIAR TREINO <span className="text-[#ff6600]"><br/>DE FRANGO</span>
-            </h1>
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
-              CONSTRUÇÃO MANUAL DE ELITE
+            <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.0)]"><br/> MANUAIS</span>
+</h1>
+            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-4">
+              CRIAÇÃO MANUAL PARA FRANGOS DE ELITE
             </p>
           </div>
         </div>
@@ -968,11 +1017,11 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           {/* AJUSTE DE POSIÇÃO AQUI: 
               Mude o mt-[20px] para o valor que deixe o card na altura original.
           */}
-          <div className={`mt-[20px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
               <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">NOVO PLANO</h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">ADICIONE DIAS E EXERCÍCIOS</p>
+              
             </div>
 
             <InputField
@@ -1008,16 +1057,15 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               >
                 {loading ? 'SINCRONIZANDO...' : 'SALVAR TREINO'}
               </button>
-              <button 
-                type="button" 
-                onClick={() => setShowCreatePlan(false)} 
-                className="w-full py-2 text-gray text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
-              >
-                VOLTAR
-              </button>
             </div>
           </div>
         </form>
+        {/* MENSAGEM INFORMATIVA */}
+<div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+  <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
+    Planos manuais sob medida. Monte sua estrutura, depois preencha com os exercícios.
+  </p>
+</div>
       </div>
     </div>
   </div>
@@ -1064,11 +1112,11 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
               <div className="space-y-1 -mt-2">
-                <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
-                  PLANOS <br /> DE TREINO
+                <div className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.2)] font-black italic uppercase tracking-tighter text-4xl leading-none">
+                  PLANOS <br /> DE TREINOS
                 </div>
                 <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
-                  Crie e gerencie seus treinos manuais
+                  Crie seus treinos manualmente e acompanhe sua evolução
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -1078,9 +1126,65 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                 >
                   <Plus size={16} strokeWidth={3} /> Criar treino
                 </button>
+                  <button
+    onClick={() => setIsImportModalOpen(true)}
+    className="p-3 rounded-2xl bg-white text-black hover:bg-[#ff6600] hover:text-black transition-all active:scale-95"
+    title="Importar plano"
+  >
+    <svg width="20" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+      <polyline points="8 12 12 16 16 12" />
+      <line x1="12" y1="2" x2="12" y2="16" />
+    </svg>
+  </button>
               </div>
             </div>
-
+{isImportModalOpen && (
+  <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="bg-[#111111] border border-white/5 p-8 rounded-[2rem] w-full max-w-md space-y-6 shadow-2xl relative">
+      <button
+        onClick={() => {
+          setIsImportModalOpen(false);
+          setImportCode('');
+        }}
+        className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors"
+      >
+        <X size={20} />
+      </button>
+      <div className="text-center space-y-2">
+        <div className="w-12 h-12 bg-[#ff6600]/10 text-[#ff6600] rounded-2xl flex items-center justify-center mx-auto mb-2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            <polyline points="8 12 12 16 16 12" />
+            <line x1="12" y1="2" x2="12" y2="16" />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+  IMPORTAR <span className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.2)]">PLANO</span>
+</h3>
+        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+          Cole o id do plano que deseja copiar
+        </p>
+      </div>
+      <div className="space-y-4">
+        <input
+          autoFocus
+          className="w-full bg-black border border-white/10 rounded-xl p-4 text-white uppercase font-mono text-sm outline-none focus:border-[#ff6600] text-center"
+          placeholder="EX: GSC6-2A1B-3C2D-4E3F"
+          value={importCode}
+          onChange={(e) => setImportCode(e.target.value.toUpperCase())}
+        />
+       <button
+  onClick={handleImportPlan}
+  disabled={loadingImport || !importCode.trim()}
+  className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all disabled:opacity-50"
+>
+  {loadingImport ? 'IMPORTANDO...' : 'IMPORTAR'}
+</button>
+      </div>
+    </div>
+  </div>
+)}
             <MetricsGrid
               stats={stats}
               plans={plans}
@@ -1145,7 +1249,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                     <div className="flex justify-center mt-6">
                       <div
                         onClick={() => setVisiblePlans(visiblePlans === 6 ? plans.length : 6)}
-                        className="text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="text-gray-500 hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-xs sm:text-sm font-black uppercase tracking-wider">
@@ -1215,14 +1319,14 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   </div>
 
                   <div className="flex justify-center">
-                    <button
-                      disabled={loading}
-                      type="submit"
-                      className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95 whitespace-nowrap"
-                    >
-                      {loading ? 'Sincronizando...' : 'SALVAR PLANO'}
-                    </button>
-                  </div>
+  <button
+    disabled={loading}
+    type="submit"
+    className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] whitespace-nowrap"
+  >
+    {loading ? 'Sincronizando...' : 'SALVAR PLANO'}
+  </button>
+</div>
                 </div>
               </form>
             </div>
@@ -1230,7 +1334,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
         )}
       </div>
     ) : activeTab === 'generator' ? (
-      <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700 py-10">
+      <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
         {selectedPlan ? (
           <PlanDetailsView
             plan={selectedPlan}
@@ -1272,12 +1376,12 @@ const [isTransitioning, setIsTransitioning] = useState(false);
         ) : (
           <>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
-              <div className="space-y-1 -mt-11">
-                <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
+              <div className="space-y-1 -mt-2">
+                <div className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.2)] font-black italic uppercase tracking-tighter text-4xl leading-none">
                   TREINOS <br /> AUTOMÁTICOS
                 </div>
                 <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
-                  Protocolos Automatizados de Alta Performance
+                  TREINOS GERADOS COM BASE NA BIOMECÂNICA DO SEU OBJETIVO
                 </p>
               </div>
               <div className="inline-block">
@@ -1339,7 +1443,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               <div className="flex justify-center mt-4">
                 <div
                   onClick={() => setVisibleWorkouts(visibleWorkouts === 6 ? generatedWorkouts.length : 6)}
-                  className="text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  className="text-gray-500 hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs sm:text-sm font-black uppercase tracking-wider">
@@ -1352,44 +1456,34 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           </>
         )}
 
-   {isGeneratingCustom && (
-  <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl flex flex-col">
-    
-    {/* 1. CABEÇALHO FIXO - Alinhado logo abaixo do header real */}
-    <div className="w-full pt-23 sm:pt-24 pb-4 px-6 flex justify-center animate-in fade-in slide-in-from-top-2">
-      <div className="w-full max-w-[380px] flex items-center gap-3">
-        <button
-          onClick={() => setIsGeneratingCustom(false)}
-          className="text-gray-500 hover:text-white p-1 -ml-1 transition-colors"
-        >
-          <ArrowLeft size={24} />
-        </button>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white leading-none">
-            GERAR <span className="text-[#ff6600]">TREINO <br/>de frango</span>
-          </h1>
-          <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mt-1">
-            TREINOS AUTOMATIZADOS
-          </p>
+  {isGeneratingCustom && (
+  <div className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl overflow-y-auto">
+    <div className="min-h-full flex flex-col items-center p-4">
+      <div className="w-full max-w-[380px] flex flex-col">
+        
+        {/* CABEÇALHO - IGUAL AO MANUAL */}
+        <div className="flex items-center gap-3 pt-1 sm:pt-24 -ml-5">
+          <button
+            onClick={() => setIsGeneratingCustom(false)}
+            className="text-gray-500 hover:text-white transition-colors p-1"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+          <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+  GERAR <br/>TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.0)]"><br/> AUTOMÁTICOs</span>
+</h1>
+            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-4">
+              PLANOS AUTOMÁTICOS PARA FRANGOS INICIANTES
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
 
-    {/* 2. ÁREA DO CARD */}
-    <div className="flex-1 overflow-y-auto flex flex-col items-center px-4 pb-10 no-scrollbar">
-      <div className="w-full max-w-[380px] mt-2">
-        <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }}>
-          <div className={` p-6 rounded-[2.5rem] ${theme.colors.surfaceLight} border ${theme.colors.border} space-y-10 shadow-2xl relative overflow-hidden`}>
+        <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }} className="w-full">
+          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#ff6600]/10 blur-[80px] pointer-events-none" />
-
             <div className="text-center space-y-1">
-              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">
-                objetivo e dias
-              </h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                DEFINA SEU FOCO e dias de treino 
-              </p>
+              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">OBJETIVO E DIAS</h3>
             </div>
 
             {/* Objetivos */}
@@ -1428,12 +1522,12 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               ))}
             </div>
 
-            {/* AÇÕES - PADRONIZADO COM O MANUAL E NEON BRILHANTE */}
+            {/* BOTÃO GERAR */}
             <div className="flex flex-col gap-3 pt-2">
-              <button
-                disabled={loading}
-                type="submit"
-                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_25px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
+              <button 
+                disabled={loading} 
+                type="submit" 
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -1441,18 +1535,17 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   <><Zap size={14} /> GERAR TREINO</>
                 )}
               </button>
-              
-              <button
-                type="button"
-                onClick={() => setIsGeneratingCustom(false)}
-                className="w-full py-2 text-gray-600 text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
-              >
-                VOLTAR
-              </button>
             </div>
             
           </div>
         </form>
+       {/* MENSAGEM INFORMATIVA - PLANOS AUTOMÁTICOS */}
+        <div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+          <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
+            Treinos automatizados de alta performance. Escolha seu objetivo e dias para gerar um plano automático.
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1831,7 +1924,9 @@ input[type=number] {
     gap: 0.5rem !important;
   }
 }
-  
+  body.modal-open {
+  overflow: hidden;
+}
 `}</style>
       <MainContent />
     </AuthProvider>

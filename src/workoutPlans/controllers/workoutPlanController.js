@@ -11,7 +11,7 @@ const mongoose = require("mongoose");
 
 /*tentei criar a funçao direto no model usando "default" mas ele nao aceita funçoes assíncronas, optei por criar aqui mesmo no controller ao inves de deixar o default gerar um valor padrao temporario "ex PENDENTE" e depois atualizar com o valor correto do shareCode apos gerar o plano de treino, assim garantimos que o shareCode seja unico e no formato correto antes de salvar o plano no banco de dados*/
 function gerarCodigoFormatado() {
-  const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const characters = 'ABCDEFGHJKLMNPRSTUVWXYZ23456789'; // caracteres permitidos (exclui I, O, Q, 0, 1 para evitar confusão visual)
   let codigo = '';
   
   for (let i = 0; i < 12; i++) {
@@ -124,7 +124,7 @@ const deleteDaySchema = z.object({
 
 // schema para validaçao do shereCode
 const shareCodeSchema = z.object({
-  shareCode: z.string().regex(/^[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}$/, "Formato de código inválido")
+  shareCode: z.string().regex(/^[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}$/, "Formato de código inválido") // 4 grupos de 4 dígitos, separados por hifen com 0 1 O Q i l para evitar confusão visual
 });
 
 
@@ -693,10 +693,19 @@ exports.createPlanShareCode = async (req, res) => {
         })
       }
     });
+    let codigoUnico;
+    let codigoExiste = true;
+
+    while (codigoExiste) { // Gera um código único e verifica se já existe no banco de dados, se existir, gera outro até encontrar um código único
+      codigoUnico = gerarCodigoFormatado();
+      const planoExistente = await WorkoutPlan.findOne({ shareCode: codigoUnico });
+      codigoExiste = !!planoExistente; // se existir, repete o loop
+    }
     const newPlan = await WorkoutPlan.create({ // cria o plano de treino com os dados copiados e o usuário logado
       user: req.user.id,
       name: workoutPlan.name,
-      days: daysCopy
+      days: daysCopy,
+      shareCode: codigoUnico
     });
     res.status(201).json({ message: "Plano de treino criado com sucesso!", plan: newPlan }); // retorna o plano criado
   } catch (error) {
