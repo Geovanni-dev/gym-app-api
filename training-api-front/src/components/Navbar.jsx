@@ -4,15 +4,21 @@ import {
   LayoutDashboard,
   History as HistoryIcon,
   User as UserIcon,
-  Zap,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { theme } from '../utils/theme';
 
+/**
+ * Componente Navbar - Gerencia a navegação principal, 
+ * exibição de logo e status do sistema.
+ */
 export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
   const { isAuthenticated } = useAuth();
+
+  // Bloqueio de renderização para usuários não autenticados
   if (!isAuthenticated) return null;
 
+  // Configuração das abas de navegação
   const tabs = [
     { id: 'dashboard', icon: Dumbbell, label: 'Planos' },
     { id: 'generator', icon: LayoutDashboard, label: 'Auto-Treino' },
@@ -21,25 +27,37 @@ export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
 
   return (
     <>
-      {/* Header superior mobile - com logo, status e perfil */}
+      {/* Header Mobile: Logo, Status Online e Perfil */}
       <div className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between px-4 py-5 bg-black/90 backdrop-blur-md border-b border-white/10">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <Zap className={theme.colors.primary} fill="currentColor" size={20} />
+            <img 
+              src="/images/super-frango.png" 
+              alt="Logo" 
+              className="w-5 h-7 object-contain -translate-y-[-1px] -ml-[9px]"
+              style={{
+                filter: 'invert(52%) sepia(91%) saturate(3029%) hue-rotate(360deg) brightness(101%) contrast(106%)'
+              }}
+            />
             <span className="font-black text-xl tracking-tighter text-white italic uppercase">
-              IRON<span className={theme.colors.primary}>& SOUL</span>
+              SUPER <span className={theme.colors.primary}> FRANGO</span>
             </span>
           </div>
+
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-              STATUS: PROTOCOLO ATIVO
-            </span>
-            <span className="text-[10px] font-bold text-gray-600">•</span>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <div className="flex items-center gap-1.5 ml-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-800 animate-pulse shadow-[0_0_5px_#22c55e]"></span>
+              <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
+                STATUS: ONLINE
+              </span>
+            </div>
+            <span className="text-[8px] font-bold text-gray-600">-</span>
+            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
               {new Date().toLocaleDateString('pt-BR')}
             </span>
           </div>
         </div>
+
         <button
           onClick={onOpenProfile}
           className="flex items-center justify-center w-10 h-10 rounded-full bg-[#111111] border border-white/10 text-gray-500 hover:text-[#ff6600] hover:border-[#ff6600]/50 transition-all"
@@ -48,10 +66,8 @@ export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
         </button>
       </div>
 
-      {/* Navbar inferior - apenas no mobile */}
-      <nav
-        className={`fixed bottom-0 left-0 right-0 ${theme.colors.surfaceLight} border-t ${theme.colors.border} px-6 py-3 z-50 md:hidden shadow-2xl`}
-      >
+      {/* Navbar Inferior: Apenas visualização Mobile */}
+      <nav className={`fixed bottom-0 left-0 right-0 ${theme.colors.surfaceLight} border-t ${theme.colors.border} px-6 py-3 z-50 md:hidden shadow-2xl`}>
         <div className="flex justify-around items-center">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -69,14 +85,19 @@ export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
         </div>
       </nav>
 
-      {/* Navbar desktop - visível apenas no desktop */}
-      <nav
-        className={`hidden md:flex fixed top-0 left-0 right-0 ${theme.colors.surfaceLight} border-b ${theme.colors.border} px-8 py-4 z-50 shadow-2xl items-center justify-between`}
-      >
+      {/* Navbar Superior: Apenas visualização Desktop */}
+      <nav className={`hidden md:flex fixed top-0 left-0 right-0 ${theme.colors.surfaceLight} border-b ${theme.colors.border} px-8 py-4 z-50 shadow-2xl items-center justify-between`}>
         <div className="flex items-center gap-2">
-          <Zap className={theme.colors.primary} fill="currentColor" size={24} />
+          <img 
+            src="/images/super-frango.png" 
+            alt="Logo" 
+            className="w-5 h-7 object-contain -translate-y-[-1px] -ml-[9px]"
+            style={{
+              filter: 'invert(52%) sepia(91%) saturate(3029%) hue-rotate(360deg) brightness(101%) contrast(106%)'
+            }}
+          />
           <span className="font-black text-xl tracking-tighter text-white italic uppercase">
-            IRON<span className={theme.colors.primary}>& SOUL</span>
+            SUPER <span className={theme.colors.primary}> FRANGO</span>
           </span>
         </div>
 

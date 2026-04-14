@@ -22,7 +22,7 @@ const MetricsGridAuto = ({
             {safeStats.completedCount}
           </span>
           <span className="text-sm font-black text-white uppercase tracking-[0.15em]">
-            FEITOS
+            CHECK
           </span>
         </div>
       ),

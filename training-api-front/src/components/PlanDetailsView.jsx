@@ -222,7 +222,7 @@ useEffect(() => {
                 Novo Exercício
               </h3>
               <p className="text-gray-500 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest leading-relaxed">
-                Adicionando ao protocolo de {addingToDay}
+                Adicionando ao plano de {addingToDay}
               </p>
             </div>
             <form onSubmit={handleAddNewEx} className="space-y-4 sm:space-y-5">

@@ -22,12 +22,11 @@ const MetricsGridAuto = ({
             {safeStats.completedCount}
           </span>
           <span className="text-sm font-black text-white uppercase tracking-[0.15em]">
-            FEITOS
+           CHECK
           </span>
         </div>
       ),
       icon: CheckSquare,
-      image: 'https://images.unsplash.com/photo-1728486145245-d4cb0c9c3470?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // academia aestethic
       image: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       position: 'bg-top',
     },
@@ -35,7 +34,6 @@ const MetricsGridAuto = ({
       title: 'MAX CARGA',
       value: `${safeStats.maxWeight}kg`,
       icon: Trophy,
-      image: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800', // levantamento terra
       image: 'https://images.unsplash.com/photo-1546817372-628669db4655?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',// mulher agachamento
       onClick: () => setIsPRSearchOpen(true),
       position: 'bg-[position:50%_20%]',

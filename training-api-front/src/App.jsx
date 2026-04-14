@@ -916,7 +916,7 @@ const handleImportPlan = async () => {
                   }}
                    className="cursor-pointer text-center py-2 text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-[#ff6600] transition-colors flex items-center justify-center gap-2 w-full"
                 >
-                  <KeyRound size={14} /> Redefinição via E-mail
+                 Redefinição via E-mail
                 </button>
               </div>
             }
@@ -940,7 +940,7 @@ const handleImportPlan = async () => {
                     <Search size={24} />
                   </div>
                  <h3 className="text-2xl font-black italic uppercase tracking-tighter">
-  seu <span className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.2)]">PR MAXIMO</span>
+  seu pr <span className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.2)]">MáXIMO</span>
 </h3>
                   <p className="text-gray text-[10px] font-bold uppercase tracking-widest">
                     Busca o PR de qualquer exercício
@@ -1020,7 +1020,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
           <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
-              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">NOVO PLANO</h3>
+              <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">DADOS DO PLANO</h3>
               
             </div>
 
@@ -1060,11 +1060,28 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
             </div>
           </div>
         </form>
-        {/* MENSAGEM INFORMATIVA */}
-<div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
-  <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
-    Planos manuais sob medida. Monte sua estrutura, depois preencha com os exercícios.
-  </p>
+    {/* MENSAGEM INFORMATIVA - PLANOS MANUAIS (COM EFEITO NEON E HALTER) */}
+<div className="group relative mt-6 p-4 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/9 hover:border-[#ff6600]/40 transition-all duration-500 shadow-2xl overflow-hidden cursor-default">
+  
+  {/* Barra lateral fixa (estilo histórico) */}
+  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ff6600]/10 group-hover:bg-[#ff6600] transition-all duration-300"></div>
+  
+  <div className="flex items-center gap-4 relative z-10">
+    {/* Badge de Ícone - Agora com Dumbbell (Halter) */}
+    <div className="w-9 h-9 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-gray-500 group-hover:bg-[#ff6600] group-hover:text-black group-hover:border-[#ff6600] transition-all duration-300 flex-shrink-0">
+      <Dumbbell size={16} />
+    </div>
+
+    <div className="flex-1">
+      <p className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.15em] leading-tight group-hover:text-white transition-colors duration-300">
+        Planos manuais <span className="text-[#ff6600]">sob medida</span>. 
+        Monte sua estrutura, depois preencha com os exercícios.
+      </p>
+    </div>
+  </div>
+
+  {/* BARRA NEON INFERIOR (O efeito que corre de uma extremidade a outra) */}
+  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#ff6600] shadow-[0_0_15px_#ff6600] transition-all duration-700 group-hover:w-full" />
 </div>
       </div>
     </div>
@@ -1539,13 +1556,29 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
             
           </div>
         </form>
-       {/* MENSAGEM INFORMATIVA - PLANOS AUTOMÁTICOS */}
-        <div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
-          <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
-            Treinos automatizados de alta performance. Escolha seu objetivo e dias para gerar um plano automático.
-          </p>
-        </div>
+      {/* MENSAGEM INFORMATIVA - COM EFEITO NEON DO METRICSGRID */}
+<div className="group relative mt-6 p-4 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/9 hover:border-[#ff6600]/40 transition-all duration-500 shadow-2xl overflow-hidden cursor-default">
+  
+  {/* Barra lateral fixa (estilo histórico) */}
+  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ff6600]/10 group-hover:bg-[#ff6600] transition-all duration-300"></div>
+  
+  <div className="flex items-center gap-4 relative z-10">
+    {/* Badge de Ícone */}
+    <div className="w-9 h-9 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-gray-500 group-hover:bg-[#ff6600] group-hover:text-black group-hover:border-[#ff6600] transition-all duration-300 flex-shrink-0">
+      <Zap size={16} />
+    </div>
 
+    <div className="flex-1">
+      <p className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.15em] leading-tight group-hover:text-white transition-colors duration-300">
+        Treinos automatizados de <span className="text-[#ff6600] group-hover:text-[#ff6600] transition-colors">alta performance</span>. 
+        Escolha seu objetivo e dias para gerar um plano automático.
+      </p>
+    </div>
+  </div>
+
+  {/* BARRA NEON INFERIOR (O efeito que você pediu) */}
+  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#ff6600] shadow-[0_0_15px_#ff6600] transition-all duration-700 group-hover:w-full" />
+</div>
       </div>
     </div>
   </div>
@@ -1665,7 +1698,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
  <footer className="mt-1 mb-9 py-6 border-t border-transparent">
     <div className="text-center">
        <p className="text-[8px] font-black italic text-gray-600 uppercase tracking-[0.2em]">
-  © {new Date().getFullYear()} Geovani Rodrigues <span className="text-[#ff6600] inline-block mx-1">·</span> Super Frango Studio
+ © {new Date().getFullYear()} Geovani Rodrigues <span className="text-white inline-block mx-1">·</span> Super Frango Studio
 </p>
       <div className="flex items-center justify-center gap-6 mt-3">
         <a 
