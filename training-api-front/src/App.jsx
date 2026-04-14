@@ -103,6 +103,9 @@ function MainContent() {
   const [uiMessage, setUiMessage] = useState({ type: '', text: '' });
   const [isInternalReset, setIsInternalReset] = useState(false);
 
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+const [importCode, setImportCode] = useState('');
+const [loadingImport, setLoadingImport] = useState(false);
   const [plans, setPlans] = useState([]);
   const [generatedWorkouts, setGeneratedWorkouts] = useState([]);
   const [isCreatingPlan, setIsCreatingPlan] = useState(false);
@@ -191,6 +194,18 @@ const [isTransitioning, setIsTransitioning] = useState(false);
     };
   }, [isGeneratingCustom]);
 
+  // Impede o scroll do fundo quando o modal de importar estiver aberto
+useEffect(() => {
+  if (isImportModalOpen) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+  return () => {
+    document.body.style.overflow = 'unset';
+  };
+}, [isImportModalOpen]);
+
   const toggleCheck = (key) => {
     setCompletedExercises((prev) => {
       if (prev[key]) {
@@ -213,6 +228,34 @@ const [isTransitioning, setIsTransitioning] = useState(false);
       return newState;
     });
   };
+
+  useEffect(() => {
+  if (isPRSearchOpen) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+  return () => {
+    document.body.style.overflow = 'unset';
+  };
+}, [isPRSearchOpen]);
+
+const handleImportPlan = async () => {
+  if (!importCode.trim()) return;
+  setLoadingImport(true);
+  try {
+    await api.post(`/workout-plans/copy/${importCode.trim()}`);
+    setUiMessage({ type: 'success', text: 'Plano copiado com sucesso!' });
+    setIsImportModalOpen(false);
+    setImportCode('');
+    fetchPlans();
+  } catch (error) {
+    setUiMessage({ type: 'error', text: error.response?.data?.message || 'Código inválido' });
+    setIsImportModalOpen(false);
+  } finally {
+    setLoadingImport(false);
+  }
+};
 
   const fetchPlans = async () => {
     try {
@@ -880,8 +923,8 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           />
 
           {isPRSearchOpen && (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-              <div className="bg-[#111111] border border-white/5 p-8 rounded-[2rem] w-full max-w-md space-y-6 shadow-2xl relative">
+            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+              <div className="bg-[#111111] border border-white/5 p-8 rounded-[2rem] w-full max-w-md space-y-6 shadow-2xl relative ,my-auto">
                 <button
                   onClick={() => {
                     setIsPRSearchOpen(false);
@@ -896,9 +939,9 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                   <div className="w-12 h-12 bg-[#ff6600]/10 text-[#ff6600] rounded-2xl flex items-center justify-center mx-auto mb-2">
                     <Search size={24} />
                   </div>
-                  <h3 className="text-2xl font-black italic uppercase tracking-tighter text-[#ff6600]">
-                    PR DO FRANGO
-                  </h3>
+                 <h3 className="text-2xl font-black italic uppercase tracking-tighter">
+  seu <span className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.2)]">PR MAXIMO</span>
+</h3>
                   <p className="text-gray text-[10px] font-bold uppercase tracking-widest">
                     Busca o PR de qualquer exercício
                   </p>
@@ -953,7 +996,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
       <div className="w-full max-w-[380px] flex flex-col">
         
         {/* CABEÇALHO - Mantido com o pt-24 que você enviou */}
-        <div className="flex items-center gap-3 pt-10 sm:pt-24 -ml-5">
+        <div className="flex items-center gap-3 pt-2 sm:pt-24 -ml-5">
           <button
             onClick={() => setShowCreatePlan(false)}
             className="text-gray-500 hover:text-white transition-colors p-1"
@@ -961,10 +1004,10 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             <ArrowLeft size={24} />
           </button>
           <div>
-            <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none">
-              CRIAR TREINO <span className="text-[#ff6600]"><br/> MANUAL</span>
-            </h1>
-            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
+            <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.0)]"><br/> MANUAIS</span>
+</h1>
+            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-4">
               CRIAÇÃO MANUAL PARA FRANGOS DE ELITE
             </p>
           </div>
@@ -974,7 +1017,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           {/* AJUSTE DE POSIÇÃO AQUI: 
               Mude o mt-[20px] para o valor que deixe o card na altura original.
           */}
-          <div className={`mt-[40px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
               <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">NOVO PLANO</h3>
@@ -1020,7 +1063,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
         {/* MENSAGEM INFORMATIVA */}
 <div className="mt-6 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
   <p className="text-[12px] font-medium text-gray-400 uppercase tracking-wider text-center">
-    Criação manual para frangos de elite. Crie o plano com os dias do treino e depois adicione os exercícios dentro do plano.
+    Planos manuais sob medida. Monte sua estrutura, depois preencha com os exercícios.
   </p>
 </div>
       </div>
@@ -1069,8 +1112,8 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
               <div className="space-y-1 -mt-2">
-                <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
-                  PLANOS <br /> DE TREINO
+                <div className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.2)] font-black italic uppercase tracking-tighter text-4xl leading-none">
+                  PLANOS <br /> DE TREINOS
                 </div>
                 <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
                   Crie seus treinos manualmente e acompanhe sua evolução
@@ -1083,9 +1126,65 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                 >
                   <Plus size={16} strokeWidth={3} /> Criar treino
                 </button>
+                  <button
+    onClick={() => setIsImportModalOpen(true)}
+    className="p-3 rounded-2xl bg-white text-black hover:bg-[#ff6600] hover:text-black transition-all active:scale-95"
+    title="Importar plano"
+  >
+    <svg width="20" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+      <polyline points="8 12 12 16 16 12" />
+      <line x1="12" y1="2" x2="12" y2="16" />
+    </svg>
+  </button>
               </div>
             </div>
-
+{isImportModalOpen && (
+  <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="bg-[#111111] border border-white/5 p-8 rounded-[2rem] w-full max-w-md space-y-6 shadow-2xl relative">
+      <button
+        onClick={() => {
+          setIsImportModalOpen(false);
+          setImportCode('');
+        }}
+        className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors"
+      >
+        <X size={20} />
+      </button>
+      <div className="text-center space-y-2">
+        <div className="w-12 h-12 bg-[#ff6600]/10 text-[#ff6600] rounded-2xl flex items-center justify-center mx-auto mb-2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            <polyline points="8 12 12 16 16 12" />
+            <line x1="12" y1="2" x2="12" y2="16" />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+  IMPORTAR <span className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.2)]">PLANO</span>
+</h3>
+        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+          Cole o id do plano que deseja copiar
+        </p>
+      </div>
+      <div className="space-y-4">
+        <input
+          autoFocus
+          className="w-full bg-black border border-white/10 rounded-xl p-4 text-white uppercase font-mono text-sm outline-none focus:border-[#ff6600] text-center"
+          placeholder="EX: GSC6-2A1B-3C2D-4E3F"
+          value={importCode}
+          onChange={(e) => setImportCode(e.target.value.toUpperCase())}
+        />
+       <button
+  onClick={handleImportPlan}
+  disabled={loadingImport || !importCode.trim()}
+  className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all disabled:opacity-50"
+>
+  {loadingImport ? 'IMPORTANDO...' : 'IMPORTAR'}
+</button>
+      </div>
+    </div>
+  </div>
+)}
             <MetricsGrid
               stats={stats}
               plans={plans}
@@ -1150,7 +1249,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
                     <div className="flex justify-center mt-6">
                       <div
                         onClick={() => setVisiblePlans(visiblePlans === 6 ? plans.length : 6)}
-                        className="text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="text-gray-500 hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-xs sm:text-sm font-black uppercase tracking-wider">
@@ -1278,7 +1377,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
           <>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
               <div className="space-y-1 -mt-2">
-                <div className="text-[#ff6600] font-black italic uppercase tracking-tighter text-4xl leading-none">
+                <div className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.2)] font-black italic uppercase tracking-tighter text-4xl leading-none">
                   TREINOS <br /> AUTOMÁTICOS
                 </div>
                 <p className="text-[11px] font-bold text-white/85 uppercase tracking-[0.4em]">
@@ -1344,7 +1443,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
               <div className="flex justify-center mt-4">
                 <div
                   onClick={() => setVisibleWorkouts(visibleWorkouts === 6 ? generatedWorkouts.length : 6)}
-                  className="text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  className="text-gray-500 hover:text-[#ff5500] hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs sm:text-sm font-black uppercase tracking-wider">
@@ -1363,7 +1462,7 @@ const [isTransitioning, setIsTransitioning] = useState(false);
       <div className="w-full max-w-[380px] flex flex-col">
         
         {/* CABEÇALHO - IGUAL AO MANUAL */}
-        <div className="flex items-center gap-3 pt-10 sm:pt-24 -ml-5">
+        <div className="flex items-center gap-3 pt-1 sm:pt-24 -ml-5">
           <button
             onClick={() => setIsGeneratingCustom(false)}
             className="text-gray-500 hover:text-white transition-colors p-1"
@@ -1371,17 +1470,17 @@ const [isTransitioning, setIsTransitioning] = useState(false);
             <ArrowLeft size={24} />
           </button>
           <div>
-           <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none">
-  GERAR TREINO <span className="text-[#ff6600]"><br/> AUTOMÁTICO</span>
+          <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+  GERAR <br/>TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.0)]"><br/> AUTOMÁTICOs</span>
 </h1>
-            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-1">
+            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-4">
               PLANOS AUTOMÁTICOS PARA FRANGOS INICIANTES
             </p>
           </div>
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }} className="w-full">
-          <div className={`mt-[40px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
               <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">OBJETIVO E DIAS</h3>
@@ -1825,7 +1924,9 @@ input[type=number] {
     gap: 0.5rem !important;
   }
 }
-  
+  body.modal-open {
+  overflow: hidden;
+}
 `}</style>
       <MainContent />
     </AuthProvider>

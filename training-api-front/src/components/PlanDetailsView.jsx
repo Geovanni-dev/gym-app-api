@@ -207,8 +207,8 @@ useEffect(() => {
 
   return (
     <div
-      className={`space-y-8 sm:space-y-10 animate-in fade-in slide-in-from-right-6 duration-500 pb-28 relative ${isGenerated ? '-mt-15' : ''}`}
-    >
+  className={`space-y-8 sm:space-y-10 animate-in fade-in slide-in-from-right-6 duration-500 pb-28 relative`}
+>
 
       {/* MODAL ADICIONAR EXERCÍCIO */}
       {addingToDay && !isGenerated && (
@@ -482,95 +482,101 @@ useEffect(() => {
       )}
 
       {/* CABEÇALHO DO PLANO */}
-      <div className="flex items-center justify-between px-2 gap-2 sm:gap-4 -mt-5">
-        <div className="flex items-center gap-3 sm:gap-6 overflow-hidden flex-1 min-w-0">
+<div className="flex items-center justify-between px-2 gap-2 sm:gap-4">
+  <div className="flex items-center gap-3 sm:gap-6 overflow-hidden flex-1 min-w-0">
+    <button
+      onClick={onBack}
+      className="p-2 sm:p-3 bg-white/5 rounded-xl sm:rounded-2xl text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-90 flex-shrink-0"
+    >
+      <ArrowLeft size={20} className="sm:size-[28px]" />
+    </button>
+    <div className="group relative overflow-hidden flex-1 min-w-0">
+      {editingPlanName !== null && !isGenerated ? (
+        <div className="flex items-center gap-2 sm:gap-3 w-full">
+          <input
+            autoFocus
+            className="bg-transparent text-xl sm:text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white border-b-2 border-[#ff6600] outline-none flex-1 min-w-0 w-full"
+            value={editingPlanName}
+            onChange={(e) => setEditingPlanName(e.target.value)}
+          />
           <button
-            onClick={onBack}
-            className="p-2 sm:p-3 bg-white/5 rounded-xl sm:rounded-2xl text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-90 flex-shrink-0"
-          >
-            <ArrowLeft size={20} className="sm:size-[28px]" />
-          </button>
-          <div className="group relative overflow-hidden flex-1 min-w-0">
-            {editingPlanName !== null && !isGenerated ? (
-              <div className="flex items-center gap-2 sm:gap-3 w-full">
-                <input
-                  autoFocus
-                  className="bg-transparent text-xl sm:text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white border-b-2 border-[#ff6600] outline-none flex-1 min-w-0 w-full"
-                  value={editingPlanName}
-                  onChange={(e) => setEditingPlanName(e.target.value)}
-                />
-                <button
-                  onClick={() => {
-                    onUpdatePlanName(plan._id || plan.id, editingPlanName);
-                    setEditingPlanName(null);
-                  }}
-                  className="p-1.5 sm:p-2 text-[#ff6600] flex-shrink-0"
-                >
-                  <Check size={18} className="sm:size-[24px]" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 sm:gap-4 overflow-hidden flex-wrap sm:flex-nowrap">
-                <h1 className="text-xl sm:text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white leading-tight break-words">
-                  {plan.name}
-                </h1>
-                {!isGenerated && (
-                  <button
-                    onClick={() => setEditingPlanName(plan.name)}
-                    className="p-1.5 sm:p-2 bg-white/5 rounded-lg sm:rounded-xl text-gray-400 hover:text-[#ff6600] transition-all flex-shrink-0"
-                  >
-                    <Edit3 size={14} className="sm:size-[18px]" />
-                  </button>
-                )}
-              </div>
-            )}
-    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
-  {/* PLANOS AUTOMÁTICOS - Arena Mode + frase antiga */}
-  {isGenerated && (
-    <div className="flex items-center gap-1">
-      <div className="px-2 py-0.5 sm:px-3 sm:py-1 bg-[#ff6600] text-black text-[7px] sm:text-[9px] font-black uppercase tracking-widest rounded-full italic">
-        FRANGO STUDIO
-      </div>
-      <span className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-wider">
-        Treinos gerados automaticamente
-      </span>
-    </div>
-  )}
-  
-  {/* PLANOS MANUAIS - ID DO PLANO + código + botão */}
-  {!isGenerated && (
-    <>
-      <div className="px-2 py-0.5 sm:px-3 sm:py-1 bg-[#ff6600] text-black text-[7px] sm:text-[9px] font-black uppercase tracking-widest rounded-full italic">
-        ID DO PLANO:
-      </div>
-      
-      {plan.shareCode && (
-        <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-md pl-2 pr-1.5 py-0.5 transition-all duration-200">
-          <span className={`text-[10px] sm:text-[9px] font-mono font-bold text-gray-300 tracking-wider transition-all duration-200 ${copied ? 'scale-110 text-[#ff6600]' : ''}`}>
-            {plan.shareCode}
-          </span>
-          <button
-            onClick={async () => {
-              await navigator.clipboard.writeText(plan.shareCode);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 300);
+            onClick={() => {
+              onUpdatePlanName(plan._id || plan.id, editingPlanName);
+              setEditingPlanName(null);
             }}
-            className={`p-0.5 rounded text-gray-500 hover:text-[#ff6600] transition-all duration-200 ${copied ? 'scale-125 text-[#ff6600]' : 'hover:scale-110'}`}
-            title="Copiar código"
+            className="p-1.5 sm:p-2 text-[#ff6600] flex-shrink-0"
           >
-            <svg width="12" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
+            <Check size={18} className="sm:size-[24px]" />
           </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 sm:gap-4 overflow-hidden flex-wrap sm:flex-nowrap">
+          <h1 className="text-xl sm:text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white leading-tight break-words">
+            {plan.name}
+          </h1>
+          {!isGenerated && (
+            <button
+              onClick={() => setEditingPlanName(plan.name)}
+              className="p-1.5 sm:p-2 bg-white/5 rounded-lg sm:rounded-xl text-gray-400 hover:text-[#ff6600] transition-all flex-shrink-0"
+            >
+              <Edit3 size={14} className="sm:size-[18px]" />
+            </button>
+          )}
         </div>
       )}
-    </>
-  )}
-</div>
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
+        {/* PLANOS AUTOMÁTICOS - Arena Mode + frase antiga */}
+        {isGenerated && (
+          <div className="flex items-center gap-1">
+            <div className="px-2 py-0.5 sm:px-3 sm:py-1 bg-[#ff6600] text-black text-[8px] sm:text-[9px] font-black uppercase tracking-widest rounded-full italic">
+              FRANGO STUDIO
+            </div>
+            <span className="text-[9px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+              auto-treinos
+            </span>
           </div>
-        </div>
+        )}
+        
+        {/* PLANOS MANUAIS - ID DO PLANO + código + botão */}
+        {!isGenerated && (
+          <>
+            <div className="px-2 py-0.5 sm:px-3 sm:py-1 bg-[#ff6600] text-black text-[8px] sm:text-[9px] font-black uppercase tracking-widest rounded-full italic">
+              ID DO PLANO:
+            </div>
+            
+            {plan.shareCode && (
+              <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-md pl-2 pr-1.5 py-0.5 transition-all duration-200">
+                <span className={`text-[12px] sm:text-[9px] font-mono font-bold text-gray-300 tracking-wider transition-all duration-200 ${copied ? 'scale-110 text-[#ff6600]' : ''}`}>
+                  {plan.shareCode}
+                </span>
+                <button
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(plan.shareCode);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 300);
+                  }}
+                  className={`p-0.5 rounded text-gray-500 hover:text-[#ff6600] transition-all duration-200 ${copied ? 'scale-125 text-[#ff6600]' : 'hover:scale-110'}`}
+                  title="Copiar código"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
+    </div>
+  </div>
+  <button
+    onClick={() => setConfirmTarget({ type: 'plan', id: plan._id || plan.id })}
+    className="text-gray-500 hover:text-red-500 transition-all flex-shrink-0"
+  >
+    <Trash2 size={18} className="sm:size-[24px]" />
+  </button>
+</div>
       {/* DIAS DO PLANO */}
       <div className="grid gap-8 sm:gap-12">
         {plan.days?.map((day, dIdx) => {
@@ -646,15 +652,6 @@ useEffect(() => {
                             className="p-1 text-gray-600 hover:text-white transition-all"
                           >
                             <Edit3 size={12} className="sm:size-[14px]" />
-                          </button>
-                          <button
-                            onClick={() => setAddingToDay(day.name)}
-                            className="p-1 text-gray-600 hover:text-[#ff6600] transition-all flex items-center gap-0.5 sm:gap-1"
-                          >
-                            <Plus size={12} className="sm:size-[14px]" />{' '}
-                            <span className="text-[6px] sm:text-[8px] font-black uppercase tracking-widest hidden sm:inline">
-                              Adicionar
-                            </span>
                           </button>
                           <button
                             onClick={() =>
@@ -818,22 +815,33 @@ useEffect(() => {
                       );
                     })}
                   </div>
-
                   <div className="flex justify-center pt-3">
-                    <div
-                      onClick={() => hasCompletedInDay && handleFinishDayWorkout(dIdx)}
-                      className={`transition-all cursor-pointer ${
-                        hasCompletedInDay
-                          ? 'text-[#ff6600] hover:text-[#ff5500] hover:scale-105 active:scale-95'
-                          : 'text-gray-600 cursor-not-allowed opacity-10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 size={16} />
-                        <span className="text-xs sm:text-sm font-black uppercase tracking-wider">Finalizar treino</span>
-                      </div>
-                    </div>
-                  </div>
+  <div
+    onClick={() => hasCompletedInDay && handleFinishDayWorkout(dIdx)}
+    className={`transition-all cursor-pointer ${
+      hasCompletedInDay
+        ? 'text-gray-500 hover:text-gray-300 hover:scale-105 active:scale-95'
+        : 'text-gray-900 cursor-not-allowed opacity-10'
+    }`}
+  >
+    <div className="flex items-center gap-2">
+      <CheckCircle2 size={16} className="text-green-900" />
+      <span className="text-xs sm:text-sm font-black uppercase tracking-wider">Finalizar treino</span>
+    </div>
+  </div>
+</div>
+                  {/* BOTÃO ADICIONAR EXERCÍCIO */}
+<div className="mt-4">
+  <button
+    onClick={() => setAddingToDay(day.name)}
+    className="w-full py-3 sm:py-6 border-2 border-dashed border-white/5 rounded-[1.5rem] sm:rounded-[2rem] text-[12px] sm:text-[10px] font-black uppercase transition-all flex items-center justify-center gap-2 sm:gap-3 group cursor-pointer text-gray-500 hover:border-[#ff6600] hover:text-[#ff6600]"
+  >
+    <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-white/5 flex items-center justify-center transition-all group-hover:bg-[#ff6600] group-hover:text-black">
+      <Plus size={12} strokeWidth={3} className="sm:size-[18px]" />
+    </div>
+    Adicionar Exercício
+  </button>
+</div>
                 </>
               )}
             </div>
@@ -870,12 +878,12 @@ useEffect(() => {
             ) : (
               <button
                 onClick={() => setAddingNewDay(true)}
-                className="w-full py-3 sm:py-6 border-2 border-dashed border-white/5 rounded-[1.5rem] sm:rounded-[2rem] text-[9px] sm:text-[10px] font-black uppercase text-gray-500 hover:border-[#ff6600] hover:text-[#ff6600] transition-all flex items-center justify-center gap-2 sm:gap-3 group"
+                className="w-full py-3 sm:py-6 border-2 border-dashed border-white/5 rounded-[1.5rem] sm:rounded-[2rem] text-[12px] sm:text-[10px] font-black uppercase text-gray-600 hover:border-[#ff6600] hover:text-[#ff6600] transition-all flex items-center justify-center gap-2 sm:gap-3 group"
               >
                 <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#ff6600] group-hover:text-black transition-all">
                   <Plus size={12} strokeWidth={3} className="sm:size-[18px]" />
                 </div>
-                Adicionar Novo Dia ao Protocolo
+                Adicionar dia
               </button>
             )}
           </div>
