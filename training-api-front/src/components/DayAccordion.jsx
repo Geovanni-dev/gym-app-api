@@ -7,7 +7,7 @@ export const DayAccordion = ({ register, dayIndex, removeDay }) => {
       <div className="flex items-center justify-between gap-3">
         <input
           {...register(`days.${dayIndex}.name`)}
-          placeholder="Ex: Segunda-feira"
+          placeholder="Ex: Peito e tríceps"
           className="bg-transparent text-lg font-black italic uppercase tracking-tight text-[#ff6600] outline-none border-b border-[#ff6600]/30 focus:border-[#ff6600] flex-1"
           autoComplete="off"
         />

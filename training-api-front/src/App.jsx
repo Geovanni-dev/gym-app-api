@@ -909,11 +909,11 @@ const handleImportPlan = async () => {
                     {...formChangePassword.register('newPassword')}
                   />
                   <button
-                    type="submit"
-                    className={`w-full py-4 rounded-xl font-black italic text-black uppercase text-[10px] tracking-widest ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all shadow-lg active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)]`}
-                  >
-                    {loading ? 'Sincronizando...' : 'Trocar Senha'}
-                  </button>
+  type="submit"
+  className={`w-full py-4 rounded-xl font-black italic text-black uppercase text-[10px] tracking-widest ${theme.colors.primaryBg} shadow-[0_0_20px_rgba(255,102,0,0.9)] active:scale-95 transition-all`}
+>
+  {loading ? 'Sincronizando...' : 'Trocar Senha'}
+</button>
                 </form>
                 <div className="relative flex items-center justify-center py-2">
                   <div className="absolute inset-0 flex items-center">
@@ -997,7 +997,7 @@ const handleImportPlan = async () => {
             </div>
           )}
 
-          <main className="max-w-7xl mx-auto w-full pt-28 pb-8 md:pt-8 relative z-10">
+          <main className="max-w-7xl mx-auto w-full pt-13 pb-8 md:pt-8 relative z-10">
   <StatusMessage type={uiMessage.type} message={uiMessage.text} />
   
   <div className={`transition-all duration-200 ease-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
@@ -1069,7 +1069,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
               <button 
                 disabled={loading} 
                 type="submit" 
-                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[12px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all"
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,102,0,0.9)] active:scale-95 transition-all"
               >
                 {loading ? 'SINCRONIZANDO...' : 'CRIAR PLANO'}
               </button>
@@ -1203,14 +1203,14 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
         <input
           autoFocus
           className="w-full bg-black border border-white/10 rounded-xl p-4 text-white uppercase font-mono text-sm outline-none focus:border-[#ff6600] text-center"
-          placeholder="EX: GSC6-2A1B-3C2D-4E3F"
+          placeholder="EX: XXXX-XXXX-XXXX"
           value={importCode}
           onChange={(e) => setImportCode(e.target.value.toUpperCase())}
         />
        <button
   onClick={handleImportPlan}
   disabled={loadingImport || !importCode.trim()}
-  className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all disabled:opacity-50"
+  className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[10px] tracking-widest shadow-[0_0_20px_rgba(255,102,0,0.9)] active:scale-95 transition-all disabled:opacity-50"
 >
   {loadingImport ? 'IMPORTANDO...' : 'IMPORTAR'}
 </button>
@@ -1355,7 +1355,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
   <button
     disabled={loading}
     type="submit"
-    className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] whitespace-nowrap"
+    className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest hover:bg-[#ff5500] transition-all shadow-xl active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] whitespace-nowrap "
   >
     {loading ? 'Sincronizando...' : 'SALVAR PLANO'}
   </button>
@@ -1522,19 +1522,19 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
             {/* Objetivos */}
             <div className="grid grid-cols-3 gap-2">
               {['hipertrofia', 'força', 'resistência'].map((goal) => (
-                <button
-                  key={goal}
-                  type="button"
-                  onClick={() => setSelectedGoal(goal)}
-                  className={`py-4 rounded-2xl border-2 font-black italic uppercase text-[11px] tracking-tighter transition-all ${
-                    selectedGoal === goal 
-                      ? 'bg-[#ff6600] border-[#ff6600] text-black shadow-[0_0_15px_rgba(255,102,0,0.3)]' 
-                      : 'bg-black/40 border-white/10 text-gray-500 hover:border-white/20'
-                  }`}
-                >
-                  {goal}
-                </button>
-              ))}
+  <button
+    key={goal}
+    type="button"
+    onClick={() => setSelectedGoal(goal)}
+    className={`py-4 rounded-2xl border-2 font-black italic uppercase text-[11px] tracking-tighter transition-all ${
+      selectedGoal === goal 
+        ? 'bg-[#ff6600] border-[#ff6600] text-black shadow-[0_0_15px_rgba(255,102,0,0.9)]' 
+        : 'bg-black/40 border-white/10 text-gray-500 hover:border-white/20'
+    }`}
+  >
+    {goal}
+  </button>
+))}
             </div>
 
             {/* Dias */}
@@ -1560,7 +1560,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
               <button 
                 disabled={loading} 
                 type="submit" 
-                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[12px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,102,0,0.9)] active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />

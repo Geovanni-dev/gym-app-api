@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
+  Zap,
   User as UserIcon,
   Camera,
   ShieldAlert,
@@ -59,7 +60,7 @@ export const ProfileSideMenu = ({ isOpen, onClose, user, logout, securityContent
       >
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1674834727206-4bc272bfd8da?w=600&auto=format&fit=crop&q=60"
+            src="https://images.unsplash.com/photo-1674834727206-4bc272bfd8da?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fGd5bXxlbnwwfHwwfHx8MA%3D%3D"
             className="w-full h-full object-cover opacity-80 grayscale" 
             alt="Background"
             onError={(e) => e.target.style.display = 'none'}
@@ -67,30 +68,21 @@ export const ProfileSideMenu = ({ isOpen, onClose, user, logout, securityContent
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black" />
         </div>
 
-        {/* pt-1 para subir tudo ao limite */}
-        <div className="relative z-10 h-full px-6 pb-6 pt-1 overflow-y-auto no-scrollbar">
+        {/* Ajuste: Mudei p-6 para px-6 pb-6 pt-2 para subir o conteúdo */}
+        <div className="relative z-10 h-full px-6 pb-6 pt-2 overflow-y-auto no-scrollbar">
           
-          <div className="flex items-center justify-between mb-0">
+          {/* Ajuste: Mudei mb-10 para mb-2 para tirar o espaço vazio no topo */}
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 shrink-0">
-              {/* Título com Kanit Black Italic e tamanho maior */}
-              <span 
-                className="font-black italic uppercase tracking-tighter leading-none"
-                style={{ 
-                  fontFamily: "'Kanit', sans-serif", 
-                  fontSize: '36px',
-                  color: 'white'
-                }}
-              >
-                MEU <span className="text-[#ff6600] drop-shadow-[0_0_10px_rgba(255,102,0,0.5)]">PERFIL</span>
-              </span>
+            
             </div>
             <button onClick={onClose} className="p-2 text-gray-500 hover:text-white transition-colors">
               <X size={24} />
             </button>
           </div>
 
-          {/* Margem negativa maior para a foto colar no título */}
-          <div className="flex flex-col items-center text-center space-y-4 mb-8 pb-8 border-b border-white/5 -mt-2">
+          {/* Ajuste: Adicionei -mt-10 para a foto subir e encostar lá em cima */}
+          <div className="flex flex-col items-center text-center space-y-4 mb-8 pb-8 border-b border-white/5 -mt-10">
             <div className="relative group">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-white/10 border-2 border-white/40">
                 {user?.profileImg ? (
