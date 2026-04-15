@@ -280,7 +280,7 @@ useEffect(() => {
               <div className="flex flex-col items-center gap-3 pt-2 sm:pt-4">
   <button
     type="submit"
-    className="px-15 py-3 sm:px-10 sm:py-3.5 bg-[#ff6600] text-black font-black uppercase text-[9px] sm:text-[10px] tracking-widest rounded-xl hover:bg-[#ff5500] transition-all shadow-lg active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)]"
+   className="px-15 py-3 sm:px-10 sm:py-3.5 bg-[#ff6600] text-black font-black uppercase text-[9px] sm:text-[10px] tracking-widest rounded-xl hover:bg-[#ff5500] transition-all shadow-[0_0_20px_rgba(255,102,0,0.9)] active:scale-95"
   >
     Adicionar
   </button>
@@ -466,8 +466,7 @@ useEffect(() => {
       onUpdateExercise(plan._id || plan.id, editingExercise.day, editingExercise.exerciseName, editingExercise.data, isGenerated);
       setEditingExercise(null);
     }}
-    className="px-12 py-3 sm:px-16 sm:py-3.5 bg-[#ff6600] text-black font-black uppercase text-[9px] sm:text-[10px] tracking-widest rounded-xl hover:bg-[#ff5500] transition-all shadow-lg active:scale-95 hover:shadow-[0_0_20px_rgba(255,102,0,0.9)]"
-  >
+className="px-12 py-3 sm:px-16 sm:py-3.5 bg-[#ff6600] text-black font-black uppercase text-[9px] sm:text-[10px] tracking-widest rounded-xl hover:bg-[#ff5500] transition-all shadow-[0_0_20px_rgba(255,102,0,0.9)] active:scale-95"  >
     SALVAR
   </button>
   <button
@@ -519,7 +518,7 @@ useEffect(() => {
               onClick={() => setEditingPlanName(plan.name)}
               className="p-1.5 sm:p-2 bg-white/5 rounded-lg sm:rounded-xl text-gray-400 hover:text-[#ff6600] transition-all flex-shrink-0"
             >
-              <Edit3 size={14} className="sm:size-[18px]" />
+              <Edit3 size={10} />
             </button>
           )}
         </div>

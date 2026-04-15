@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
     return { 
       success: false, 
-      message: error.response?.data?.message || "Erro ao entrar",
+      message: error.response?.data?.message || 'Email ou senha incorretos',
       notVerified: isNotVerified // Manda a flag para o App.jsx
     };
   }

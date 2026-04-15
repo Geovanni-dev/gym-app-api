@@ -13,7 +13,7 @@ import { theme } from '../utils/theme';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
-export const ProfileSideMenu = ({ isOpen, onClose, user, logout, securityContent }) => {
+export const ProfileSideMenu = ({ isOpen, onClose, user, setView, logout, securityContent }) => {
   const { updateUserData } = useAuth();
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -60,8 +60,8 @@ export const ProfileSideMenu = ({ isOpen, onClose, user, logout, securityContent
       >
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1674834727206-4bc272bfd8da?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fGd5bXxlbnwwfHwwfHx8MA%3D%3D"
-            className="w-full h-full object-cover opacity-80 grayscale" 
+            src="https://images.unsplash.com/photo-1656785280286-3cd303399113?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            className="w-full h-full object-cover opacity-100 grayscale" 
             alt="Background"
             onError={(e) => e.target.style.display = 'none'}
           />
@@ -82,9 +82,9 @@ export const ProfileSideMenu = ({ isOpen, onClose, user, logout, securityContent
           </div>
 
           {/* Ajuste: Adicionei -mt-10 para a foto subir e encostar lá em cima */}
-          <div className="flex flex-col items-center text-center space-y-4 mb-8 pb-8 border-b border-white/5 -mt-10">
+          <div className="flex flex-col items-center text-center space-y-4 mb-8 pb-8 border-b border-white/10 -mt-10">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-white/10 border-2 border-white/40">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-white/10 border-2 border-gray-900">
                 {user?.profileImg ? (
                   <img 
                     src={user.profileImg} 
@@ -123,7 +123,11 @@ export const ProfileSideMenu = ({ isOpen, onClose, user, logout, securityContent
               </div>
             </div>
             <div className="pt-4 space-y-4">
-              <button onClick={logout} className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-red-500/5 text-red-500 text-[10px] font-black uppercase tracking-[0.2em] border border-red-500/10 hover:bg-red-500/10 transition-all active:scale-95">
+              <button onClick={() => {
+      logout();
+      setView('landing');
+    }}  
+    className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-red-500/5 text-red-500 text-[10px] font-black uppercase tracking-[0.2em] border border-red-500/10 hover:bg-red-500/10 transition-all active:scale-95">
                 <LogOut size={16} /> Encerrar Sessão
               </button>
             </div>
