@@ -15,7 +15,8 @@ export const LandingPage = ({ onStart }) => {
   }, []);
 
   return (
-    <div className={`h-[100dvh] w-full ${theme.colors.background} text-white relative flex flex-col items-center justify-between overflow-hidden font-sans p-6`}>
+    
+<div className={`fixed inset-0 w-full ${theme.colors.background} text-white flex flex-col items-center justify-between overflow-hidden font-sans p-6`}>
       
       {/* Background Camada */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -82,7 +83,7 @@ export const LandingPage = ({ onStart }) => {
   </div>
 
   <p className="text-[10px] text-center text-neutral-600 font-bold uppercase tracking-widest mt-4">
-    Treina como um monstro ou continua um frango.
+    Treine como um monstro ou continue um frango.
   </p>
 </footer>
 
