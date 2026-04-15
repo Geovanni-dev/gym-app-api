@@ -770,92 +770,203 @@ const handleImportPlan = async () => {
           setIsProfileOpen(true);
         } else setView('landing');
       };
-      if (view === 'forgotPassword')
-        return (
-          <AuthWrapper
-            title="Recuperar"
-            subtitle="Solicita o código de redefinição."
-            onSubmit={formForgot.handleSubmit(onForgotSubmit)}
-            onBack={resetBack}
-            uiMessage={uiMessage}
-            loading={loading}
+    if (view === 'forgotPassword')
+  return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-[5vh] p-6 select-none overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff6600] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900 rounded-full blur-[120px]" />
+      </div>
+      <div className="z-10 w-full flex justify-center">
+        <div className="w-full max-w-md bg-neutral-900/95 border border-white/10 p-7 rounded-[2rem] shadow-2xl space-y-6 md:backdrop-blur-3xl relative">
+          <button
+            onClick={() => setView('landing')}
+            className="absolute top-5 right-6 p-1 text-gray-500 hover:text-white transition-colors z-10"
           >
-            <InputField
-              label="Digite o seu E-mail"
-              type="email"
-              icon={Mail}
-              error={formForgot.formState.errors.email?.message}
-              {...formForgot.register('email')}
-            />
-            <button
-              type="submit"
-              className="w-full text-center py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-[#ff6600] transition-colors mt-2 disabled:opacity-50"
->
+            <X size={16} />
+          </button>
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#ff6600]/20 to-[#ff6600]/5 text-[#ff6600] rounded-xl flex items-center justify-center mx-auto border border-[#ff6600]/20 shadow-[0_0_15px_rgba(255,102,0,0.1)]">
+              <KeyRound size={24} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+                RECUPERAR SENHA
+              </h3>
+              <p className="text-neutral-500 text-[8px] font-bold uppercase tracking-[0.2em] mt-0.5">
+                Enviaremos um código para seu e-mail
+              </p>
+            </div>
+          </div>
 
-            
-              Enviar Código
-            </button>
-          </AuthWrapper>
-        );
-      if (view === 'resetPassword')
-        return (
-          <AuthWrapper
-            title="Nova Senha"
-            subtitle="Define a sua nova senha."
-            onSubmit={formReset.handleSubmit(onResetSubmit)}
-            onBack={resetBack}
-            uiMessage={uiMessage}
-            loading={loading}
-          >
-            <InputField
-              label="Código de 6 dígitos"
-              type="text"
-              maxLength={6}
-              error={formReset.formState.errors.code?.message}
-              {...formReset.register('code')}
-            />
-            <InputField
-              label="Nova Senha"
-              type="password"
-              icon={Lock}
-              error={formReset.formState.errors.password?.message}
-              {...formReset.register('password')}
-            />
+          <form onSubmit={formForgot.handleSubmit(onForgotSubmit)} className="space-y-6">
+            <div className="space-y-3.5">
+              <InputField
+                label="E-mail"
+                type="email"
+                icon={Mail}
+                placeholder="seu@email.com"
+                autoComplete="off"
+                error={formForgot.formState.errors.email?.message}
+                {...formForgot.register('email')}
+              />
+            </div>
+
             <button
               type="submit"
-              className={`w-full py-4 rounded-xl font-black italic text-black uppercase tracking-wider ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all mt-2`}
+              disabled={loading}
+              className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[11px] tracking-[0.15em] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,102,0,0.9)]"
             >
-              Redefinir Senha
+              {loading ? 'PROCESSANDO...' : 'ENVIAR CÓDIGO'}
+              {!loading && <ChevronRight size={16} />}
             </button>
-          </AuthWrapper>
-        );
-      if (view === 'verify')
-        return (
-          <AuthWrapper
-            title="Validar Conta"
-            subtitle={`Código enviado para ${tempEmail}`}
-            onSubmit={formVerify.handleSubmit(onVerifySubmit)}
-            onBack={resetBack}
-            uiMessage={uiMessage}
-            loading={loading}
+          </form>
+
+          <div className="pt-2 text-center">
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+              Lembrou a senha?{' '}
+            </span>
+            <button
+              onClick={() => setView('login')}
+              className="text-[10px] font-bold text-[#ff6600] uppercase tracking-widest hover:scale-105 transition-transform duration-200 inline-block"
+            >
+              Voltar ao login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+   if (view === 'resetPassword')
+  return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-[5vh] p-6 select-none overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff6600] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900 rounded-full blur-[120px]" />
+      </div>
+      <div className="z-10 w-full flex justify-center">
+        <div className="w-full max-w-md bg-neutral-900/95 border border-white/10 p-7 rounded-[2rem] shadow-2xl space-y-6 md:backdrop-blur-3xl relative">
+          <button
+            onClick={() => setView('landing')}
+            className="absolute top-5 right-6 p-1 text-gray-500 hover:text-white transition-colors z-10"
           >
-            <InputField
-              label="Código de 6 dígitos"
-              type="text"
-              maxLength={6}
-              placeholder="000000"
-              error={formVerify.formState.errors.code?.message}
-              {...formVerify.register('code')}
-              className="text-center text-3xl font-black tracking-[0.4em] w-full bg-black/40 border border-white/10 rounded-xl p-5 text-white outline-none focus:border-[#ff6600]"
-            />
+            <X size={16} />
+          </button>
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#ff6600]/20 to-[#ff6600]/5 text-[#ff6600] rounded-xl flex items-center justify-center mx-auto border border-[#ff6600]/20 shadow-[0_0_15px_rgba(255,102,0,0.1)]">
+              <Lock size={24} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+                NOVA SENHA
+              </h3>
+              <p className="text-neutral-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-0.5">
+                Digite o código e a nova senha
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={formReset.handleSubmit(onResetSubmit)} className="space-y-6">
+            <div className="space-y-3.5">
+              <InputField
+                label="Código de 6 dígitos"
+                type="text"
+                maxLength={6}
+                placeholder="000000"
+                autoComplete="off"
+                error={formReset.formState.errors.code?.message}
+                {...formReset.register('code')}
+              />
+              <InputField
+                label="Nova Senha"
+                type="password"
+                icon={Lock}
+                placeholder="••••••••"
+                autoComplete="off"
+                error={formReset.formState.errors.password?.message}
+                {...formReset.register('password')}
+              />
+            </div>
+
             <button
               type="submit"
-              className={`w-full py-4 rounded-xl font-black italic text-black uppercase tracking-wider ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all mt-2`}
+              disabled={loading}
+              className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[11px] tracking-[0.15em] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,102,0,0.9)]"
             >
-              Verificar
+              {loading ? 'PROCESSANDO...' : 'REDEFINIR SENHA'}
+              {!loading && <ChevronRight size={16} />}
             </button>
-          </AuthWrapper>
-        );
+          </form>
+
+          <div className="pt-2 text-center">
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+              Lembrou a senha?{' '}
+            </span>
+            <button
+              onClick={() => setView('login')}
+              className="text-[10px] font-bold text-[#ff6600] uppercase tracking-widest hover:scale-105 transition-transform duration-200 inline-block"
+            >
+              Voltar ao login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+   if (view === 'verify')
+  return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-[15vh] p-6 select-none overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff6600] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900 rounded-full blur-[120px]" />
+      </div>
+      <div className="z-10 w-full flex justify-center">
+        <div className="w-full max-w-md bg-neutral-900/95 border border-white/10 p-7 rounded-[2rem] shadow-2xl space-y-6 md:backdrop-blur-3xl relative">
+          <button
+            onClick={() => setView('landing')}
+            className="absolute top-5 right-6 p-1 text-gray-500 hover:text-white transition-colors z-10"
+          >
+            <X size={16} />
+          </button>
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#ff6600]/20 to-[#ff6600]/5 text-[#ff6600] rounded-xl flex items-center justify-center mx-auto border border-[#ff6600]/20 shadow-[0_0_15px_rgba(255,102,0,0.1)]">
+              <Mail size={24} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+                VERIFICAR EMAIL
+              </h3>
+              <p className="text-neutral-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-0.5">
+                Código enviado
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={formVerify.handleSubmit(onVerifySubmit)} className="space-y-6">
+            <div className="space-y-3.5">
+              <input
+                autoFocus
+                autoComplete="off"
+                className="w-full bg-black/40 border border-white/10 rounded-xl p-5 text-white text-center font-black text-2xl tracking-[0.5em] outline-none focus:border-[#ff6600] transition-all focus:bg-black/60"
+                placeholder="000000"
+                maxLength={6}
+                {...formVerify.register('code')}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[11px] tracking-[0.15em] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,102,0,0.9)]"
+            >
+              {loading ? 'PROCESSANDO...' : 'CONFIRMAR CÓDIGO'}
+              {!loading && <ChevronRight size={16} />}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
     }
 
     if (isAuthenticated) {
@@ -897,13 +1008,16 @@ const handleImportPlan = async () => {
                   <InputField
                     label="Senha Atual"
                     type="password"
+                    
                     icon={Lock}
+                    autoComplete="off"
                     error={formChangePassword.formState.errors.oldPassword?.message}
                     {...formChangePassword.register('oldPassword')}
                   />
                   <InputField
                     label="Nova Senha"
                     type="password"
+                    autoComplete="off"
                     icon={ShieldCheck}
                     error={formChangePassword.formState.errors.newPassword?.message}
                     {...formChangePassword.register('newPassword')}
@@ -1043,6 +1157,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
             <InputField
               label="NOME DO PLANO"
               placeholder="Ex: PPL UPPER LOWER"
+              autoComplete="off"
               {...formPlan.register('name')}
               error={formPlan.formState.errors.name?.message}
             />
@@ -1322,6 +1437,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
                     <InputField
                       label="NOME DO PLANO"
                       placeholder="Ex: PPL UPPER LOWER"
+                      autoComplete="off"
                       {...formPlan.register('name')}
                       error={formPlan.formState.errors.name?.message}
                     />
@@ -1755,107 +1871,177 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
       );
     }
     switch (view) {
-      case 'login':
-        return (
-          <AuthWrapper
-            title="Login do Atleta"
-            subtitle="Insira suas credenciais"
-            onSubmit={formLogin.handleSubmit(onLoginSubmit)}
-            onBack={() => setView('landing')}
-            uiMessage={uiMessage}
-            loading={loading}
+  case 'login':
+  return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-[5vh] p-6 select-none overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff6600] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900 rounded-full blur-[120px]" />
+      </div>
+      <div className="z-10 w-full flex justify-center">
+        <div className="w-full max-w-md bg-neutral-900/95 border border-white/10 p-7 rounded-[2rem] shadow-2xl space-y-6 md:backdrop-blur-3xl relative">
+          <button
+            onClick={() => setView('landing')}
+            className="absolute top-5 right-6 p-1 text-gray-500 hover:text-white transition-colors z-10"
           >
-            <InputField
-              label="E-mail"
-              type="email"
-              icon={Mail}
-              error={formLogin.formState.errors.email?.message}
-              {...formLogin.register('email')}
-            />
-            <div className="space-y-1">
+            <X size={16} />
+          </button>
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#ff6600]/20 to-[#ff6600]/5 text-[#ff6600] rounded-xl flex items-center justify-center mx-auto border border-[#ff6600]/20 shadow-[0_0_15px_rgba(255,102,0,0.1)]">
+              <LogIn size={24} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+                LOGIN
+              </h3>
+              <p className="text-neutral-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-0.5">
+                torne-se um super frango
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={formLogin.handleSubmit(onLoginSubmit)} className="space-y-6">
+            <div className="space-y-3.5">
+              <InputField
+                label="E-mail"
+                type="email"
+                icon={Mail}
+                placeholder="seu@email.com"
+                autoComplete="off"
+                error={formLogin.formState.errors.email?.message}
+                {...formLogin.register('email')}
+              />
+              <div className="space-y-1">
+                <InputField
+                  label="Senha"
+                  type="password"
+                  icon={Lock}
+                  placeholder="••••••••"
+                  autoComplete="off"
+                  error={formLogin.formState.errors.password?.message}
+                  {...formLogin.register('password')}
+                />
+                <div className="flex justify-end pr-1">
+                  <button
+                    type="button"
+                    onClick={() => setView('forgotPassword')}
+                    className="text-[9px] font-bold text-[#ff6600] uppercase tracking-widest "
+                  >
+                    Esqueci minha senha
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[11px] tracking-[0.15em] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,102,0,0.9)]"
+            >
+              {loading ? 'PROCESSANDO...' : 'ENTRAR NO TREINO'}
+              {!loading && <ChevronRight size={16} />}
+            </button>
+          </form>
+
+          <div className="pt-2 text-center">
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+              Ainda é frango?{' '}
+            </span>
+            <button
+              onClick={() => setView('register')}
+              className="text-[10px] font-bold text-[#ff6600] uppercase tracking-widest hover:scale-105 transition-transform duration-200 inline-block"
+            >
+              Crie sua conta
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );case 'register':
+  return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-[5vh] p-6 select-none overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff6600] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900 rounded-full blur-[120px]" />
+      </div>
+      <div className="z-10 w-full flex justify-center">
+        <div className="w-full max-w-md bg-neutral-900/95 border border-white/10 p-7 rounded-[2rem] shadow-2xl space-y-6 md:backdrop-blur-3xl relative">
+          <button
+            onClick={() => setView('landing')}
+            className="absolute top-5 right-6 p-1 text-gray-500 hover:text-white transition-colors z-10"
+          >
+            <X size={16} />
+          </button>
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#ff6600]/20 to-[#ff6600]/5 text-[#ff6600] rounded-xl flex items-center justify-center mx-auto border border-[#ff6600]/20 shadow-[0_0_15px_rgba(255,102,0,0.1)]">
+              <UserPlus size={24} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">
+                CRIAR CONTA
+              </h3>
+              <p className="text-neutral-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-0.5">
+                Junte-se ao time de monstros
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={formRegister.handleSubmit(onRegisterSubmit)} className="space-y-6">
+            <div className="space-y-3.5">
+              <InputField
+                label="Nome"
+                type="text"
+                icon={User}
+                placeholder="Como gostaria de ser chamado"
+                autoComplete="off"
+                error={formRegister.formState.errors.name?.message}
+                {...formRegister.register('name')}
+              />
+              <InputField
+                label="E-mail"
+                type="email"
+                icon={Mail}
+                placeholder="seu@email.com"
+                autoComplete="off"
+                error={formRegister.formState.errors.email?.message}
+                {...formRegister.register('email')}
+              />
               <InputField
                 label="Senha"
                 type="password"
                 icon={Lock}
-                error={formLogin.formState.errors.password?.message}
-                {...formLogin.register('password')}
+                placeholder="••••••••"
+                autoComplete="off"
+                error={formRegister.formState.errors.password?.message}
+                {...formRegister.register('password')}
               />
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setView('forgotPassword')}
-                  className="text-[10px] text-gray-600 font-bold uppercase tracking-widest hover:text-[#ff6600] transition-colors"
-                >
-                  Esqueci a senha
-                </button>
-              </div>
             </div>
-            <div className="space-y-4 pt-2">
-              <button
-                disabled={loading}
-                type="submit"
-                className={`w-full py-4 rounded-xl font-black italic text-black uppercase tracking-wider ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all disabled:opacity-50`}
-              >
-                Entrar
-              </button>
-              <div className="relative flex items-center justify-center py-2">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/5"></div>
-                </div>
-                <span className="relative bg-[#111111] px-2 text-[8px] uppercase font-black text-gray-700 tracking-widest italic">
-                  ou
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setView('register')}
-                className="w-full py-4 rounded-xl font-bold text-white border-2 border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-widest"
-              >
-                <UserPlus size={16} /> Criar nova conta
-              </button>
-            </div>
-          </AuthWrapper>
-        );
-      case 'register':
-        return (
-          <AuthWrapper
-            title="Crie sua Conta"
-            subtitle="Junte-se à melhor fábrica de Frangos."
-            onSubmit={formRegister.handleSubmit(onRegisterSubmit)}
-            onBack={() => setView('landing')}
-            uiMessage={uiMessage}
-            loading={loading}
-          >
-            <InputField
-              label="Como Gostaria de ser chamado"
-              type="text"
-              icon={User}
-              error={formRegister.formState.errors.name?.message}
-              {...formRegister.register('name')}
-            />
-            <InputField
-              label="E-mail"
-              type="email"
-              icon={Mail}
-              error={formRegister.formState.errors.email?.message}
-              {...formRegister.register('email')}
-            />
-            <InputField
-              label="Senha"
-              type="password"
-              icon={Lock}
-              error={formRegister.formState.errors.password?.message}
-              {...formRegister.register('password')}
-            />
+
             <button
-              disabled={loading}
               type="submit"
-              className={`w-full py-4 rounded-xl font-black italic text-black uppercase tracking-wider ${theme.colors.primaryBg} ${theme.colors.primaryHover} transition-all mt-2`}
+              disabled={loading}
+              className="w-full py-4 rounded-xl font-black italic bg-[#ff6600] text-black uppercase text-[11px] tracking-[0.15em] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,102,0,0.9)]"
             >
-              Registrar
+              {loading ? 'PROCESSANDO...' : 'CRIAR MINHA CONTA'}
+              {!loading && <ChevronRight size={16} />}
             </button>
-          </AuthWrapper>
-        );
+          </form>
+
+          <div className="pt-2 text-center">
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+              Já é um monstro?{' '}
+            </span>
+            <button
+              onClick={() => setView('login')}
+              className="text-[10px] font-bold text-[#ff6600] uppercase tracking-widest hover:scale-105 transition-transform duration-200 inline-block"
+            >
+              Faça login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
       default:
         return <LandingPage onStart={(mode) => setView(mode)} />;
     }
@@ -1992,6 +2178,9 @@ input:-webkit-autofill:active  {
 /* Garante que o cursor e o brilho do input sigam o seu tema */
 input:-webkit-autofill {
     caret-color: white;
+}
+    input, select, textarea {
+  -webkit-text-security: none;
 }
 `}</style>
       <MainContent />
