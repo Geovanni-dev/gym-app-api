@@ -162,8 +162,22 @@ try {
       });
     }
     if (!user.isVerified) { // Verifica se o email do usuário foi verificado
+      const newCode = emailService.generateVerificationCode();
+      user.verificationCode = newCode;
+      await user.save();
+      try {
+        await emailService.sendEmail(
+          user.email,
+          "Código de verificação",
+          `Seu novo código é: ${newCode}`
+        );
+      } catch (emailError) {
+        console.log("Erro ao enviar email:", emailError);
+      }
       return res.status(403).json({
-        message: "Verifique seu email antes de fazer login"
+        message: "Email ainda não verificado. Verifique seu email.",
+        notVerified: true,
+        email: user.email
       });
     }
     const isMatch = await bcrypt.compare(password, user.password); // Compara a senha fornecida com a senha armazenada no banco de dados utilizando bcrypt
@@ -177,9 +191,14 @@ try {
       SECRET,
       { expiresIn: "365d" } // token válido por 1 ano
     );
-    res.json({
+    res.json({ // Retorna o token e os dados do usuário logado
       message: "Login realizado com sucesso",
-      token
+      token, 
+      user: {
+        name: user.name,
+        email: user.email,
+        profileImg: user.profileImg
+      }
     });
   } catch (error) {
        if (error instanceof z.ZodError) { // se o erro for do zod
@@ -194,7 +213,7 @@ try {
 
 
 
-// SOLICITAÇÃO DE RECUPERAÇÃO DE SENHA (publico).
+// SOLICITAÇÃO DE RECUPERAÇÃO DE SENHA PUBLICO
 exports.forgotPassword = async (req, res) => {
   try {
     const{ email } = forgotPasswordSchema.parse(req.body);
@@ -233,7 +252,7 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-// REDEFINIÇÃO DE SENHA (publico).
+// REDEFINIÇÃO DE SENHA PUBLICO
 exports.resetPassword = async (req, res) => {
   try {
     
@@ -307,3 +326,35 @@ exports.updatePassword = async (req, res) => {
         res.status(500).json({ error: "Erro ao redefinir senha" });
     }
 };
+
+
+// ADICIONAR IMG AO PERFIL
+exports.addToImg = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Nenhuma imagem fornecida"
+      });
+    }
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`; // Cria a URL da imagem
+      const user = await User.findByIdAndUpdate(req.user.id,
+        { profileImg: imageUrl}, // Atualiza o campo profileImg com a URL da imagem
+        { new: true } // Retorna o documento atualizado
+      );
+      if (!user) {
+        return res.status(404).json({
+          message: "Usuário não encontrado"
+        });
+      }
+      res.json({
+        message: "Imagem adicionada ao perfil com sucesso",
+        profileImg: user.profileImg
+      });
+  } catch (error) {
+       if (error instanceof z.ZodError) { // se o erro for do zod
+            return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
+        }
+        console.log(error); // se n for do zod
+        res.status(500).json({ error: "Erro ao adicionar imagem ao perfil" });
+        }
+}

@@ -5,15 +5,18 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 // Cria a aplicação Express
 const app = express();
 
-// Configura o middleware CORS
+// Configura os middlewares basicos da aplicação
 app.use(cors());
+app.use(express.json());  
 
-// Middleware que permite receber JSON no body das requisições
-app.use(express.json());
+// Configura o middleware para servir arquivos estáticos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Importação das rotas da aplicação
 const userRoutes = require("./src/users/routes/userRoutes");
@@ -29,7 +32,7 @@ app.use("/workout-plans", workoutPlanRoutes);
 // Rotas de exercícios personalizados
 app.use("/exercises", exerciseRoutes);
 
-// Rotas de usuários (login, registro, recuperação de senha)
+// Rotas de usuários (login, registro, recuperação de senha, up de fts de perfil, etc)
 app.use("/users", userRoutes);
 
 // Rotas de treinos e histórico
@@ -39,14 +42,14 @@ app.use("/workouts", workoutRoutes);
 
 // INICIALIZAÇÃO DO SERVIDOR
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT 
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
 
-// CONEXÃO COM O BANCO
+// CONEXÃO COM O MONGODB
 
 // Conecta ao MongoDB usando a URL definida nas variáveis de ambiente
 mongoose

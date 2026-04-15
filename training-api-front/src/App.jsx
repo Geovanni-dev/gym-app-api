@@ -608,18 +608,34 @@ const handleImportPlan = async () => {
   }, [uiMessage]);
 
   const onLoginSubmit = async (data) => {
-    setLoading(true);
-    const result = await login(data);
-    setLoading(false);
-    if (!result.success) setUiMessage({ type: 'error', text: result.message });
-  };
+  setLoading(true);
+  const result = await login(data);
+  setLoading(false);
+
+  if (!result.success) {
+    // Se o erro for de e-mail não verificado (Status 403 que vem do seu Back)
+    if (result.notVerified) {
+      setTempEmail(data.email); // Guarda o e-mail para a próxima tela
+      setUiMessage({ 
+        type: 'error', 
+        text: 'E-mail não verificado! Enviamos um novo código.' 
+      });
+      
+      // Pequeno delay para ele ler a mensagem antes de mudar a tela
+      setTimeout(() => setView('verify'), 1500); 
+      return;
+    }
+
+    setUiMessage({ type: 'error', text: result.message });
+  }
+};
 
   const onRegisterSubmit = async (data) => {
     setLoading(true);
     try {
       await api.post('/users/register', data);
       setTempEmail(data.email);
-      setUiMessage({ type: 'success', text: 'Conta criada! Verifica seu e-mail.' });
+      setUiMessage({ type: 'success', text: 'Conta criada! Verifique seu e-mail.' });
       setView('verify');
     } catch (e) {
       setUiMessage({ type: 'error', text: e.response?.data?.message || 'Falha na conexão.' });
@@ -632,7 +648,7 @@ const handleImportPlan = async () => {
     setLoading(true);
     try {
       await api.post('/users/verify-email', { email: tempEmail, code: data.code });
-      setUiMessage({ type: 'success', text: 'E-mail validado! Faz o login.' });
+      setUiMessage({ type: 'success', text: 'E-mail validadidado, faça login.' });
       setView('login');
     } catch (e) {
       setUiMessage({ type: 'error', text: e.response?.data?.message || 'Código inválido.' });
@@ -1005,7 +1021,7 @@ const handleImportPlan = async () => {
           </button>
           <div>
             <h1 className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.0)]"><br/> MANUAIS</span>
+CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.0)]"><br/> MANUAIS</span>
 </h1>
             <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mt-4">
               CRIAÇÃO MANUAL PARA FRANGOS DE ELITE
@@ -1017,7 +1033,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
           {/* AJUSTE DE POSIÇÃO AQUI: 
               Mude o mt-[20px] para o valor que deixe o card na altura original.
           */}
-          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/30 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
               <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">DADOS DO PLANO</h3>
@@ -1053,15 +1069,15 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
               <button 
                 disabled={loading} 
                 type="submit" 
-                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all"
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[12px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all"
               >
-                {loading ? 'SINCRONIZANDO...' : 'SALVAR TREINO'}
+                {loading ? 'SINCRONIZANDO...' : 'CRIAR PLANO'}
               </button>
             </div>
           </div>
         </form>
     {/* MENSAGEM INFORMATIVA - PLANOS MANUAIS (COM EFEITO NEON E HALTER) */}
-<div className="group relative mt-6 p-4 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/9 hover:border-[#ff6600]/40 transition-all duration-500 shadow-2xl overflow-hidden cursor-default">
+<div className="group relative mt-6 p-4 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/80 hover:border-[#ff6600]/40 transition-all duration-500 shadow-2xl overflow-hidden cursor-default">
   
   {/* Barra lateral fixa (estilo histórico) */}
   <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ff6600]/10 group-hover:bg-[#ff6600] transition-all duration-300"></div>
@@ -1148,7 +1164,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
     className="p-3 rounded-2xl bg-white text-black hover:bg-[#ff6600] hover:text-black transition-all active:scale-95"
     title="Importar plano"
   >
-    <svg width="20" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="25" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
       <polyline points="8 12 12 16 16 12" />
       <line x1="12" y1="2" x2="12" y2="16" />
@@ -1250,7 +1266,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
                             <div className="flex items-center justify-between pt-2">
                               <div className="flex flex-col">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Arquitetura</span>
-                                <span className="text-xs font-bold text-white">{plan.daysCount} DIAS DE FORÇA</span>
+                                <span className="text-xs font-bold text-white">{plan.daysCount} DIAS DE TREINO</span>
                               </div>
                               <div className="w-12 h-12 rounded-2xl bg-black border border-white/5 flex items-center justify-center text-gray-500 group-hover:text-black group-hover:bg-[#ff6600] transition-all shadow-lg">
                                 <ChevronRight size={24} strokeWidth={3} />
@@ -1497,7 +1513,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); onGenerateSubmit(); }} className="w-full">
-          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/10 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
+          <div className={`mt-[25px] p-6 rounded-[2.5rem] bg-[#0a0a0a] border border-white/30 space-y-6 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500`}>
             
             <div className="text-center space-y-1">
               <h3 className="text-lg font-black italic uppercase tracking-tighter text-white">OBJETIVO E DIAS</h3>
@@ -1544,12 +1560,12 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
               <button 
                 disabled={loading} 
                 type="submit" 
-                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl bg-[#ff6600] text-black text-[12px] font-black uppercase tracking-widest shadow-xl active:scale-95 hover:bg-[#ff7700] hover:shadow-[0_0_20px_rgba(255,102,0,0.9)] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <><Zap size={14} /> GERAR TREINO</>
+                  <><Zap size={14} /> GERAR PLANO</>
                 )}
               </button>
             </div>
@@ -1557,7 +1573,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
           </div>
         </form>
       {/* MENSAGEM INFORMATIVA - COM EFEITO NEON DO METRICSGRID */}
-<div className="group relative mt-6 p-4 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/9 hover:border-[#ff6600]/40 transition-all duration-500 shadow-2xl overflow-hidden cursor-default">
+<div className="group relative mt-6 p-4 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/80 hover:border-[#ff6600]/40 transition-all duration-500 shadow-2xl overflow-hidden cursor-default">
   
   {/* Barra lateral fixa (estilo histórico) */}
   <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ff6600]/10 group-hover:bg-[#ff6600] transition-all duration-300"></div>
@@ -1571,7 +1587,7 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
     <div className="flex-1">
       <p className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.15em] leading-tight group-hover:text-white transition-colors duration-300">
         Treinos automatizados de <span className="text-[#ff6600] group-hover:text-[#ff6600] transition-colors">alta performance</span>. 
-        Escolha seu objetivo e dias para gerar um plano automático.
+        Escolha seu objetivo e dias para gerar um plano de treino automático.
       </p>
     </div>
   </div>
@@ -1742,8 +1758,8 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
       case 'login':
         return (
           <AuthWrapper
-            title="Login Arena"
-            subtitle="Insira suas credenciais de Atleta."
+            title="Login do Atleta"
+            subtitle="Insira suas credenciais"
             onSubmit={formLogin.handleSubmit(onLoginSubmit)}
             onBack={() => setView('landing')}
             uiMessage={uiMessage}
@@ -1804,14 +1820,14 @@ CRIAR TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102
         return (
           <AuthWrapper
             title="Crie sua Conta"
-            subtitle="Junte-se à melhor infraestrutura de força."
+            subtitle="Junte-se à melhor fábrica de Frangos."
             onSubmit={formRegister.handleSubmit(onRegisterSubmit)}
             onBack={() => setView('landing')}
             uiMessage={uiMessage}
             loading={loading}
           >
             <InputField
-              label="Seu nome"
+              label="Como Gostaria de ser chamado"
               type="text"
               icon={User}
               error={formRegister.formState.errors.name?.message}
@@ -1959,6 +1975,23 @@ input[type=number] {
 }
   body.modal-open {
   overflow: hidden;
+}
+  /* Remove o fundo branco/amarelo do Autocomplete */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active  {
+    /* Cria uma transição infinita na cor de fundo para ela nunca aparecer */
+    -webkit-transition: background-color 9999s ease-out;
+    transition: background-color 9999s ease-out;
+    
+    /* Define a cor do texto para branco, senão o Chrome pode colocar preto */
+    -webkit-text-fill-color: white !important;
+}
+
+/* Garante que o cursor e o brilho do input sigam o seu tema */
+input:-webkit-autofill {
+    caret-color: white;
 }
 `}</style>
       <MainContent />

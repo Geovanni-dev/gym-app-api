@@ -1,44 +1,76 @@
-// importa as dependências necessárias para criar o contexto de autenticação, gerenciar o estado do usuário e do token, e fazer requisições à API
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
-const AuthContext = createContext({}); // Cria um contexto de autenticação para compartilhar o estado de login em toda a aplicação
+const AuthContext = createContext({});
 
-export const AuthProvider = ({ children }) => { // Componente que fornece o contexto de autenticação para toda a aplicação
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('@IronSoul:token'));
 
-  useEffect(() => { // Adiciona o token ao cabeçalho das requisições
+  useEffect(() => {
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      // PERSISTÊNCIA: Tenta carregar o usuário salvo no localStorage
+      const savedUser = localStorage.getItem('@IronSoul:user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
     }
   }, [token]);
 
-  const login = async (data) => { // Função assíncrona para fazer login, recebe os dados do formulário de login
-    try {
-      const response = await api.post('/users/login', data);
-      const { token: receivedToken } = response.data;
-      setToken(receivedToken);
-      localStorage.setItem('@IronSoul:token', receivedToken);
-      setUser({ email: data.email, name: 'Atleta Elite' });
-      return { success: true };
-    } catch (error) {
-      return { success: false, message: error.response?.data?.message || "Credenciais inválidas" };
-    }
+ const login = async (data) => {
+  try {
+    const response = await api.post('/users/login', data);
+    const { token: receivedToken, user: userData } = response.data;
+
+    setToken(receivedToken);
+    setUser(userData);
+
+    localStorage.setItem('@IronSoul:token', receivedToken);
+    localStorage.setItem('@IronSoul:user', JSON.stringify(userData));
+
+    return { success: true };
+  } catch (error) {
+    // CAPTURA A FLAG NOTVERIFIED DO BACKEND
+    const isNotVerified = error.response?.status === 403 && error.response?.data?.notVerified;
+
+    return { 
+      success: false, 
+      message: error.response?.data?.message || "Erro ao entrar",
+      notVerified: isNotVerified // Manda a flag para o App.jsx
+    };
+  }
+};
+  // FUNÇÃO NOVA: Para o ProfileSideMenu atualizar a foto sem dar refresh na página
+  const updateUserData = (newData) => {
+    setUser(prev => {
+      const updated = { ...prev, ...newData };
+      localStorage.setItem('@IronSoul:user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
-  const logout = () => { // Limpa o estado e remove o token do localStorage
+  const logout = () => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('@IronSoul:token');
+    localStorage.removeItem('@IronSoul:user');
     delete api.defaults.headers.common['Authorization'];
   };
 
-  return ( // Fornece o estado do usuário, token, e as funções de login e logout para os componentes filhos que consomem este contexto
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
+  return (
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      login, 
+      logout, 
+      updateUserData, // Exportando a nova função
+      isAuthenticated: !!token 
+    }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext); //exporta o hook para acessar o contexto de autenticação em outros componentes do projeto
+export const useAuth = () => useContext(AuthContext);

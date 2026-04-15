@@ -3,6 +3,12 @@ const mongoose = require("mongoose");
 
 // Schema que define a estrutura de um usuário no sistema
 const userSchema = new mongoose.Schema({
+ 
+  profileImg:{
+    type: String,
+    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+  },
+
   name: String, // Nome do usuário
 
   email: String, // email utilizado para login e comunicação

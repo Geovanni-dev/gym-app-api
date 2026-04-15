@@ -124,7 +124,10 @@ const deleteDaySchema = z.object({
 
 // schema para validaçao do shereCode
 const shareCodeSchema = z.object({
-  shareCode: z.string().regex(/^[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}$/, "Formato de código inválido") // 4 grupos de 4 dígitos, separados por hifen com 0 1 O Q i l para evitar confusão visual
+  shareCode: z.string().regex(
+    /^[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}$/, 
+    "Formato de código inválido"
+  )
 });
 
 
