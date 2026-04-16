@@ -16,7 +16,7 @@ API para gestão de rotinas de academia, permitindo a geração de treinos autom
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/Geovanni-dev/training-api.git
+git clone https://github.com/Geovanni-dev/gym-app-api.git
 
 # 2. Instale as dependências
 npm install
