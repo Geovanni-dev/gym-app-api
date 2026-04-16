@@ -27,7 +27,7 @@ const MetricsGridAuto = ({
       title: 'EXERCÍCIOS',
       value: (
         <div className="flex items-baseline gap-1.5">
-          <span className="text-xl font-black text-white italic tracking-tighter">
+          <span className="text-[17px] font-black text-white italic tracking-tighter">
             {safeStats.completedCount}
           </span>
           <span className="text-base font-black text-white uppercase tracking-[0.15em]">
