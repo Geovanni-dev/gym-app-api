@@ -33,12 +33,16 @@ export const LandingPage = ({ onStart }) => {
       {/* Topo: Logo e Nome */}
       <header className={`z-20 flex flex-col items-center transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <img 
-          src="/images/super-frango.png" 
+          src="/images/superfrango.png" 
           alt="Logo" 
-          className="w-8 h-auto mb-0" 
+          className="w-70 h-35 -mb-[30px] -ml-[20px] pointer-events-none" 
           style={{
-            filter: 'invert(52%) sepia(91%) saturate(3029%) hue-rotate(360deg) brightness(101%) contrast(106%)'
-          }}
+            filter: `
+      invert(52%) sepia(91%) saturate(3029%) hue-rotate(360deg) brightness(101%) contrast(106%)
+      drop-shadow(0 0 5px rgba(255, 102, 0, 0.1))   /* Brilho interno/próximo */
+      drop-shadow(0 0 15px rgba(255, 102, 0, 0.4))  /* Aura neon espalhada */
+    `
+  }}
         />
         <div className="flex flex-col items-center leading-[0.9] -mt-1">
           <span className="text-xl font-black italic tracking-tighter uppercase opacity-80">SUPER</span>

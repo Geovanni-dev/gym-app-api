@@ -1,11 +1,11 @@
 import axios from 'axios'; // importa a biblioteca axios para fazer requisições HTTP
 
 const api = axios.create({ // cria uma instância do axios com uma configuração base
-  baseURL: 'http://localhost:3000', 
+  baseURL: 'http://localhost:3000',
 });
 
 api.interceptors.request.use((config) => { // adiciona um interceptor para incluir o token de autenticação em todas as requisições
-  const token = localStorage.getItem('@IronSoul:token');
+  const token = localStorage.getItem('@superfrango:token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
