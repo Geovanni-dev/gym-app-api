@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
   }
   const token =
     authHeader.split(" ")[1]; /* O header normalmente vem no formato:
-    "Bearer TOKEN_AQUI" então temos q separar o token da palavra "Bearer" com um espaço*/
+    "Bearer TOKEN_AQUI" então separei o token da palavra "Bearer" com um espaço*/
   try {
     const decoded = jwt.verify(token, SECRET); // Verifica se o token é válido usando a chave secreta
     req.user = decoded; /* Salva os dados do usuário dentro da requisição,

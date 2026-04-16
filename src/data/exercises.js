@@ -1,5 +1,8 @@
+
+// BIBLIOTECA DE EXERCÍCIOS
+
 const exercises = {
-  // ========== EXERCÍCIOS FULLBODY ==========
+  // ========== EXERCÍCIOS FULLBODY
   fullbody1: [
     { name: "Agachamento Livre", sets: 4, reps: "8-10", weight: 0 },
     { name: "Supino Reto com Barra", sets: 4, reps: "8-10", weight: 0 },
@@ -17,7 +20,7 @@ const exercises = {
     { name: "Tríceps Corda", sets: 3, reps: "10-12", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS PUSH (Peito, Ombro, Tríceps) ==========
+  // ========== EXERCÍCIOS PUSH 
   push: [
     { name: "Supino Reto com Barra", sets: 4, reps: "6-8", weight: 0 },
     { name: "Supino Inclinado com Halteres", sets: 4, reps: "8-10", weight: 0 },
@@ -32,7 +35,7 @@ const exercises = {
     { name: "Mergulho no Banco", sets: 3, reps: "12-15", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS PULL (Costas, Bíceps, Posterior) ==========
+  // ========== EXERCÍCIOS PULL 
   pull: [
     { name: "Barra Fixa", sets: 4, reps: "6-10", weight: 0 },
     { name: "Puxada Alta Aberta", sets: 4, reps: "8-10", weight: 0 },
@@ -48,7 +51,7 @@ const exercises = {
     { name: "Rosca Concentrada", sets: 3, reps: "12-15", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS LEGS (Pernas completas) ==========
+  // ========== EXERCÍCIOS LEGS 
   legs: [
     { name: "Agachamento Livre", sets: 4, reps: "6-8", weight: 0 },
     { name: "Leg Press 45°", sets: 4, reps: "10-12", weight: 0 },
@@ -64,7 +67,7 @@ const exercises = {
     { name: "Panturrilha Sentado", sets: 4, reps: "15-20", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS UPPER (Superiores) ==========
+  // ========== EXERCÍCIOS UPPER
   upper: [
     { name: "Supino Reto com Barra", sets: 4, reps: "6-8", weight: 0 },
     { name: "Supino Inclinado com Halteres", sets: 4, reps: "8-10", weight: 0 },
@@ -78,7 +81,7 @@ const exercises = {
     { name: "Remada Baixa", sets: 3, reps: "10-12", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS LOWER (Inferiores) ==========
+  // ========== EXERCÍCIOS LOWER 
   lower: [
     { name: "Agachamento Livre", sets: 4, reps: "6-8", weight: 0 },
     { name: "Leg Press 45°", sets: 4, reps: "10-12", weight: 0 },
@@ -89,7 +92,7 @@ const exercises = {
     { name: "Afundo com Halteres", sets: 3, reps: "10-12", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS PARA ABCDEF (6 dias) ==========
+  // ========== EXERCÍCIOS PARA ABCDEF 6 DIAS
   // Dia A - Peito
   chest: [
     { name: "Supino Reto com Barra", sets: 4, reps: "6-8", weight: 0 },
@@ -150,7 +153,7 @@ const exercises = {
     { name: "Panturrilha Sentado", sets: 4, reps: "15-20", weight: 0 }
   ],
 
-  // ========== EXERCÍCIOS ESPECÍFICOS ==========
+  // ========== EXERCÍCIOS Q VOU OBRIGAR O USUARIO A FAZER
   abs: [
     { name: "Abdominal Supra", sets: 3, reps: "20-25", weight: 0 },
     { name: "Prancha", sets: 3, reps: "30-60s", weight: 0 },

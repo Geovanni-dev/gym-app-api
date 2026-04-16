@@ -27,7 +27,7 @@ const userController = require("../controllers/userController");
 
 
 
-// ROTAS DE USUÁRIOS
+//==============================ROTAS DE USUÁRIOS
 
 //registrar um novo usuario
 router.post("/register", userController.registerUser);

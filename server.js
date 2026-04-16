@@ -10,21 +10,23 @@ const path = require("path");
 // Cria a aplicação Express
 const app = express();
 
-// Configura os middlewares basicos da aplicação
+// Configura os middlewares basicos 
 app.use(cors());
 app.use(express.json());  
 
-// Configura o middleware para servir arquivos estáticos
+// Configura o middleware para servir arquivos estaticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-// Importação das rotas da aplicação
+// Importação das rotas das APIs
 const userRoutes = require("./src/users/routes/userRoutes");
 const workoutRoutes = require("./src/workouts/routes/workoutsRoutes");
 const exerciseRoutes = require("./src/exercises/routes/exerciseRoutes");
 const workoutPlanRoutes = require("./src/workoutPlans/routes/workoutPlanRoutes");
 
-// REGISTRO DAS ROTAS
+
+//============================= REGISTRO DAS ROTAS
+
 
 // Rotas relacionadas aos planos de treino
 app.use("/workout-plans", workoutPlanRoutes);
@@ -40,7 +42,7 @@ app.use("/workouts", workoutRoutes);
 
 
 
-// INICIALIZAÇÃO DO SERVIDOR
+//================================ INICIALIZAÇÃO DO SERVIDOR
 
 const PORT = process.env.PORT 
 
@@ -51,7 +53,7 @@ app.listen(PORT, () => {
 
 // CONEXÃO COM O MONGODB
 
-// Conecta ao MongoDB usando a URL definida nas variáveis de ambiente
+// Conecta ao MongoDB usando a URL definida no .env
 mongoose
   .connect(process.env.DATABASE_URL)
   .then(() => {

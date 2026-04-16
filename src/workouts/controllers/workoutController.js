@@ -7,73 +7,16 @@ const exercises = require("../../data/exercises");
 // Importa o zod para validação de dados
 const { z } = require("zod"); 
 
-// ==============================================
-// FUNÇÕES AUXILIARES
-// ==============================================
 
-// Função simples que pega exercícios aleatórios de uma lista
-// Usada para montar os treinos automáticos (versão antiga, mantida para compatibilidade)
+//====================================== FUNÇÕES AUXILIARES
+
+
+/* Função que pega exercícios aleatórios usada para montar os treinos automáticos */
 function getRandomExercises(list, count) {
   return list.sort(() => 0.5 - Math.random()).slice(0, count);
 }
 
-// ==============================================
-// VALIDAÇÕES COM ZOD (protege os dados que entram na API)
-// ==============================================
-
-// Valida os dados para geração de treino automático
-// Garante que o objetivo e a quantidade de dias são válidos
-const generateWorkoutSchema = z.object({
-  goal: z.enum(["força", "resistência", "hipertrofia"]),
-  days: z.number({required_error: "days é obrigatório"}).min(2, "days deve ser entre 2 e 6").max(6, "days deve ser entre 2 e 6"),
-});
-
-// Valida os dados para buscar o PR (Personal Record) de um exercício
-const getPRSchema = z.object({
-  exercise: z.string().min(1, "O nome do exercício é obrigatório").transform((val) => decodeURIComponent(val)),
-});
-
-// Valida os dados de uma série (reps e peso)
-const setSchema = z.object({
-  reps: z.coerce.number().min(0, "Reps deve ser um número positivo"),
-  weight: z.number().min(0, "Weight deve ser um número positivo")
-});
-
-// Valida os dados de um exercício completo
-const exerciseSchema = z.object({
-  name: z.string().min(1, "O nome do exercício é obrigatório"),
-  sets: z.array(setSchema).optional(),
-  reps: z.coerce.number().optional(),
-  weight: z.number().optional(),
-  workoutName: z.string().optional().nullable(),
-});
-
-// Valida os dados para registrar um treino executado no histórico
-const logWorkoutSchema = z.object({
-  exercises: z.array(exerciseSchema).min(1, "É necessário enviar pelo menos um exercício")
-});
-
-// Valida os dados para deletar um treino (garante que o ID foi enviado)
-const deleteWorkoutSchema = z.object({
-  Id: z.string().min(1, "O id do treino é obrigatório")
-});
-
-// Valida os dados para editar o PR de um exercício
-// Aceita tanto workoutId quanto exerciseName, mas exige pelo menos um
-const updatePRSchema = z.object({
-  workoutId: z.string().optional(),
-  exerciseName: z.string().optional(),
-  newPR: z.number().min(0, "O PR deve ser um número positivo")
-}).refine(data => data.workoutId && data.exerciseName, {
-  message: "É necessário fornecer workoutId e exerciseName"
-});
-
-// ==============================================
-// FUNÇÃO AUXILIAR PARA GERAR TREINOS
-// ==============================================
-
-// Função que pega exercícios aleatórios e os transforma em objetos completos
-// Diferente da versão antiga, essa retorna objetos com nome, séries, repetições e peso
+// Função que pega exercícios aleatórios e transforma em objetos
 function getRandomExercisesAsObjects(exerciseArray, count, sets, reps) {
   if (!exerciseArray || exerciseArray.length === 0) return [];
   
@@ -84,22 +27,70 @@ function getRandomExercisesAsObjects(exerciseArray, count, sets, reps) {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   
-  // Pega os primeiros 'count' exercícios e transforma em objetos
+  // Pega os primeiros count exercícios da lista embaralhada e transforma em objetos
   return shuffled.slice(0, count).map(ex => ({
     name: ex.name,
     sets: sets,
     reps: reps,
-    weight: 0  // Começa com peso zero, o usuário ajusta depois
+    weight: 0  // Começa com pr zero pois e individual
   }));
 }
 
-// ==============================================
-// 1. GERAR TREINO AUTOMÁTICO
-// ==============================================
+
+//======================================== VALIDAÇÕES COM ZOD 
+
+
+// schema para criar um treino
+const generateWorkoutSchema = z.object({
+  goal: z.enum(["força", "resistência", "hipertrofia"]),
+  days: z.number({required_error: "days é obrigatório"}).min(2, "days deve ser entre 2 e 6").max(6, "days deve ser entre 2 e 6"),
+});
+
+// schema para pegar o PR de um exercício
+const getPRSchema = z.object({
+  exercise: z.string().min(1, "O nome do exercício é obrigatório").transform((val) => decodeURIComponent(val)),
+});
+
+//schema para validar os dados de um set
+const setSchema = z.object({
+  reps: z.coerce.number().min(0, "Reps deve ser um número positivo"),
+  weight: z.number().min(0, "Weight deve ser um número positivo")
+});
+
+// schema para validar os dados de um exercício
+const exerciseSchema = z.object({
+  name: z.string().min(1, "O nome do exercício é obrigatório"),
+  sets: z.array(setSchema).optional(),
+  reps: z.coerce.number().optional(),
+  weight: z.number().optional(),
+  workoutName: z.string().optional().nullable(),
+});
+
+// Valida os dados para criar um treino
+const logWorkoutSchema = z.object({
+  exercises: z.array(exerciseSchema).min(1, "É necessário enviar pelo menos um exercício")
+});
+
+// Valida os dados para deletar um treino
+const deleteWorkoutSchema = z.object({
+  Id: z.string().min(1, "O id do treino é obrigatório")
+});
+
+// Valida os dados para editar um PR
+const updatePRSchema = z.object({
+  workoutId: z.string().optional(),
+  exerciseName: z.string().optional(),
+  newPR: z.number().min(0, "O PR deve ser um número positivo")
+}).refine(data => data.workoutId && data.exerciseName, {
+  message: "É necessário fornecer workoutId e exerciseName"
+});
+
+
+
+
+//====================================== GERAR TREINO AUTOMÁTICO
 
 // Gera um treino completo baseado no objetivo e na quantidade de dias
-// Suporta: 2 dias (Fullbody), 3 dias (PPL), 4 dias (Upper/Lower), 
-//          5 dias (PPL+UL), 6 dias (ABCDEF)
 exports.generateWorkout = async (req, res) => {
   try {
     // Valida os dados que vieram do frontend
@@ -117,12 +108,10 @@ exports.generateWorkout = async (req, res) => {
       reps = "15-20";    // Muitas repetições, menos peso
     } else {
       sets = 4;
-      reps = "8-12";     // Meio termo - hipertrofia
+      reps = "8-12";     // Meio termo, hipertrofia
     }
 
     let split = [];
-
-    // ===== ESTRATÉGIA DE SPLIT BASEADA NA QUANTIDADE DE DIAS =====
     
     if (days === 2) {
       // 2 dias: Fullbody A e Fullbody B (6 exercícios cada)
@@ -138,7 +127,7 @@ exports.generateWorkout = async (req, res) => {
       ];
     } 
     else if (days === 3) {
-      // 3 dias: PPL (Push, Pull, Legs) - 6 exercícios cada
+      // 3 dias: PPL 6 exercícios cada
       split = [
         { 
           day: "Push - Peito, Ombros e Tríceps", 
@@ -155,7 +144,7 @@ exports.generateWorkout = async (req, res) => {
       ];
     } 
     else if (days === 4) {
-      // 4 dias: Upper/Lower 2x (6 exercícios cada)
+      // 4 dias: Upper/Lower 2x 
       split = [
         { 
           day: "Upper A - Força Superior", 
@@ -176,7 +165,7 @@ exports.generateWorkout = async (req, res) => {
       ];
     } 
     else if (days === 5) {
-      // 5 dias: PPL + Upper + Lower (5 exercícios cada)
+      // 5 dias: PPL  Upper  Lower (5 exercícios cada)
       split = [
         { 
           day: "Push - Peito, Ombros, Tríceps", 
@@ -201,7 +190,7 @@ exports.generateWorkout = async (req, res) => {
       ];
     } 
     else if (days >= 6) {
-      // 6 dias: ABCDEF (Peito, Costas, Pernas, Ombros, Braços, Posterior)
+      // 6 dias: Peito, Costas, Pernas, Ombros, Braços, Posterior
       split = [
         { 
           day: "Dia A - Peito e Tríceps", 
@@ -230,7 +219,7 @@ exports.generateWorkout = async (req, res) => {
       ];
     }
 
-    // Adiciona um exercício de abdômen em todos os treinos (ninguém gosta, mas é necessário)
+    // Adiciona um exercício de abdomen em todos os treinos (ninguém gosta, mas é necessário kkkkj)
     if (exercises.abs) {
       split.forEach(day => {
         const absExercises = getRandomExercisesAsObjects(exercises.abs, 1, sets, reps);
@@ -265,9 +254,7 @@ exports.generateWorkout = async (req, res) => {
   }
 };
 
-// ==============================================
-// 2. BUSCAR TODOS OS TREINOS DO USUÁRIO
-// ==============================================
+//================================== BUSCAR TODOS OS TREINOS DO USUÁRIO
 
 // Retorna todos os treinos gerados pelo usuário (os automáticos)
 exports.getMyWorkouts = async (req, res) => {
@@ -279,36 +266,33 @@ exports.getMyWorkouts = async (req, res) => {
   }
 };
 
-// ==============================================
-// 3. HISTÓRICO DE TREINOS EXECUTADOS
-// ==============================================
 
-// Retorna os últimos 20 treinos que o usuário finalizou
+//=======================================HISTÓRICO DE TREINOS EXECUTADOS
+
+// Retorna os últimos 20 treinos que o user finalizou
 exports.getWorkoutHistory = async (req, res) => {
   try {
     const workouts = await WorkoutHistory.find({ user: req.user.id })
       .sort({ date: -1 })  // Os mais recentes primeiro
-      .limit(20);           // Limita a 20 para não sobrecarregar
+      .limit(20);           // Limitei em 20 para não sobrecarregar
     res.json(workouts);
   } catch (error) {
     res.status(500).json({ message: "Erro ao buscar histórico de treinos" });
   }
 };
 
-// ==============================================
-// 4. CALCULAR PR (PERSONAL RECORD) DO EXERCÍCIO
-// ==============================================
+//======================================CALCULAR PR (PERSONAL RECORD) DO EXERCÍCIO
 
-// Busca o maior peso que o usuário já fez em um exercício específico
-// Procura tanto nos treinos automáticos (workouts) quanto nos manuais (workoutplans)
-// É case-insensitive, então "supino" = "SUPINO" = "Supino"
+
+/*Busca o maior peso que o usuário já fez em um exercício específico,
+procura tanto nos treinos automáticos quanto nos manuais.
+OBS: se o exercício for supino, ele vai encontrar Supino, SUPINO,*/
 exports.getPR = async (req, res) => {
   try {
     // Valida se o nome do exercício foi enviado
     const { exercise } = getPRSchema.parse(req.query);
     
     // Cria uma regex que ignora maiúsculo/minúsculo
-    // Exemplo: "supino" vai encontrar "Supino", "SUPINO", "supino"
     const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const searchTerm = escapeRegex(exercise.trim());
     const caseInsensitiveRegex = new RegExp(`^${searchTerm}$`, 'i');
@@ -317,7 +301,7 @@ exports.getPR = async (req, res) => {
     let foundInWorkouts = false;
     let foundInPlans = false;
     
-    // 1º lugar: busca nos treinos gerados automaticamente (workouts)
+    // busca nos treinos gerados automaticamente, workouts
     const workouts = await Workout.find({ user: req.user.id });
     
     workouts.forEach(workout => {
@@ -331,7 +315,7 @@ exports.getPR = async (req, res) => {
       });
     });
     
-    // 2º lugar: busca nos planos de treino criados manualmente (workoutplans)
+    //busca tbm nos planos de treino criados manualmente
     const WorkoutPlan = require("../../models/WorkoutPlan");
     const plans = await WorkoutPlan.find({ user: req.user.id });
     
@@ -346,7 +330,7 @@ exports.getPR = async (req, res) => {
       });
     });
     
-    // Retorna o resultado com informações úteis
+    // Retorna o resultado com informações sobre o exercício
     res.json({ 
       exercise: exercise.trim(),
       personalRecord: maxWeight,
@@ -354,8 +338,7 @@ exports.getPR = async (req, res) => {
       source: foundInWorkouts ? (foundInPlans ? "both" : "workouts") : (foundInPlans ? "workoutplans" : "none")
     });
     
-  } catch (error) {
-    // Se o erro for de validação do Zod, retorna 400 com detalhes
+  } catch (error) { // se o erro for do zod
     if (error instanceof z.ZodError) {
       return res.status(400).json({ 
         error: "Erro de validação", 
@@ -363,20 +346,19 @@ exports.getPR = async (req, res) => {
       });
     }
     
-    console.error("Erro ao buscar PR:", error);
+    console.error("Erro ao buscar PR:", error); // se for outro erro
     res.status(500).json({ message: "Erro ao buscar PR", error: error.message });
   }
 };
 
-// ==============================================
-// 5. REGISTRAR TREINO EXECUTADO (LOG)
-// ==============================================
+
+//=========================================REGISTRAR TREINO EXECUTADO ESTANDO LOGADO
+
 
 // Salva no histórico os exercícios que o usuário completou
-// Isso ajuda a calcular os PRs depois
 exports.logWorkout = async (req, res) => {
   try {
-    const { exercises } = logWorkoutSchema.parse(req.body);
+    const { exercises } = logWorkoutSchema.parse(req.body); // Valida os dados com zod
     const savedExercises = []; 
     
     for (const exercise of exercises) {
@@ -392,7 +374,7 @@ exports.logWorkout = async (req, res) => {
           const saved = await WorkoutHistory.insertMany(entries);
           savedExercises.push(...saved);
       } else {
-        // Se for um registro simples (sem séries detalhadas)
+        // Se for um registro simples de um exercício, salva apenas um
         const saved = await WorkoutHistory.create({
           user: req.user.id,
           exerciseName: exercise.name,
@@ -405,21 +387,20 @@ exports.logWorkout = async (req, res) => {
     }
     
     res.json({
-      message: "Treino registrado com sucesso! Mais um passo rumo ao shape! 🏆",
+      message: "Treino registrado com sucesso!",
       count: savedExercises.length
     });
   } catch (error) {
-    if (error instanceof z.ZodError) { 
+    if (error instanceof z.ZodError) { // se o erro for do zod
       return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
     }
-    console.log(error); 
+    console.log(error); // se for outro erro
     res.status(500).json({ message: "Erro ao registrar treino" });
   }
 };
 
-// ==============================================
-// 6. EXCLUIR TREINO GERADO
-// ==============================================
+
+//==============================EXCLUIR TREINO GERADO
 
 // Remove um treino automático que o usuário não quer mais
 exports.deleteWorkouts = async (req, res) => { 
@@ -442,12 +423,11 @@ exports.deleteWorkouts = async (req, res) => {
   }
 };
 
-// ==============================================
-// 7. EDITAR PR DE UM EXERCÍCIO
-// ==============================================
 
-// Atualiza o peso (PR) de um exercício específico dentro de um treino gerado
-// Usado quando o usuário clica no botão "Salvar PR" ou no troféu de sincronização
+// ================================EDITAR PR DE UM EXERCÍCIO
+
+
+// Atualiza o peso pr de um exercício específico dentro de um treino gerado
 exports.updatePR = async (req, res) => {
   try {
     const { workoutId, exerciseName, newPR } = updatePRSchema.parse(req.body);
@@ -480,8 +460,8 @@ exports.updatePR = async (req, res) => {
     
     await workout.save();
     
-    res.json({ 
-      message: "PR atualizado com sucesso! Você está mais forte! ",
+    res.json({  // retorna o exercício que foi atualizado
+      message: "PR atualizado com sucesso ",
       workout: {
         id: workout._id,
         exerciseName,
@@ -490,14 +470,14 @@ exports.updatePR = async (req, res) => {
     });
     
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof z.ZodError) { // se o erro for do zod
       return res.status(400).json({ 
         error: "Erro de validação", 
         detalhes: error.flatten().fieldErrors 
       });
     }
     
-    console.error("Erro no updatePR:", error);
+    console.error("Erro no updatePR:", error); // se for outro erro
     res.status(500).json({ message: "Erro ao atualizar PR" });
   }
 };

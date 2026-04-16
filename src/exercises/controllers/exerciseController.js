@@ -15,6 +15,13 @@ const deleteExerciseSchema = z.object({
 });
 
 
+
+/* por enquanto nao implementei endpoint ao front, em atualizaçoes futuras 
+pretendo implementar, foi a primeira rota que criei (tava meio sem ideias, so sabia
+que seria um app de academia pra portifolio e uso pessoal)*/
+
+
+
 //========================================= Exercicios do usuário
 
 

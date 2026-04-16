@@ -9,9 +9,10 @@ const mongoose = require("mongoose");
 
 //==============================================funçaos auxiliares
 
-/*tentei criar a funçao direto no model usando "default" mas ele nao aceita funçoes assíncronas, optei por criar aqui mesmo no controller ao inves de deixar o default gerar um valor padrao temporario "ex PENDENTE" e depois atualizar com o valor correto do shareCode apos gerar o plano de treino, assim garantimos que o shareCode seja unico e no formato correto antes de salvar o plano no banco de dados*/
+
+/*tentei criar a funçao direto no model usando "default" mas ele nao aceita funçoes assíncronas, optei por criar aqui mesmo no controller ao inves de deixar o default gerar um valor padrao temporario "ex PENDENTE" e depois atualizar com o valor correto do shareCode apos gerar o plano de treino, assim garantindo que o shareCode seja unico e no formato correto antes de salvar o plano no banco de dados*/
 function gerarCodigoFormatado() {
-  const characters = 'ABCDEFGHJKLMNPRSTUVWXYZ23456789'; // caracteres permitidos (exclui I, O, Q, 0, 1 para evitar confusão visual)
+  const characters = 'ABCDEFGHJKLMNPRSTUVWXYZ23456789'; // caracteres permitidos exclui I, O, Q, 0, 1 para evitar confusão visual
   let codigo = '';
   
   for (let i = 0; i < 12; i++) {
@@ -438,7 +439,7 @@ exports.updateExerciseInPlan = async (req, res) => {
       });
     }
     
-    // Busca o dia dentro do plano pelo nome (case insensitive)
+    // Busca o dia dentro do plano pelo nome case insensitive
     const dayToUpdate = workoutPlan.days.find(
       d => d.name.toLowerCase() === day.toLowerCase()
     );
@@ -450,7 +451,7 @@ exports.updateExerciseInPlan = async (req, res) => {
       });
     }
     
-    // Busca o exercício dentro do dia pelo nome (case insensitive)
+    // Busca o exercício dentro do dia pelo nome sem considerar maiúsculas e minúsculas
     const exerciseToUpdate = dayToUpdate.exercises.find(
       e => e.name.toLowerCase() === exerciseName.toLowerCase()
     );
@@ -463,7 +464,6 @@ exports.updateExerciseInPlan = async (req, res) => {
     }
     
     // Atualiza APENAS os campos que foram enviados no body
-    // Ex: se enviar { sets: 5 }, só o sets será atualizado
     if (updateData.name !== undefined) exerciseToUpdate.name = updateData.name;
     if (updateData.sets !== undefined) exerciseToUpdate.sets = updateData.sets;
     if (updateData.reps !== undefined) exerciseToUpdate.reps = updateData.reps;
@@ -509,7 +509,7 @@ exports.updateDayInPlan = async (req, res) => {
       });
     }
     
-    const dayToUpdate = workoutPlan.days.find(
+    const dayToUpdate = workoutPlan.days.find( // busca o dia dentro do plano de treino pelo nome do dia, ignorando maiúsculas e minúsculas
       d => d.name.toLowerCase() === day.toLowerCase()
     );
     
@@ -519,7 +519,7 @@ exports.updateDayInPlan = async (req, res) => {
       });
     }
     
-    const dayExists = workoutPlan.days.some(
+    const dayExists = workoutPlan.days.some( // verifica se já existe um dia com esse nome
       d => d.name.toLowerCase() === newDayName.toLowerCase() && d !== dayToUpdate
     );
     
@@ -530,7 +530,7 @@ exports.updateDayInPlan = async (req, res) => {
     }
     
     dayToUpdate.name = newDayName;
-    await workoutPlan.save();
+    await workoutPlan.save(); // salva as alterações
     
     res.json({
       message: "Dia atualizado com sucesso!",
@@ -538,7 +538,7 @@ exports.updateDayInPlan = async (req, res) => {
     });
     
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof z.ZodError) { /// Tratamento de erro de validação do Zod
       return res.status(400).json({
         error: "Erro de validação",
         detalhes: error.flatten().fieldErrors
