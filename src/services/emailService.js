@@ -30,7 +30,6 @@ exports.sendEmail = async (to, subject, text, html) => {
     // Configura as opções do email a ser enviado
     const finalText = text || "Seu código de verificação do Super Frango";
     const finalHtml = html || finalText;
-    
     const mailOptions = {
       from: `"EQUIPE SUPER FRANGO" <${process.env.EMAIL_USER}>`,
       to,
@@ -38,9 +37,7 @@ exports.sendEmail = async (to, subject, text, html) => {
       text: finalText,
       html: finalHtml,
     };
-
     const info = await transporter.sendMail(mailOptions); // Envia o email usando o transporter configurado
-
     console.log("E-mail enviado com sucesso! ID:", info.messageId);
     return info;
   } catch (error) {
@@ -89,22 +86,22 @@ exports.sendVerificationEmail = async (to, code, name) => {
                 <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">Verifique o seu acesso.</h2>
                 
                 <p style="color: #a0a0a0; font-size: 16px; line-height: 1.5; margin-bottom: 32px;">
-                    Olá, <strong>${name}</strong>. Use o código abaixo para validar a sua sessão. Este token é temporário.
+                    Olá, <strong>${name}</strong>. Use o código abaixo para validar a sua sessão. Este código expira em 5 minutos.
                 </p>
                 
                 <div style="background: #141414; padding: 24px; text-align: center; border: 1px solid #222; margin-bottom: 24px;">
-                    <span style="font-size: 48px; font-weight: 700; letter-spacing: 12px; color: #ff6600; font-family: 'Courier New', Courier, monospace;">
-                        ${code}
-                    </span>
+                    <span style="font-size: 32px; font-weight: 900; font-style: italic; letter-spacing: 8px; color: #ff6600; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">
+                      ${code}
+                  </span>
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px;">
-                    <span style="color: #ff6600;">●</span> Válido por 5 minutos.
+                    <span style="color: #ff6600;">●</span>  OBRIGADO POR USAR O SUPER FRANGO APP.
                 </div>
                 
                 <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
                     <p style="font-size: 11px; color: #444; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
-                        Performance & Tech. Não responda a este e-mail.
+                        Equipe Super Frango. Não responda a este e-mail.
                     </p>
                 </div>
             </div>
@@ -155,22 +152,22 @@ exports.sendPasswordResetEmail = async (to, code, name) => {
                 <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">Recuperação de senha</h2>
                 
                 <p style="color: #a0a0a0; font-size: 16px; line-height: 1.5; margin-bottom: 32px;">
-                    Olá, <strong>${name}</strong>. Use o código abaixo para redefinir sua senha.
+                    Olá, <strong>${name}</strong>. Use o código abaixo para redefinir sua senha, Este código expira em 5 minutos.
                 </p>
                 
                 <div style="background: #141414; padding: 24px; text-align: center; border: 1px solid #222; margin-bottom: 24px;">
-                    <span style="font-size: 48px; font-weight: 700; letter-spacing: 12px; color: #ff6600; font-family: 'Courier New', Courier, monospace;">
-                        ${code}
-                    </span>
+                    <span style="font-size: 32px; font-weight: 900; font-style: italic; letter-spacing: 8px; color: #ff6600; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">
+                      ${code}
+                  </span>
                 </div>
                 
                 <div style="display: flex; items-center; gap: 8px; color: #666; font-size: 13px;">
-                    <span style="color: #ff6600;">●</span> Válido por 5 minutos.
+                    <span style="color: #ff6600;">●</span>  OBRIGADO POR USAR O SUPER FRANGO APP.
                 </div>
                 
                 <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
                     <p style="font-size: 11px; color: #444; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
-                        Performance & Tech. Não responda a este e-mail.
+                        Equipe Super Frango. Não responda a este e-mail.
                     </p>
                 </div>
             </div>
