@@ -28,12 +28,15 @@ tbm pode ser usada para verificação de conta, recuperação de senha, etc etc*
 exports.sendEmail = async (to, subject, text, html) => {
   try {
     // Configura as opções do email a ser enviado
+    const finalText = text || "Seu código de verificação do Super Frango";
+    const finalHtml = html || finalText;
+    
     const mailOptions = {
-      from: `" EQUIPE SUPER FRANGO " <${process.env.EMAIL_USER}>`,
+      from: `"EQUIPE SUPER FRANGO" <${process.env.EMAIL_USER}>`,
       to,
       subject,
-      text,
-      html: html || text,
+      text: finalText,
+      html: finalHtml,
     };
 
     const info = await transporter.sendMail(mailOptions); // Envia o email usando o transporter configurado
