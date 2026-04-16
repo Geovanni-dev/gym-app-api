@@ -18,7 +18,7 @@ const MetricsGridAuto = ({
       title: 'GYM RATS',
       value: 'SUPER FRANGO',
       icon: Dumbbell,
-      image: '/images/logo-gymrats.jpg',
+      image: '/images/logo-gymrats2.jpg',
       position: 'bg-center',
       isGymRats: true,
       onClick: () => window.open('https://share.gymrats.app/join?code=AMKWULSI', '_blank'),
@@ -71,10 +71,14 @@ const MetricsGridAuto = ({
           onClick={card.onClick}
           className="relative group overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.02] border border-[#ff6600]/20 hover:border-[#ff6600] h-28"
         >
-          <div
-            className={`absolute inset-0 bg-cover ${card.position} transition-all duration-1000 grayscale brightness-[0.7] contrast-[1.1] group-hover:grayscale-0 group-hover:brightness-[0.9] group-hover:scale-110`}
-            style={{ backgroundImage: `url('${card.image}')` }}
-          />
+         <div
+  className={`absolute inset-0 bg-cover ${card.position} transition-all duration-1000 ${
+    card.isGymRats 
+      ? 'grayscale-0 group-hover:grayscale' 
+      : 'grayscale brightness-[0.7] contrast-[1.1] group-hover:grayscale-0 group-hover:brightness-[0.9]'
+  } group-hover:scale-110`}
+  style={{ backgroundImage: `url('${card.image}')` }}
+/>
 
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-black/30 group-hover:from-black/80 transition-all duration-500" />
 
