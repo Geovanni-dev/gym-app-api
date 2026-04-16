@@ -11,8 +11,15 @@ const path = require("path");
 const app = express();
 
 // Configura os middlewares basicos 
-app.use(cors());
 app.use(express.json());  
+app.use(cors({
+  origin: ['http://localhost:5173',
+  'https://superfrango.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+
 
 // Configura o middleware para servir arquivos estaticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -40,6 +47,19 @@ app.use("/users", userRoutes);
 // Rotas de treinos e histórico
 app.use("/workouts", workoutRoutes);
 
+
+//==========================debug
+app.get("/", (req, res) => {
+  res.json({
+    message: "Servidor rodando"
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+   status: 'ok', timestamp: Date.now()
+  });
+});
 
 
 //================================ INICIALIZAÇÃO DO SERVIDOR
