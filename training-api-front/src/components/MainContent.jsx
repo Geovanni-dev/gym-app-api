@@ -1234,7 +1234,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
         ) : !isCreatingPlan ? (
           <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
-              <div className="space-y-1 -mt-2">
+              <div className="space-y-1 -mt-">
                 <div className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.2)] font-black italic uppercase tracking-tighter text-4xl leading-none">
                   PLANOS <br /> DE TREINOS
                 </div>
@@ -1260,7 +1260,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
       <line x1="12" y1="2" x2="12" y2="16" />
     </svg>
   </button>
-              </div>
+              </div> 
             </div>
 {isImportModalOpen && (
   <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
@@ -1500,7 +1500,7 @@ CRIAR <br/> TREINOs <span className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(2
         ) : (
           <>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
-              <div className="space-y-1 -mt-2">
+              <div className="space-y-1 -mt-">
                 <div className="text-[#ff6600] drop-shadow-[0_0_15px_rgba(255,102,0,0.2)] font-black italic uppercase tracking-tighter text-4xl leading-none">
                   TREINOS <br /> AUTOMÁTICOS
                 </div>

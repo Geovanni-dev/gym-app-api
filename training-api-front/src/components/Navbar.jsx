@@ -13,7 +13,7 @@ import { theme } from '../utils/theme';
  * exibição de logo e status do sistema.
  */
 export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
-  const { isAuthenticated, user } = useAuth(); // Adicionado 'user' aqui
+  const { isAuthenticated, user } = useAuth(); 
 
   // Bloqueio de renderização para usuários não autenticados
   if (!isAuthenticated) return null;
@@ -34,7 +34,7 @@ export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
             <img 
               src="/images/super-frango.png" 
               alt="Logo" 
-              className="w-5 h-7 object-contain -translate-y-[-1px] -ml-[9px]"
+              className="w-7 h-7 object-contain -translate-y-[-1px] -ml-8px]"
               style={{
                 filter: 'invert(52%) sepia(91%) saturate(3029%) hue-rotate(360deg) brightness(101%) contrast(106%)'
               }}
@@ -45,13 +45,13 @@ export const Navbar = ({ activeTab, setActiveTab, onOpenProfile }) => {
           </div>
 
           <div className="flex items-center gap- mt-">
-            <div className="flex items-center gap-1.5 ml-0">
+            <div className="flex items-center gap-1.5 ml-6">
               <span className="w-1.5 h-1.5 rounded-full bg-green-800 animate-pulse shadow-[0_0_5px_#22c55e]"></span>
               <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
                 STATUS: ONLINE
               </span>
             </div>
-            <span className="text-[12px] font-bold text-gray-600">-</span>
+            <span className="text-[12px] font-bold text-gray-600 mx-2"> - </span>
             <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
               {new Date().toLocaleDateString('pt-BR')}
             </span>

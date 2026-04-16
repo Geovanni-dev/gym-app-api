@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy, Activity, CheckSquare, ClipboardList } from 'lucide-react';
+import { Trophy, Activity, CheckSquare, ClipboardList, Dumbbell, ChevronRight } from 'lucide-react';
 
 const MetricsGridAuto = ({
   stats = { maxWeight: 0, sessionVolume: 0, completedCount: 0 },
@@ -15,26 +15,35 @@ const MetricsGridAuto = ({
 
   const cards = [
     {
+      title: 'GYM RATS',
+      value: 'SUPER FRANGO',
+      icon: Dumbbell,
+      image: '/images/logo-gymrats.jpg',
+      position: 'bg-center',
+      isGymRats: true,
+      onClick: () => window.open('https://share.gymrats.app/join?code=AMKWULSI', '_blank'),
+    },
+    {
       title: 'EXERCÍCIOS',
       value: (
         <div className="flex items-baseline gap-1.5">
           <span className="text-xl font-black text-white italic tracking-tighter">
             {safeStats.completedCount}
           </span>
-          <span className="text-sm font-black text-white uppercase tracking-[0.15em]">
-            CHECK
+          <span className="text-base font-black text-white uppercase tracking-[0.15em]">
+            CONCLUÍDOS
           </span>
         </div>
       ),
       icon: CheckSquare,
-      image: 'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?q=80&w=800', // mulher fazendo remada 
+      image: 'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?q=80&w=800',
       position: 'bg-center',
     },
     {
       title: 'MAX CARGA',
       value: `${safeStats.maxWeight}kg`,
       icon: Trophy,
-      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800', // homem fazendo rosca direta 
+      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800',
       onClick: () => setIsPRSearchOpen(true),
       position: 'bg-center',
     },
@@ -43,19 +52,14 @@ const MetricsGridAuto = ({
       value: `${safeStats.sessionVolume}kg`,
       icon: Activity,
       image: 'https://images.unsplash.com/photo-1637430308606-86576d8fef3c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      position: 'bg-[position:50%_80%]', // academia aestetchic
+      position: 'bg-[position:50%_80%]',
     },
     {
       title: 'PLANOS',
-      value:
-        (Array.isArray(plans) ? plans.length : 0) +
-        (Array.isArray(generatedWorkouts) ? generatedWorkouts.length : 0),
+      value: (Array.isArray(plans) ? plans.length : 0) + (Array.isArray(generatedWorkouts) ? generatedWorkouts.length : 0),
       icon: ClipboardList,
-      
-       image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800',
-      position: 'bg-center', //homen fazendo levantamento terra
-       image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=800',
-      position: 'bg-center', // mulher no crossfit 
+      image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=800',
+      position: 'bg-center',
     },
   ];
 
@@ -67,17 +71,14 @@ const MetricsGridAuto = ({
           onClick={card.onClick}
           className="relative group overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.02] border border-[#ff6600]/20 hover:border-[#ff6600] h-28"
         >
-          {/* Background Image */}
           <div
             className={`absolute inset-0 bg-cover ${card.position} transition-all duration-1000 grayscale brightness-[0.7] contrast-[1.1] group-hover:grayscale-0 group-hover:brightness-[0.9] group-hover:scale-110`}
             style={{ backgroundImage: `url('${card.image}')` }}
           />
 
-          {/* Overlay gradiente */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-black/30 group-hover:from-black/80 transition-all duration-500" />
 
           <div className="relative p-4 z-10 flex flex-row items-center gap-3 h-full">
-            {/* Box do Ícone */}
             <div className="p-2 border border-[#ff6600]/30 rounded-lg bg-black/60 backdrop-blur-md group-hover:border-[#ff6600] flex-shrink-0">
               <card.icon
                 className="text-[#ff6600] drop-shadow-[0_0_8px_rgba(255,102,0,0.6)]"
@@ -85,21 +86,22 @@ const MetricsGridAuto = ({
               />
             </div>
 
-            {/* Textos */}
             <div className="flex flex-col text-left min-w-0 justify-center">
-              <div className="relative mb-2">
-                <p className="text-[12px] text-white uppercase tracking-[0.15em] font-black opacity-90 truncate transition-all duration-300 group-hover:scale-105 group-hover:origin-left">
+              <div className="relative inline-block mb-1 max-w-min">
+                <p className="text-[12px] text-white uppercase tracking-[0.15em] font-black opacity-90 whitespace-nowrap">
                   {card.title}
                 </p>
                 <div className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-[#ff6600] shadow-[0_0_6px_#ff6600] transition-all duration-300 group-hover:w-full" />
               </div>
-              <div className="text-xl font-black text-white italic uppercase tracking-tighter truncate drop-shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:origin-left">
-                {card.value}
-              </div>
+             <div className={`flex items-center gap-2 ${card.isGymRats ? 'mt-0' : '-mt-1'}`}>
+  <span className="text-base font-black text-white italic uppercase tracking-tighter drop-shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:origin-left whitespace-nowrap">
+    {card.value}
+  </span>
+  {card.isGymRats && <ChevronRight size={14} className="text-[#ff6600]" />}
+</div>
             </div>
           </div>
 
-          {/* Barra neon inferior */}
           <div className="absolute bottom-0 left-0 h-[3px] w-0 bg-[#ff6600] shadow-[0_0_15px_#ff6600] transition-all duration-700 group-hover:w-full" />
         </div>
       ))}
