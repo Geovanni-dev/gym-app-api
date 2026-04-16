@@ -25,14 +25,15 @@ const generateVerificationCode = () => {
 
 /*Função responsável por enviar emails da aplicação, 
 tbm pode ser usada para verificação de conta, recuperação de senha, etc etc*/
-exports.sendEmail = async (to, subject, text) => {
+exports.sendEmail = async (to, subject, text, html) => {
   try {
     // Configura as opções do email a ser enviado
     const mailOptions = {
-      from: `" Equipe Workout API " <${process.env.EMAIL_USER}>`,
+      from: `" EQUIPE SUPER FRANGO " <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
+      html: html || text,
     };
 
     const info = await transporter.sendMail(mailOptions); // Envia o email usando o transporter configurado
@@ -46,8 +47,143 @@ exports.sendEmail = async (to, subject, text) => {
   }
 };
 
+//====================================== /* FUNÇÃO PARA ENVIAR EMAIL COM CODIGO DE VERIFICAÇÃO DE RECUPERAÇÃO DE SENHA ESTILIZADO, OPCIONAL, MAS VAI SER DO MEU USO PESSOAL O APP ENTÃO TO CAPRICHANDO*/
+
+// Função para enviar email de verificação 
+exports.sendVerificationEmail = async (to, code, name) => {
+  const html = `
+    <!DOCTYPE html>
+    <html lang="pt-pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verificação Super Frango</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 20px;
+                background-color: #000000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                color: #ffffff;
+            }
+            .email-container {
+                width: 100%;
+                max-width: 500px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; padding: 40px; border-radius: 4px; border-top: 4px solid #ff6600;">
+                
+                <div style="margin-bottom: 40px;">
+                    <h1 style="color: #ffffff; font-size: 18px; font-weight: 800; letter-spacing: 2px; margin: 0; text-transform: uppercase;">SUPER FRANGO</h1>
+                </div>
+                
+                <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">Verifique o seu acesso.</h2>
+                
+                <p style="color: #a0a0a0; font-size: 16px; line-height: 1.5; margin-bottom: 32px;">
+                    Olá, <strong>${name}</strong>. Use o código abaixo para validar a sua sessão. Este token é temporário.
+                </p>
+                
+                <div style="background: #141414; padding: 24px; text-align: center; border: 1px solid #222; margin-bottom: 24px;">
+                    <span style="font-size: 48px; font-weight: 700; letter-spacing: 12px; color: #ff6600; font-family: 'Courier New', Courier, monospace;">
+                        ${code}
+                    </span>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px;">
+                    <span style="color: #ff6600;">●</span> Válido por 5 minutos.
+                </div>
+                
+                <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
+                    <p style="font-size: 11px; color: #444; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                        Performance & Tech. Não responda a este e-mail.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+
+  const text = `Olá ${name}. Seu código de verificação é: ${code}`;
+
+  await exports.sendEmail(to, "Verifique seu acesso - Super Frango", text, html);
+};
+
+// funçao pra redefiniçao de senha
+exports.sendPasswordResetEmail = async (to, code, name) => {
+  const html = `
+    <!DOCTYPE html>
+    <html lang="pt-pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Recuperação de Senha - Super Frango</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 20px;
+                background-color: #000000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                color: #ffffff;
+            }
+            .email-container {
+                width: 100%;
+                max-width: 500px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; padding: 40px; border-radius: 4px; border-top: 4px solid #ff6600;">
+                
+                <div style="margin-bottom: 40px;">
+                    <h1 style="color: #ffffff; font-size: 18px; font-weight: 800; letter-spacing: 2px; margin: 0; text-transform: uppercase;">SUPER FRANGO</h1>
+                </div>
+                
+                <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">Recuperação de senha</h2>
+                
+                <p style="color: #a0a0a0; font-size: 16px; line-height: 1.5; margin-bottom: 32px;">
+                    Olá, <strong>${name}</strong>. Use o código abaixo para redefinir sua senha.
+                </p>
+                
+                <div style="background: #141414; padding: 24px; text-align: center; border: 1px solid #222; margin-bottom: 24px;">
+                    <span style="font-size: 48px; font-weight: 700; letter-spacing: 12px; color: #ff6600; font-family: 'Courier New', Courier, monospace;">
+                        ${code}
+                    </span>
+                </div>
+                
+                <div style="display: flex; items-center; gap: 8px; color: #666; font-size: 13px;">
+                    <span style="color: #ff6600;">●</span> Válido por 5 minutos.
+                </div>
+                
+                <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
+                    <p style="font-size: 11px; color: #444; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                        Performance & Tech. Não responda a este e-mail.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+
+  const text = `Olá ${name}. Seu código de recuperação de senha é: ${code}`;
+
+  await exports.sendEmail(to, "Recuperação de senha - Super Frango", text, html);
+};
 // 
 module.exports = { // Exporta as funções para serem usadas em outros arquivos
   sendEmail: exports.sendEmail, 
-  generateVerificationCode     
+  generateVerificationCode, 
+  sendVerificationEmail: exports.sendVerificationEmail,
+  sendPasswordResetEmail: exports.sendPasswordResetEmail,
 };

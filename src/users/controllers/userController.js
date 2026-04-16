@@ -86,7 +86,7 @@ exports.registerUser = async (req, res) => {
       });
     }
     const hashedPassword = await bcrypt.hash(password, 10); // Criptografia da senha utilizando bcrypt com um salt de 10 rounds
-    const verificationCode = emailService.generateVerificationCode(); // Gera um código de verificação utilizando o serviço de email
+    const verificationCode = emailService.generateVerificationCode(); // Gera um código de verificação 
     const newUser = new User({ // Cria um novo usuário com os dados fornecidos e o código de verificação gerado
   name,
   email,
@@ -95,11 +95,11 @@ exports.registerUser = async (req, res) => {
   isVerified: false
 });
       await newUser.save();
-    try { // Envia o email de verificação
-      await emailService.sendEmail(
+    try { // coloquei um try/catch para tratar erros de envio de email separadamente
+      await emailService.sendVerificationEmail( // Envia um email de verificação estilizado
         email,
-        "Código de verificação",
-        `Seu código é: ${verificationCode}`
+        verificationCode,
+        newUser.name // nome do novo usuario ainda não verificado
       );
     } catch (emailError) {
       console.log("Erro ao enviar email:", emailError);
@@ -165,12 +165,8 @@ try {
       const newCode = emailService.generateVerificationCode();
       user.verificationCode = newCode;
       await user.save();
-      try {
-        await emailService.sendEmail(
-          user.email,
-          "Código de verificação",
-          `Seu novo código é: ${newCode}`
-        );
+      try { // coloquei um try/catch para tratar erros de envio de email separadamente
+        await emailService.sendVerificationEmail(email, newCode, user.name);
       } catch (emailError) {
         console.log("Erro ao enviar email:", emailError);
       }
@@ -229,12 +225,8 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() +  300000; // tempo de redefiniçao de 5 minutos
     await user.save();
     
-    try { // Envia o email de recuperação de senha utilizando o serviço de email
-    await emailService.sendEmail( // Envia o email de recuperação de senha utilizando o serviço de email
-      email,
-      "Recuperação de senha",
-      `Seu código de recuperação é: ${resetCode}\n\nO código expira em 5 minutos.`
-    );
+    try { // coloquei um try/catch para tratar erros de envio de email separadamente
+    await emailService.sendPasswordResetEmail(email, resetCode, user.name);// Envia o email de recuperação de senha utilizando o serviço de email(estilizado)
     } catch (emailError) {
       console.log("Erro ao enviar email de recuperação:", emailError);
     }
