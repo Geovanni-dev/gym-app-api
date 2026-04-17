@@ -96,7 +96,7 @@ exports.sendVerificationEmail = async (to, code, name) => {
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px;">
-                    <span style="color: #ff6600;">●</span>  OBRIGADO POR USAR O SUPER FRANGO APP.
+                    <span style="color: #ff6600;">●</span> Obrigado por usar nosso app
                 </div>
                 
                 <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
@@ -162,7 +162,7 @@ exports.sendPasswordResetEmail = async (to, code, name) => {
                 </div>
                 
                 <div style="display: flex; items-center; gap: 8px; color: #666; font-size: 13px;">
-                    <span style="color: #ff6600;">●</span>  OBRIGADO POR USAR O SUPER FRANGO APP.
+                    <span style="color: #ff6600;">●</span> Obrigado por usar o Super Frango App
                 </div>
                 
                 <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #222;">
