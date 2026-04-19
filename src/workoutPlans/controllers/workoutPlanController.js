@@ -12,7 +12,8 @@ const mongoose = require("mongoose");
 
 /*tentei criar a funçao direto no model usando "default" mas ele nao aceita funçoes assíncronas, optei por criar aqui mesmo no controller ao inves de deixar o default gerar um valor padrao temporario "ex PENDENTE" e depois atualizar com o valor correto do shareCode apos gerar o plano de treino, assim garantindo que o shareCode seja unico e no formato correto antes de salvar o plano no banco de dados*/
 function gerarCodigoFormatado() {
-  const characters = 'ABCDEFGHJKLMNPRSTUVWXYZ23456789'; // caracteres permitidos exclui I, O, Q, 0, 1 para evitar confusão visual
+  // Atualizei para incluir todas as letras de A-Z, removendo apenas 0 e 1 para evitar confusão visual com O e I
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'; // caracteres permitidos
   let codigo = '';
   
   for (let i = 0; i < 12; i++) {
@@ -126,7 +127,7 @@ const deleteDaySchema = z.object({
 // schema para validaçao do shereCode
 const shareCodeSchema = z.object({
   shareCode: z.string().regex(
-    /^[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}-[A-HJKMNP-TV-Z2-9]{4}$/, 
+    /^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/, 
     "Formato de código inválido"
   )
 });
@@ -673,10 +674,12 @@ exports.deleteDayFromPlan = async (req, res) => {
 };
 
 
-//  COPIAR PLANO DE TREINO USANDO O SHARE CODE (nova função)
+// COPIAR PLANO DE TREINO USANDO O SHARE CODE (nova função)
 exports.createPlanShareCode = async (req, res) => {
   try { 
-    const {shareCode} = shareCodeSchema.parse(req.params); // validação do shareCode com zod
+    // Validação corrigida: passamos req.params para o parse para o Zod encontrar a chave shareCode
+    const { shareCode } = shareCodeSchema.parse({ shareCode: req.params.shareCode }); // validação do shareCode com zod
+    
     const workoutPlan = await WorkoutPlan.findOne({ shareCode })
     if (!workoutPlan) {
       return res.status(404).json({ message: "Plano de treino nao encontrado" });
