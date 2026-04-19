@@ -12,12 +12,7 @@ const app = express();
 
 // Configura os middlewares basicos 
 app.use(express.json());  
-app.use(cors({
-  origin: ['http://localhost:5173',
-  'https://apisuperfrango.vercel.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(cors());
 
 
 // Importação das rotas das APIs
