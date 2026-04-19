@@ -14,15 +14,10 @@ const app = express();
 app.use(express.json());  
 app.use(cors({
   origin: ['http://localhost:5173',
-  'https://superfrango.vercel.app'],
+  'https://apisuperfrango.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
-
-
-// Configura o middleware para servir arquivos estaticos
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // Importação das rotas das APIs

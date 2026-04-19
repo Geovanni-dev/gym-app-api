@@ -14,9 +14,11 @@ const crypto = require("crypto");
 
 // Serviço responsável pelo envio de emails (verificação e recuperação de senha)
 const emailService = require("../../services/emailService");
+const cloudinary = require('../../configs/cloudinary');
 
 // Chave secreta utilizada para assinar os tokens JWT
 const SECRET = process.env.JWT_SECRET;
+
 
 
 //==================================================schemas de validação de dados
@@ -328,7 +330,21 @@ exports.addToImg = async (req, res) => {
         message: "Nenhuma imagem fornecida"
       });
     }
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`; // Cria a URL da imagem
+    // upload pra Cloudinary
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "profile_images" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+
+      stream.end(req.file.buffer);
+    });
+
+    const imageUrl = uploadResult.secure_url;
+
       const user = await User.findByIdAndUpdate(req.user.id,
         { profileImg: imageUrl}, // Atualiza o campo profileImg com a URL da imagem
         { new: true } // Retorna o documento atualizado

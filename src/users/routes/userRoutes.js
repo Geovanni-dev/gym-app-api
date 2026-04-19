@@ -3,21 +3,8 @@ const express = require("express");
 const router = express.Router();
 
 const multer = require("multer"); // Biblioteca para lidar com uploads de arquivos
-const path = require("path"); // Biblioteca para trabalhar com caminhos de arquivos
 
-// Configura o multer para lidar com uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/')
-    },
-    filename: function (req, file, cb) {
-    // Gera um nome único mantendo a extensão original
-       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, uniqueSuffix + path.extname(file.originalname))
-    }
-})
-
-const upload = multer({ storage: storage }); // Configura o  multer
+const upload = multer({ storage: multer.memoryStorage() }); // Configura o armazenamento de arquivos na memória
 
 
 // Cria uma instância de router do Express
