@@ -358,11 +358,24 @@ exports.addToImg = async (req, res) => {
         message: "Imagem adicionada ao perfil com sucesso",
         profileImg: user.profileImg
       });
-  } catch (error) {
-       if (error instanceof z.ZodError) { // se o erro for do zod
-            return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
-        }
-        console.log(error); // se n for do zod
-        res.status(500).json({ error: "Erro ao adicionar imagem ao perfil" });
-        }
+ } catch (error) {
+  if (error instanceof z.ZodError) {
+    return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
+  }
+  
+  console.log("=== ERRO NO UPLOAD ===");
+  console.log("Mensagem:", error.message);
+  console.log("Stack:", error.stack);
+  
+
+  if (error.http_code) {
+    console.log("Cloudinary HTTP Code:", error.http_code);
+    console.log("Cloudinary Error:", error.message);
+  }
+  
+  res.status(500).json({ 
+    error: "Erro ao adicionar imagem ao perfil",
+    details: error.message  // ← envia o erro para o frontend também
+  });
 }
+};
