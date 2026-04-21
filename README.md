@@ -1,4 +1,4 @@
-<h1 align="center">🏋️ workout-api</h1>
+<h1 align="center"> Gym API</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"/>
@@ -10,7 +10,7 @@
 
 ## 📋 Sobre
 
-API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR). O projeto agora conta com validação de dados utilizando **Zod**, garantindo maior segurança e integridade das informações recebidas pela API.
+API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR). O projeto conta com validação de dados utilizando **Zod**, garantindo maior segurança e integridade das informações recebidas pela API. Recentemente a API foi integrada a um frontend desenvolvido em React, disponível no repositório: [Super Frango App Frontend](https://github.com/Geovanni-dev/gym-app-front).
 
 ## 🚀 Instalação e Execução
 
@@ -33,7 +33,7 @@ EMAIL_PASS=sua_senha_de_app
 npm start
 ```
 
-> ⚠️ *Nota: Todos os endpoints de `/workouts` e `/exercises` exigem o Header:*  
+> ⚠️ *Nota: Todos os endpoints de `/workouts` e `/workouts-plan` exigem o Header:*  
 > `Authorization: Bearer <seu_token_jwt>`
 
 ---
@@ -47,10 +47,39 @@ npm start
 | `/register` | POST | `{"name": "Geo", "email": "a@a.com", "password": "123"}` | Cria nova conta |
 | `/verify-email` | POST | `{"email": "a@a.com", "code": "123456"}` | Valida o e-mail |
 | `/login` | POST | `{"email": "a@a.com", "password": "123"}` | Retorna o Token JWT |
-| `/forgot-password` | POST | `{"email": "a@a.com"}` | Envia token de recuperação |
-| `/reset-password/:token` | POST | `{"password": "nova_senha"}` | Define nova senha |
+| `/forgot-password` | POST | `{"email": "a@a.com"}` | Envia código de recuperação |
+| `/reset-password` | POST | `{"code": "123456", "email": "a@a.com", "password": "nova_senha"}` | Define nova senha |
 
 ---
+### 📋 Gestão de Planos de Treino (`/workout-plans`)
+
+| Rota | Método | Payload (Body) | Descrição |
+|------|--------|----------------|-----------|
+| `/` | POST | `{"name": "Meu Treino", "days": [{"name": "Segunda", "exercises": [{"name": "Supino", "sets": 4, "reps": "10", "weight": 60}]}]}` | Cria um novo plano de treino |
+| `/` | GET | Nenhum | Lista todos os planos do usuário |
+| `/:planId` | DELETE | Nenhum | Exclui um plano de treino |
+| `/:planId/name` | PUT | `{"name": "Novo Nome"}` | Altera o nome do plano |
+| `/:planId/reorder` | PUT | `{"daysOrder": ["Segunda", "Terça", "Quarta"]}` | Reordena os dias do plano |
+| `/:planId/day` | POST | `{"name": "Quinta", "exercises": []}` | Adiciona um novo dia ao plano |
+| `/:planId/day/:dayName` | DELETE | Nenhum | Remove um dia do plano |
+| `/:planId/day/:dayName` | PUT | `{"name": "Novo Nome do Dia"}` | Renomeia um dia existente |
+
+### 🏋️ Gestão de Exercícios nos Planos
+
+| Rota | Método | Payload (Body) | Descrição |
+|------|--------|----------------|-----------|
+| `/:planId/exercise` | POST | `{"dayName": "Segunda", "name": "Leg Press", "sets": 4, "reps": "12", "weight": 80}` | Adiciona exercício a um dia |
+| `/:planId/:day/:exerciseName` | PUT | `{"name": "Novo Nome", "sets": 5, "reps": "8", "weight": 100}` | Edita um exercício existente |
+| `/:planId/:day/:exerciseName` | DELETE | Nenhum | Remove um exercício do dia |
+| `/:planId/:day/:exerciseName/weight` | PUT | `{"weight": 90}` | Atualiza apenas o peso do exercício |
+
+### 🔗 Compartilhamento de Planos
+
+| Rota | Método | Descrição |
+|------|--------|-----------|
+| `/copy/:shareCode` | POST | Copia um plano público para o usuário logado usando o código de compartilhamento (ex: `XXXX-XXXX-XXXX`) |
+
+
 
 ### 🏋️ Gestão de Treinos (`/workouts`)
 
@@ -103,6 +132,10 @@ npm start
 - **Bcrypt.js:** Hash de senhas para segurança.
 - **JSON Web Token (JWT):** Autenticação baseada em tokens.
 - **Nodemailer:** Disparo de e-mails para verificação e recuperação.
+- **Cloudinary:** Upload e armazenamento de imagens de perfil.
 - **Zod:** Validação de schemas e tipagem estática para garantir a integridade dos dados recebidos pela API.
 ---
 
+## 📄 Licença
+
+**MIT © Geovani Rodrigues**
