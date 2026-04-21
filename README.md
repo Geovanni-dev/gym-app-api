@@ -136,6 +136,17 @@ npm start
 - **Zod:** Validação de schemas e tipagem estática para garantir a integridade dos dados recebidos pela API.
 ---
 
+## 🌐 Deploy no Render
+
+O projeto está hospedado no **Render** (plataforma cloud gratuita).
+
+### ☁️ Por que escolhi o Render?
+
+- ✅ Deploy gratuito e simples
+- ✅ Integração direta com GitHub
+- ✅ Suporte nativo a Node.js
+- ✅ SSL automático (HTTPS)
+
 ## 📄 Licença
 
 **MIT © Geovani Rodrigues**
