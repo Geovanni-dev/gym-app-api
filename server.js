@@ -7,7 +7,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-const { globalLimiter } = require("./middleware/rateLimit"); // importa o globalLimiter para usar no server
+const { globalLimiter } = require("./src/middleware/rateLimit"); // importa o globalLimiter para usar no server
 
 // Cria a aplicação Express
 const app = express();
