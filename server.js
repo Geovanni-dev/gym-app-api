@@ -7,12 +7,17 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
+const { globalLimiter } = require("./middleware/rateLimit"); // importa o globalLimiter para usar no server
+
 // Cria a aplicação Express
 const app = express();
 
-// Configura os middlewares basicos 
+// Configura os middlewares 
 app.use(express.json());  
-app.use(cors());
+app.use(cors({
+      origin: process.env.CLIENT_URL.split(",").map((url) => url.trim()),
+}));
+app.use(globalLimiter);
 
 
 // Importação das rotas das APIs
