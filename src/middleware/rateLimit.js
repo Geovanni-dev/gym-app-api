@@ -3,8 +3,13 @@ const rateLimit = require("express-rate-limit");  // importa a biblioteca expres
 exports.globalLimiter = rateLimit({ // cria limite de reqs para usar em rotas globais
     windowMs: 60 * 1000, // 1 minuto
     max: 100, // Limite de solicitações por minuto
-    message: "Muitas tentativas frequentes. Por favor, tente novamente mais tarde.",
-
+   
+    handler: (req, res) => {
+        return res.status(429).json({
+            error: "Muitas solicitações. Por favor, tente novamente mais tarde."
+        });
+        
+    }
     /*skip: (req, res) => {
         return req.path === "/login" ||
                req.path === "/register" ||
@@ -19,6 +24,10 @@ exports.globalLimiter = rateLimit({ // cria limite de reqs para usar em rotas gl
 exports.loginLimiter = rateLimit({ // cria limite de reqs para usar em rotas de login, register, etc
     windowMs: 60 * 1000, // 1 minuto
     max: 5, // Limite de solicitações por minuto
-    message: "Muitas tentativas de login. Por favor, tente novamente mais tarde."
+    handler: (req, res) => {
+        return res.status(429).json({
+            error: "Muitas solicitações. Por favor, tente novamente mais tarde."
+        });
+    }
 });
 

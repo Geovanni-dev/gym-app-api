@@ -71,9 +71,7 @@ const updatePasswordSchema = z.object({
 
 
 
-
 //====================================================controllers de usuário
-
 
 
 
@@ -138,9 +136,21 @@ try {
       user.isVerified = true; // Marca o usuário como verificado
       user.verificationCode = null; // Remove o código de verificação após o uso
       await user.save();
-      res.json({
-      message: "Email verificado com sucesso"
+      const token = jwt.sign(
+        {id: user._id},
+        SECRET,
+        { expiresIn: "365d" } // token válido por 1 ano
+    );
+         res.json({ // Retorna o token e os dados do usuário logado
+      message: "Email verificado com sucesso, bem-vindo!",
+      token, 
+      user: {
+        name: user.name,
+        email: user.email,
+        profileImg: user.profileImg
+      }
     });
+    
 } catch (error) {
        if (error instanceof z.ZodError) { // se o erro for do zod
             return res.status(400).json({ error: "Erro de validação", 
