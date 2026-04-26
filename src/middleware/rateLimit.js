@@ -19,8 +19,8 @@ exports.globalLimiter = rateLimit({
         });
         
     }
-    // Bloqueia o IP se ele tiver mais de 100 reqs em 1 minuto
-    blockedIps[ip] = now + 60 * 1000;
+    // 
+    blockedIps[ip] = now +(5 * 60 * 1000); // bloqueia por 5 minutos
 
         return res.status(429).json({
             error: "Muitas solicitações. Por favor, tente novamente mais tarde."
