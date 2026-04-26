@@ -1,33 +1,56 @@
 const rateLimit = require("express-rate-limit");  // importa a biblioteca express-rate-limit
 
-exports.globalLimiter = rateLimit({ // cria limite de reqs para usar em rotas globais
+
+const blockedIps = {}; // cria um objeto para armazenar os IPs bloqueados
+
+// cria limite de reqs para usar em rotas globais
+exports.globalLimiter = rateLimit({ 
     windowMs: 60 * 1000, // 1 minuto
     max: 100, // Limite de solicitações por minuto
-   
-    handler: (req, res) => {
+    
+    handler: (req, res) => {// Função pra lidar com o bloqueio
+    const ip = req.ip;
+    const now = Date.now();
+    // Verifica se o IP foi bloqueado
+    if (blockedIps[ip] && now < blockedIps[ip]) {
+        const secondsLeft = Math.ceil((blockedIps[ip] - now) / 1000);
+        return res.status(429).json({
+            error: "Ainda bloqueado. Por favor, tente novamente mais tarde."
+        });
+        
+    }
+    // Bloqueia o IP se ele tiver mais de 100 reqs em 1 minuto
+    blockedIps[ip] = now + 60 * 1000;
+
         return res.status(429).json({
             error: "Muitas solicitações. Por favor, tente novamente mais tarde."
         });
         
     }
-    /*skip: (req, res) => {
-        return req.path === "/login" ||
-               req.path === "/register" ||
-               req.path === "/forgot-password" ||
-               req.path === "/reset-password" ||          //===== nao irei usar o skip por enquanto, vou aplicar globalmente e
-               req.path === "/verify-email" ||            //===== nas rotas sensiveis uso o localLimiter
-               req.path === "/upload-profile-image" ||
-               req.path === "/update-password";
-    }*/        
 });
 
-exports.loginLimiter = rateLimit({ // cria limite de reqs para usar em rotas de login, register, etc
+// cria limite de reqs para usar em rotas de login, register, etc
+exports.loginLimiter = rateLimit({ 
     windowMs: 60 * 1000, // 1 minuto
     max: 5, // Limite de solicitações por minuto
-    handler: (req, res) => {
+
+    handler: (req, res) => {  // Função pra lidar com o bloqueio
+    const ip = req.ip;
+    const now = Date.now();
+    // Verifica se o IP foi bloqueado
+    if (blockedIps[ip] && now < blockedIps[ip]) { 
+        const secondsLeft = Math.ceil((blockedIps[ip] - now) / 1000);
+        return res.status(429).json({
+            error: "Ainda bloqueado. Por favor, tente novamente mais tarde."
+        });
+        
+    }
+    // Bloqueia o IP se ele tiver mais de 5 reqs em 1 minuto
+    blockedIps[ip] = now + 60 * 1000;
+        // Retorna uma resposta de erro
         return res.status(429).json({
             error: "Muitas solicitações. Por favor, tente novamente mais tarde."
         });
+        
     }
 });
-
