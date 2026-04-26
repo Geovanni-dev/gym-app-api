@@ -12,7 +12,7 @@
 
 ## 📋 Sobre
 
-API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR). O projeto conta com validação de dados via **Zod**, autenticação via **JWT**, proteção contra spam com **Rate Limit** e envio de e-mails com **Nodemailer**. Recentemente integrada a um frontend em React, disponível em: [gym-app-rontend](https://github.com/Geovanni-dev/gym-app-front).
+API para gestão de rotinas de academia, permitindo a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR). O projeto conta com validação de dados via **Zod**, autenticação via **JWT**, proteção contra spam com **Rate Limit** e envio de e-mails com **Nodemailer**. Recentemente integrada a um frontend em React, disponível em: [gym-app-frontend](https://github.com/Geovanni-dev/gym-app-front).
 
 ---
 
