@@ -11,6 +11,7 @@ console.log("Email Pass carregado?", !!process.env.EMAIL_PASS);
 // Cria o transporter responsável por fazer a comunicação com o servidor de email
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  family: 4,
   auth: {
     user: process.env.EMAIL_USER, // email utilizado para enviar as mensagens
     pass: process.env.EMAIL_PASS, // senha ou app password do email
