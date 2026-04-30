@@ -8,13 +8,15 @@ console.log("Email Pass carregado?", !!process.env.EMAIL_PASS);
 //=========================================Configuração do transporte de email
 
 
-// Cria o transporter responsável por fazer a comunicação com o servidor de email
+// Cria o transporter responsável por fazer a comunicação com o servidor de email (agora com brevo e IPv4)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false,
   family: 4,
   auth: {
-    user: process.env.EMAIL_USER, // email utilizado para enviar as mensagens
-    pass: process.env.EMAIL_PASS, // senha ou app password do email
+    user: process.env.BREVO_EMAIL,
+    pass: process.env.BREVO_API_KEY,
   },
 });
 
