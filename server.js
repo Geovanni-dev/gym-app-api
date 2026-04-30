@@ -12,6 +12,9 @@ const { globalLimiter } = require("./src/middleware/rateLimit"); // importa o gl
 // Cria a aplicação Express
 const app = express();
 
+// Configura o middleware para lidar com o proxy necessário para o Render
+app.set('trust proxy', 1);
+
 // Configura os middlewares 
 app.use(express.json());  
 app.use(cors({

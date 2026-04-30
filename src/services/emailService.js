@@ -1,25 +1,17 @@
-// Importa o Nodemailer, biblioteca usada para envio de emails no Node.js
-const nodemailer = require("nodemailer");
+// Importa o brevo API ( substitui o nodemailer para resolver meu problema com render)
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
 // Verifica se as variáveis de ambiente de email foram carregadas corretamente
-console.log("Email User:", process.env.EMAIL_USER);
-console.log("Email Pass carregado?", !!process.env.EMAIL_PASS);
+console.log("Brevo API Key carregada?", !!process.env.BREVO_API_KEY);
+console.log("Brevo Email:", process.env.BREVO_EMAIL);
 
-//=========================================Configuração do transporte de email
+//=========================================Configuração do transporte de email, agora com brevo
 
 
-// Cria o transporter responsável por fazer a comunicação com o servidor de email (agora com brevo e IPv4)
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  family: 4,
-  auth: {
-    user: process.env.BREVO_EMAIL,
-    pass: process.env.BREVO_API_KEY,
-  },
-});
-
+// Cria a instância da API do Brevo
+let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+let apiKey = apiInstance.authentications['apiKey'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
 // Função para gerar um código de verificação aleatório
 const generateVerificationCode = () => {
@@ -28,21 +20,21 @@ const generateVerificationCode = () => {
 
 /*Função responsável por enviar emails da aplicação, 
 tbm pode ser usada para verificação de conta, recuperação de senha, etc etc*/
-exports.sendEmail = async (to, subject, text, html) => {
+const sendEmail = async (to, subject, htmlContent) => {
   try {
-    // Configura as opções do email a ser enviado
-    const finalText = text || "Seu código de verificação do Super Frango";
-    const finalHtml = html || finalText;
-    const mailOptions = {
-      from: `"EQUIPE SUPER FRANGO" <${process.env.BREVO_EMAIL}>`,
-      to,
-      subject,
-      text: finalText,
-      html: finalHtml,
+    // Configura as opções do email a ser enviado via API Brevo
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = htmlContent;
+    sendSmtpEmail.sender = { 
+      name: "EQUIPE SUPER FRANGO", 
+      email: process.env.BREVO_EMAIL 
     };
-    const info = await transporter.sendMail(mailOptions); // Envia o email usando o transporter configurado
-    console.log("E-mail enviado com sucesso! ID:", info.messageId);
-    return info;
+    sendSmtpEmail.to = [{ email: to }]; // Destinatário do email
+
+    const response = await apiInstance.sendTransacEmail(sendSmtpEmail); // Envia o email usando a API Brevo
+    console.log("E-mail enviado com sucesso! ID:", response.messageId); // Imprime o ID do email
+    return response;
   } catch (error) {
     // Em caso de erro, loga o erro e lança a exceção para ser tratada pelo chamador
     console.error("Erro ao enviar e-mail:", error);
@@ -100,9 +92,7 @@ exports.sendVerificationEmail = async (to, code, name) => {
     </html>
   `;
 
-  const text = `Olá ${name}. Seu código de verificação é: ${code}`;
-
-  await exports.sendEmail(to, "Verifique seu acesso - Super Frango", text, html);
+  await sendEmail(to, "Verifique seu acesso - Super Frango", html);
 };
 
 // Função para redefinição de senha
@@ -153,13 +143,11 @@ exports.sendPasswordResetEmail = async (to, code, name) => {
     </html>
   `;
 
-  const text = `Olá ${name}. Seu código de recuperação de senha é: ${code}`;
-
-  await exports.sendEmail(to, "Recuperação de senha - Super Frango", text, html);
+  await sendEmail(to, "Recuperação de senha - Super Frango", html);
 };
+
 // 
 module.exports = { // Exporta as funções para serem usadas em outros arquivos
-  sendEmail: exports.sendEmail, 
   generateVerificationCode, 
   sendVerificationEmail: exports.sendVerificationEmail,
   sendPasswordResetEmail: exports.sendPasswordResetEmail,
