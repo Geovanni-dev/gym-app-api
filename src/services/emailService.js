@@ -34,7 +34,7 @@ exports.sendEmail = async (to, subject, text, html) => {
     const finalText = text || "Seu código de verificação do Super Frango";
     const finalHtml = html || finalText;
     const mailOptions = {
-      from: `"EQUIPE SUPER FRANGO" <${process.env.EMAIL_USER}>`,
+      from: `"EQUIPE SUPER FRANGO" <${process.env.BREVO_EMAIL}>`,
       to,
       subject,
       text: finalText,
