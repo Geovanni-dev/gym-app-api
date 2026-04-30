@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white"/>
   <img src="https://img.shields.io/badge/Zod-3E6B9E?style=for-the-badge&logo=zod&logoColor=white"/>
   <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Nodemailer-22B573?style=for-the-badge&logo=gmail&logoColor=white"/>
+ <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"/>
 </p>
 
 ## 📋 Sobre
@@ -30,8 +30,18 @@ npm install
 PORT=3000
 DATABASE_URL=mongodb://127.0.0.1:27017/workout-api
 JWT_SECRET=sua_chave_secreta
-EMAIL_USER=seu_email@gmail.com
-EMAIL_PASS=sua_senha_de_app
+
+# Configurações de E-mail (Brevo API)
+BREVO_API_KEY=xkeysib-sua_chave_v3
+BREVO_EMAIL=geovanni3344@gmail.com
+
+# Configurações de Upload de Imagens (Cloudinary)
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_SECRET=sua_api_secret
+
+# Configurações de CORS e Frontend
+CLIENT_URL=https://gym-superfrango.vercel.app,http://localhost:5173
 
 # 4. Inicie o servidor
 npm start
@@ -155,7 +165,7 @@ gym-app-api/
 - **MongoDB & Mongoose** — Banco de dados NoSQL e modelagem de dados
 - **Bcrypt.js** — Hash de senhas para segurança
 - **JSON Web Token (JWT)** — Autenticação baseada em tokens
-- **Nodemailer** — Disparo de e-mails para verificação e recuperação de senha
+- **Axios & Brevo API** — Disparo de e-mails via API REST para verificação e recuperação de senha (substituindo o Nodemailer para melhor compatibilidade em produção).
 - **Cloudinary** — Upload e armazenamento de imagens de perfil
 - **Zod** — Validação de schemas e integridade dos dados recebidos pela API
 - **Express Rate Limit** — Proteção contra spam e ataques de força bruta
