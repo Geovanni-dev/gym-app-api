@@ -1,17 +1,11 @@
-// Importa o brevo API ( substitui o nodemailer para resolver meu problema com render)
-const SibApiV3Sdk = require('@getbrevo/brevo');
+// Importa o axios para chamadas diretas à API REST do Brevo
+const axios = require('axios');
 
 // Verifica se as variáveis de ambiente de email foram carregadas corretamente
 console.log("Brevo API Key carregada?", !!process.env.BREVO_API_KEY);
 console.log("Brevo Email:", process.env.BREVO_EMAIL);
 
 //=========================================Configuração do transporte de email, agora com brevo
-
-
-// Cria a instância da API do Brevo
-let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-let apiKey = apiInstance.authentications['apiKey'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
 
 // Função para gerar um código de verificação aleatório
 const generateVerificationCode = () => {
@@ -22,22 +16,31 @@ const generateVerificationCode = () => {
 tbm pode ser usada para verificação de conta, recuperação de senha, etc etc*/
 const sendEmail = async (to, subject, htmlContent) => {
   try {
-    // Configura as opções do email a ser enviado via API Brevo
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = htmlContent;
-    sendSmtpEmail.sender = { 
-      name: "EQUIPE SUPER FRANGO", 
-      email: process.env.BREVO_EMAIL 
-    };
-    sendSmtpEmail.to = [{ email: to }]; // Destinatário do email
+    // Configura as opções do email a ser enviado via API REST Brevo
+    const response = await axios.post(
+      'https://api.brevo.com/v3/smtp/email',
+      {
+        subject: subject,
+        htmlContent: htmlContent,
+        sender: { 
+          name: "EQUIPE SUPER FRANGO", 
+          email: process.env.BREVO_EMAIL 
+        },
+        to: [{ email: to }]
+      },
+      {
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
-    const response = await apiInstance.sendTransacEmail(sendSmtpEmail); // Envia o email usando a API Brevo
-    console.log("E-mail enviado com sucesso! ID:", response.messageId); // Imprime o ID do email
+    console.log("E-mail enviado com sucesso! ID:", response.data?.messageId); // Imprime o ID do email
     return response;
   } catch (error) {
     // Em caso de erro, loga o erro e lança a exceção para ser tratada pelo chamador
-    console.error("Erro ao enviar e-mail:", error);
+    console.error("Erro ao enviar e-mail:", error.response?.data || error.message);
     throw error;
   }
 };
