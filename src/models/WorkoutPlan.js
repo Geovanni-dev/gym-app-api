@@ -14,6 +14,7 @@ const exerciseSchema = new mongoose.Schema({
 // SCHEMA DE DIA DE TREINO
 const daySchema = new mongoose.Schema({
   name: String,
+  comment: { type: String, default: "" }, // campo para comentários do dia, como observações, dicas, etc (ainda n implementei)
   exercises: [exerciseSchema],
 });
 

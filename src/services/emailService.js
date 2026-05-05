@@ -48,7 +48,7 @@ const sendEmail = async (to, subject, htmlContent) => {
 //====================================== /* FUNÇÃO PARA ENVIAR EMAIL COM CODIGO DE VERIFICAÇÃO DE RECUPERAÇÃO DE SENHA ESTILIZADO, OPCIONAL, MAS VAI SER DO MEU USO PESSOAL O APP ENTÃO TO CAPRICHANDO*/
 
 // Função para enviar email de verificação 
-exports.sendVerificationEmail = async (to, code, name) => {
+const sendVerificationEmail = async (to, code, name) => {
   const html = `
     <!DOCTYPE html>
     <html lang="pt-pt">
@@ -99,7 +99,7 @@ exports.sendVerificationEmail = async (to, code, name) => {
 };
 
 // Função para redefinição de senha
-exports.sendPasswordResetEmail = async (to, code, name) => {
+const sendPasswordResetEmail = async (to, code, name) => {
   const html = `
     <!DOCTYPE html>
     <html lang="pt-pt">
@@ -152,6 +152,6 @@ exports.sendPasswordResetEmail = async (to, code, name) => {
 // 
 module.exports = { // Exporta as funções para serem usadas em outros arquivos
   generateVerificationCode, 
-  sendVerificationEmail: exports.sendVerificationEmail,
-  sendPasswordResetEmail: exports.sendPasswordResetEmail,
+  sendVerificationEmail,
+  sendPasswordResetEmail
 };
