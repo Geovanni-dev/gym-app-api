@@ -1,3 +1,7 @@
+const dns = require('dns'); // Importa o módulo DNS para configurar os servidores DNS
+dns.setServers(['8.8.8.8', '1.1.1.1']); // Define servidores DNS do Google e Cloudflare
+dns.setDefaultResultOrder('ipv4first'); // define a ordem de resolução para priorizar IPv4, o que pode ajudar a evitar problemas de conexão em ambientes onde IPv6 não é totalmente suportado
+
 // Carrega variáveis de ambiente do arquivo .env
 require("dotenv").config();
 
@@ -47,6 +51,7 @@ app.use("/workouts", workoutRoutes);
 
 
 //==========================debug
+
 app.get("/", (req, res) => {
   res.json({
     message: "Servidor rodando"
@@ -87,3 +92,4 @@ mongoose
 process.on("unhandledRejection", (error) => {
   console.error("Erro não tratado:", error);
 });
+
