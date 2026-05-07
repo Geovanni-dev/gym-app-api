@@ -30,13 +30,16 @@ router.put("/:planId/day/:day", authMiddleware, workoutPlanController.updateDayI
 router.put("/:planId/name", authMiddleware, workoutPlanController.updateWorkoutPlanName);
 
 // rota para copiar e colar um plano de treino usando o shareCode
-router.post("/copy/:shareCode", authMiddleware, workoutPlanController.createPlanShareCode);
+router.post("/copy/:shareCode", authMiddleware, workoutPlanController.copyPlan);
 
 // Editar exercício completo do plano 
 router.put("/:planId/:day/:exerciseName", authMiddleware, workoutPlanController.updateExerciseInPlan);
 
 // Reordenar dias do plano
 router.put("/:planId/reorder", authMiddleware, workoutPlanController.reorderDaysInPlan);
+
+// Reordenar exercicios de um dia do plano
+router.put("/:planId/reorder-exercises", authMiddleware, workoutPlanController.reorderExercisesInDay);
 
 // Cria um novo plano de treino para o usuário
 router.post("/", authMiddleware, workoutPlanController.createWorkoutPlan);

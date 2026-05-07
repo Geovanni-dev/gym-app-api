@@ -21,7 +21,7 @@ const deleteWorkoutHistorySchema = z.object({
 // HISTÓRICO DE TREINOS 
 exports.getWorkoutHistory = async (req, res) => {
   try {
-    const workouts = await WorkoutHistory.find({ user: req.user.id }).sort({ date: -1 });
+    const workouts = await WorkoutHistory.find({ user: req.user.id }).sort({ date: -1, _id: -1 }); // ordena por data e id para garantir a ordem correta
     res.json(workouts);
   } catch (error) {
     console.error("Erro ao buscar histórico:", error);

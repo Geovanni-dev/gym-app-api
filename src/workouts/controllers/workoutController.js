@@ -355,7 +355,7 @@ exports.getPR = async (req, res) => {
 //=========================================REGISTRAR TREINO EXECUTADO ESTANDO LOGADO
 
 
-// Salva no histórico os exercícios que o usuário completou
+// Salva no histórico os exercícios que o user completou
 exports.logWorkout = async (req, res) => {
   try {
     const { exercises } = logWorkoutSchema.parse(req.body); // Valida os dados com zod

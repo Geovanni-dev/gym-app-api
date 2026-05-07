@@ -130,6 +130,12 @@ const shareCodeSchema = z.object({
   )
 });
 
+// schema para reordenar os exercicios dentro de um dia
+const reorderExSchema = z.object({
+  dayName: z.string().min(1, "O nome do dia é obrigatório"),
+  exercisesOrder: z.array(z.string(), "Array com a nova ordem dos IDs dos exercícios")
+});
+
 
 //=============================================criar planos de treinos
 
@@ -604,7 +610,7 @@ exports.deleteDayFromPlan = async (req, res) => {
 
 
 // COPIAR PLANO DE TREINO USANDO O SHARE CODE (nova função)
-exports.createPlanShareCode = async (req, res) => {
+exports.copyPlan = async (req, res) => {
   try { 
     // Validação corrigida: passamos req.params para o parse para o Zod encontrar a chave shareCode
     const { shareCode } = shareCodeSchema.parse({ shareCode: req.params.shareCode }); // validação do shareCode com zod
@@ -649,5 +655,53 @@ exports.createPlanShareCode = async (req, res) => {
     }
     console.log(error);
     return res.status(500).json({ message: "Erro ao criar plano de treino" }); // retorna erro genérico para outros erros
+  }
+}
+
+
+//REORDENAR EXERCÍCIOS DENTRO DE UM DIA DO PLANO
+exports.reorderExercisesInDay = async (req, res) => {
+  try {
+    const { planId } = deletePlanSchema.parse(req.params); // validação do id do plano com zod
+    const { dayName, exercisesOrder } = reorderExSchema.parse(req.body); // validação da ordem dos exercícios com zod
+    
+    const workoutPlan = await WorkoutPlan.findOne({ // busca o plano de treino pelo id e pelo usuário logado
+      _id: planId,
+      user: req.user.id 
+    });
+    if (!workoutPlan) { // se o plano não for encontrado, retorna erro 404
+      return res.status(404).json({ message: "Plano não encontrado" });
+    }
+    const day = workoutPlan.days.find(day => day.name === dayName);// busca o dia pelo nome
+
+    if (!day) { // se o dia não for encontrado, retorna erro 404
+      return res.status(404).json({ message: "Dia nao encontrado" });
+    } 
+
+    const existingExerciseIds = day.exercises.map(ex => ex._id.toString()); // cria um array com todos os IDs dos exercícios no dia
+
+    const allIdsExist = exercisesOrder.every(id => existingExerciseIds.includes(id)); // Verifica se todos os IDs enviados existem no dia
+
+    const hasSameLength = exercisesOrder.length === existingExerciseIds.length;// Verifica se a quantidade de IDs enviados é igual ao dia
+
+    if (!allIdsExist || !hasSameLength) { // Verifica se todos os IDs enviados existem no dia
+    return res.status(400).json({ message: "Ordem de exercícios inválida" });
+    }
+   const reorderedExercises = exercisesOrder.map(id =>  // cria um novo array de exercícios reordenados conforme a ordem dos IDs enviada, buscando os exercícios pelo ID
+    day.exercises.find(ex => ex._id.toString() === id)  
+    );
+
+   day.exercises = reorderedExercises; // atualiza a ordem dos exercícios no dia
+
+   await workoutPlan.save(); // salva o plano de treino com os exercícios reordenados
+    
+   res.json({ message: "Exercícios reordenados com sucesso!", workoutPlan}); // retorna o plano atualizado com os exercícios reordenados
+
+  } catch (error) {
+    if (error instanceof z.ZodError) { // se o erro for do zod
+      return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
+    }
+    console.log(error); // Log do erro e retorno genérico para outros erros
+    return res.status(500).json({ message: "Erro ao reordenar exercícios" });
   }
 }
