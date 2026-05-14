@@ -20,7 +20,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Configura os middlewares 
-app.use(express.json());  
+app.use(express.json()); 
+
+/*app.use(cors());*/
+
 app.use(cors({
       origin: process.env.CLIENT_URL.split(",").map((url) => url.trim()),
 }));

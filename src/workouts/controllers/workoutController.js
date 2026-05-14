@@ -307,7 +307,7 @@ exports.getPR = async (req, res) => {
     workouts.forEach(workout => {
       workout.split?.forEach(day => {
         day.exercises?.forEach(ex => {
-          if (ex.name && caseInsensitiveRegex.test(ex.name) && ex.weight > maxWeight) {
+          if (ex.name && caseInsensitiveRegex.test(ex.name.trim()) && ex.weight > maxWeight) {
             maxWeight = ex.weight;
             foundInWorkouts = true;
           }

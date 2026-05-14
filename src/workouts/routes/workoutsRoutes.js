@@ -20,8 +20,8 @@ router.post("/generate", authMiddleware, workoutController.generateWorkout);
 // Registra a execução de um treino realizado pelo usuario
 router.post("/log", authMiddleware, workoutController.logWorkout);
 
-// Retorna o PR de um exercício
-// o nome do exercício é enviado via query (ex: /pr?exercise=Supino)
+/* Retorna o PR de um exercício,
+O nome do exercício é enviado via query (ex: /pr?exercise=Supino)*/
 router.get("/pr", authMiddleware, workoutController.getPR);
 
 // Lista todos os treinos gerados ou registrados pelo user
@@ -33,6 +33,7 @@ router.get("/history", authMiddleware, workoutHistoryController.getWorkoutHistor
 
 // Retorna o histórico de um exercício específico
 router.get("/history/:exerciseName", authMiddleware, workoutHistoryController.getExerciseHistory);
+
 // Rota para deletar o histórico completo de treinos do usuário (opcional, não implementada ainda)
 router.delete("/history", authMiddleware, workoutHistoryController.deleteWorkoutHistory);
 
