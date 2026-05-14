@@ -14,6 +14,21 @@ const authMiddleware = require("../../middleware/authMiddleware");
 
 // ==================================rotas relacionadas aos planos de treino
 
+// Editar nome do plano 
+router.put("/:planId/name", authMiddleware, workoutPlanController.updateWorkoutPlanName);
+
+// Reordenar dias do plano
+router.put("/:planId/reorder", authMiddleware, workoutPlanController.reorderDaysInPlan);
+
+// Reordenar exercicios de um dia do plano
+router.put("/:planId/reorder-exercises", authMiddleware, workoutPlanController.reorderExercisesInDay);
+
+// Editar nome do dia
+router.put("/:planId/day/:day", authMiddleware, workoutPlanController.updateDayInPlan);
+
+// Editar exercício completo do plano 
+router.put("/:planId/:day/:exerciseName", authMiddleware, workoutPlanController.updateExerciseInPlan);
+
 // Adiciona um exercício a um plano específico
 router.post("/:planId/exercise", authMiddleware, workoutPlanController.addExerciseToPlan);
 
@@ -23,23 +38,9 @@ router.post("/:planId/day", authMiddleware, workoutPlanController.addDayToPlan);
 // Deletar dia do plano 
 router.delete("/:planId/day/:dayName", authMiddleware, workoutPlanController.deleteDayFromPlan);
 
-// Editar nome do dia
-router.put("/:planId/day/:day", authMiddleware, workoutPlanController.updateDayInPlan);
-
-// Editar nome do plano 
-router.put("/:planId/name", authMiddleware, workoutPlanController.updateWorkoutPlanName);
 
 // rota para copiar e colar um plano de treino usando o shareCode
 router.post("/copy/:shareCode", authMiddleware, workoutPlanController.copyPlan);
-
-// Editar exercício completo do plano 
-router.put("/:planId/:day/:exerciseName", authMiddleware, workoutPlanController.updateExerciseInPlan);
-
-// Reordenar dias do plano
-router.put("/:planId/reorder", authMiddleware, workoutPlanController.reorderDaysInPlan);
-
-// Reordenar exercicios de um dia do plano
-router.put("/:planId/reorder-exercises", authMiddleware, workoutPlanController.reorderExercisesInDay);
 
 // Cria um novo plano de treino para o usuário
 router.post("/", authMiddleware, workoutPlanController.createWorkoutPlan);

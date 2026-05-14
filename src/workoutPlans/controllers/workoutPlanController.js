@@ -665,6 +665,8 @@ exports.reorderExercisesInDay = async (req, res) => {
     const { planId } = deletePlanSchema.parse(req.params); // validação do id do plano com zod
     const { dayName, exercisesOrder } = reorderExSchema.parse(req.body); // validação da ordem dos exercícios com zod
     
+    console.log(`[REORDER] Plano: ${planId}, Dia: ${dayName}, Nova ordem: ${exercisesOrder}`); // Log para verificar os dados recebidos na requisição
+
     const workoutPlan = await WorkoutPlan.findOne({ // busca o plano de treino pelo id e pelo usuário logado
       _id: planId,
       user: req.user.id 
@@ -672,10 +674,10 @@ exports.reorderExercisesInDay = async (req, res) => {
     if (!workoutPlan) { // se o plano não for encontrado, retorna erro 404
       return res.status(404).json({ message: "Plano não encontrado" });
     }
-    const day = workoutPlan.days.find(day => day.name === dayName);// busca o dia pelo nome
+    const day = workoutPlan.days.find(day => day.name.toLowerCase() === dayName.toLowerCase());  // busca o dia dentro do plano de treino pelo nome do dia, ignorando maiúsculas e minúsculas
 
     if (!day) { // se o dia não for encontrado, retorna erro 404
-      return res.status(404).json({ message: "Dia nao encontrado" });
+      return res.status(404). json({ message: "Dia nao encontrado" });
     } 
 
     const existingExerciseIds = day.exercises.map(ex => ex._id.toString()); // cria um array com todos os IDs dos exercícios no dia
@@ -685,7 +687,12 @@ exports.reorderExercisesInDay = async (req, res) => {
     const hasSameLength = exercisesOrder.length === existingExerciseIds.length;// Verifica se a quantidade de IDs enviados é igual ao dia
 
     if (!allIdsExist || !hasSameLength) { // Verifica se todos os IDs enviados existem no dia
-    return res.status(400).json({ message: "Ordem de exercícios inválida" });
+      console.error(`[REORDER] Falha: IDs recebidos: ${exercisesOrder}, IDs esperados: ${existingExerciseIds}`); // LOG detalhado para entender o que foi recebido e o que era esperado
+      return res.status(400).json({
+        message: "Ordem de exercícios inválida",
+        receivedIds: exercisesOrder,
+        expectedIds: existingExerciseIds
+      });
     }
    const reorderedExercises = exercisesOrder.map(id =>  // cria um novo array de exercícios reordenados conforme a ordem dos IDs enviada, buscando os exercícios pelo ID
     day.exercises.find(ex => ex._id.toString() === id)  
