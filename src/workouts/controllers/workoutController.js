@@ -294,8 +294,9 @@ exports.getPR = async (req, res) => {
     
     // Cria uma regex que ignora maiúsculo/minúsculo
     const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const searchTerm = escapeRegex(exercise.trim());
-    const caseInsensitiveRegex = new RegExp(`^${searchTerm}$`, 'i');
+    const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove acentos para comparação mais flexível
+    const searchTerm = escapeRegex(removeAccents(exercise.trim()));
+    const caseInsensitiveRegex = new RegExp(searchTerm, 'i');
     
     let maxWeight = 0;
     let foundInWorkouts = false;
@@ -307,7 +308,7 @@ exports.getPR = async (req, res) => {
     workouts.forEach(workout => {
       workout.split?.forEach(day => {
         day.exercises?.forEach(ex => {
-          if (ex.name && caseInsensitiveRegex.test(ex.name.trim()) && ex.weight > maxWeight) { // adicionei o .trim() para evitar problemas com espaços extras
+          if (ex.name && caseInsensitiveRegex.test(removeAccents(ex.name.trim())) && ex.weight > maxWeight) { // adicionei o .trim() para evitar problemas com espaços extras e a função removeAccents para ignorar acentos 
             maxWeight = ex.weight;
             foundInWorkouts = true;
           }
@@ -322,7 +323,7 @@ exports.getPR = async (req, res) => {
     plans.forEach(plan => {
       plan.days?.forEach(day => {
         day.exercises?.forEach(ex => {
-          if (ex.name && caseInsensitiveRegex.test(ex.name.trim()) && ex.weight > maxWeight) { // adicionei o .trim() para evitar problemas com espaços extras
+          if (ex.name && caseInsensitiveRegex.test(removeAccents(ex.name.trim())) && ex.weight > maxWeight) { // adicionei o .trim() para evitar problemas com espaços extras e a função removeAccents para ignorar acentos
             maxWeight = ex.weight;
             foundInPlans = true;
           }
