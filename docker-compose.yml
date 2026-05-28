@@ -1,0 +1,19 @@
+# servicos que vao ser executados pelo docker
+services:
+  
+  # servico da api node
+  api:
+    
+    # define a construcao da imagem usando o dockerfile presente na raiz do projeto
+    build: .
+    
+    # nome para identificar o container da api
+    container_name: gym_app_api
+    
+    # mapeia a porta 3000 do container para a porta 3000 do sistema operacional hospedeiro
+    ports:
+      - "3000:3000"
+    
+    # injeta as variaveis de ambiente configuradas no arquivo local para a memoria do container
+    env_file:
+      - .env

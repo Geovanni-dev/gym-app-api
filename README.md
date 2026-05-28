@@ -6,8 +6,9 @@
   <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white"/>
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white"/>
   <img src="https://img.shields.io/badge/Zod-3E6B9E?style=for-the-badge&logo=zod&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white"/>
- <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"/>
 </p>
 
 ## 📋 Sobre
@@ -18,9 +19,11 @@ API para gestão de rotinas de academia, permitindo a geração de treinos autom
 
 ## 🚀 Instalação e Execução
 
+### Execução Padrão (Local)
+
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/Geovanni-dev/gym-app-api.git
+git clone [https://github.com/Geovanni-dev/gym-app-api.git](https://github.com/Geovanni-dev/gym-app-api.git)
 
 # 2. Instale as dependências
 npm install
@@ -41,10 +44,27 @@ CLOUDINARY_API_KEY=sua_api_key
 CLOUDINARY_API_SECRET=sua_api_secret
 
 # Configurações de CORS e Frontend
-CLIENT_URL=https://gym-superfrango.vercel.app,http://localhost:5173
+CLIENT_URL=[https://gym-superfrango.vercel.app](https://gym-superfrango.vercel.app),http://localhost:5173
 
 # 4. Inicie o servidor
 npm start
+```
+
+### 🐳 Execução via Docker (Recomendado)
+
+Você pode subir a API rapidamente usando o Docker, garantindo o mesmo ambiente de execução da produção.
+
+```bash
+# 1. Certifique-se de que o seu arquivo .env está configurado na raiz do projeto.
+
+# 2. Construa a imagem e inicie o container em segundo plano
+docker compose up -d
+
+# Para visualizar os logs em tempo real:
+docker compose logs -f
+
+# Para derrubar o container:
+docker compose down
 ```
 
 > ⚠️ *Rotas marcadas com 🔒 exigem o Header:*
@@ -54,7 +74,7 @@ npm start
 
 ## 🗂️ Arquitetura do Projeto
 
-```
+```text
 gym-app-api/
 ├── src/
 │   ├── configs/
@@ -165,10 +185,11 @@ gym-app-api/
 - **MongoDB & Mongoose** — Banco de dados NoSQL e modelagem de dados
 - **Bcrypt.js** — Hash de senhas para segurança
 - **JSON Web Token (JWT)** — Autenticação baseada em tokens
-- **Axios & Brevo API** — Disparo de e-mails via API REST para verificação e recuperação de senha (substituindo o Nodemailer para melhor compatibilidade em produção).
+- **Axios & Brevo API** — Disparo de e-mails via API REST para verificação e recuperação de senha
 - **Cloudinary** — Upload e armazenamento de imagens de perfil
 - **Zod** — Validação de schemas e integridade dos dados recebidos pela API
 - **Express Rate Limit** — Proteção contra spam e ataques de força bruta
+- **Docker** — Containerização para padronização de ambientes e deploy
 
 ---
 

@@ -1,8 +1,8 @@
 // Importa o framework responsável por gerenciar as rotas da aplicação
-const express = require("express");
+const { Router } = require("express");
 
 // Cria uma instância de roteador do Express
-const router = express.Router();
+const router = Router();
 
 
 // Controller responsável pela lógica relacionada aos exercícios
