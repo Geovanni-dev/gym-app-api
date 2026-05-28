@@ -67,8 +67,6 @@ docker compose logs -f
 docker compose down
 ```
 
-> ⚠️ *Rotas marcadas com 🔒 exigem o Header:*
-> `Authorization: Bearer <seu_token_jwt>`
 
 ---
 
@@ -114,6 +112,8 @@ gym-app-api/
 ---
 
 ## 📡 Guia de Endpoints & Payloads
+> ⚠️ *Rotas marcadas com 🔒 exigem o Header:*
+> `Authorization: Bearer <seu_token_jwt>`
 
 ### 🔐 Autenticação e Usuário (`/users`)
 
