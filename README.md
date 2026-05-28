@@ -19,7 +19,7 @@ API para gestão de rotinas de academia, permitindo a geração de treinos autom
 
 ## 🚀 Instalação e Execução
 
-### Execução Padrão (Local)
+### Execução Local
 
 ```bash
 # 1. Clone o repositório
@@ -50,7 +50,7 @@ CLIENT_URL=[https://gym-superfrango.vercel.app](https://gym-superfrango.vercel.a
 npm start
 ```
 
-### 🐳 Execução via Docker (Recomendado)
+### 🐳 Execução via Docker
 
 Você pode subir a API rapidamente usando o Docker, garantindo o mesmo ambiente de execução da produção.
 
