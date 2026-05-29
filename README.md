@@ -104,9 +104,13 @@ gym-app-api/
 │       │   ├── workoutController.js
 │       │   └── workoutHistoryController.js
 │       └── routes/
-├── .env
-├── server.js
-└── package.json
+├── .dockerignore
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── package.json
+└── server.js
 ```
 
 ---

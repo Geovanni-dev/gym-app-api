@@ -365,16 +365,16 @@ exports.addToImg = async (req, res) => {
         });
       }
       res.json({
-        message: "Imagem adicionada ao perfil com sucesso",
+        message: "Imagem adicionada ao perfil com sucesso", // envia uma mensagem de sucesso para o frontend
         profileImg: user.profileImg
       });
  } catch (error) {
   if (error instanceof z.ZodError) {
     return res.status(400).json({ error: "Erro de validação", detalhes: error.flatten().fieldErrors });
   }
-  
+  //logs de erro
   console.log("=== ERRO NO UPLOAD ===");
-  console.log("Mensagem:", error.message);
+  console.log("Mensagem:", error.message); 
   console.log("Stack:", error.stack);
   
 
@@ -385,7 +385,7 @@ exports.addToImg = async (req, res) => {
   
   res.status(500).json({ 
     error: "Erro ao adicionar imagem ao perfil",
-    details: error.message  // ← envia o erro para o frontend também
+    details: error.message  // envia o erro para o frontend tbm
   });
 }
 };

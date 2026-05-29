@@ -1,10 +1,6 @@
 // Importa o axios para chamadas diretas à API REST do Brevo
 const axios = require('axios');
 
-// Verifica se as variáveis de ambiente de email foram carregadas corretamente
-console.log("Brevo API Key carregada?", !!process.env.BREVO_API_KEY);
-console.log("Brevo Email:", process.env.BREVO_EMAIL);
-
 //=========================================Configuração do transporte de email, agora com brevo
 
 // Função para gerar um código de verificação aleatório
