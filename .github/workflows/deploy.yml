@@ -1,0 +1,49 @@
+# identificacao do pipeline exibida na interface do GitHub Actions
+name: CI/CD Pipeline
+
+#  Gatilho que executa automaticamente apos cada push na branch principal
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+    # job responsavel por construir a imagem e envia-la ao Docker Hub
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      # o agent clona a ultima versao do codigo fonte do repositorio
+      - uses: actions/checkout@v3
+      
+      # o agent efetua o login no Docker Hub
+      - name: Login Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      # o agent constroi a imagem a partir do Dockerfile e realiza o push para o registro
+      - name: Build e Push
+        uses: docker/build-push-action@v4
+        with:
+          push: true  # envia a imagem para o Docker Hub
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/gym-api-app:latest
+
+  # o agent efetua o deploy na VPS, somente apos a conclusao do build
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      # o agent conecta via ssh a VPS e executa os comandos de atualizacao do container
+      - name: Deploy na VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+
+            # o agent atualiza a imagem local com a versao mais recente do Docker Hub
+            # e recria o container em segundo plano, mantendo o mesmo nome de container
+          script: |
+            cd ~/gym-app
+            docker compose pull
+            docker compose up -d

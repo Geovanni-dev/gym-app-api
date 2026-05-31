@@ -15,7 +15,7 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-// CONEXÃO COM O MONGODB
+//=======================CONEXÃO COM O MONGODB
 
 // Conecta ao MongoDB usando a URL definida no .env
 mongoose
