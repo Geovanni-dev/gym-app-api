@@ -4,7 +4,7 @@ name: CI/CD Pipeline
 #  Gatilho que executa automaticamente apos cada push na branch principal
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
     # job responsavel por construir a imagem e envia-la ao Docker Hub
