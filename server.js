@@ -21,7 +21,7 @@ app.listen(PORT, () => {
 mongoose
   .connect(process.env.DATABASE_URL)
   .then(() => {
-    // confirmação de conexão bem-sucedida com o MongoDB
+    // confirmação de que o atlas foi conectado com sucesso
     console.log("Atlas conectado");
   })
   .catch((err) => {

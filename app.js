@@ -53,7 +53,7 @@ app.use("/workouts", workoutRoutes);
 // rota de teste
 app.get("/", (req, res) => {
   res.json({
-    message: "Servidor subuiudo com sucesso",
+    message: "Servidor subiu com sucesso",
   });
 });
 
