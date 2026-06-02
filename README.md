@@ -14,7 +14,7 @@
 
 ## 📋 Sobre
 
-API para gestão de rotinas de academia, desenvolvida a partir de uma necessidade real de controle e organização dos meus próprios treinos. Permite a geração de treinos automáticos, controle de biblioteca de exercícios e acompanhamento de evolução de carga (PR). O projeto conta com validação de dados via **Zod**, autenticação via **JWT**, proteção contra spam com **Rate Limit** e envio de e-mails com **Brevo**. Recentemente integrada a um frontend em React, veja o projeto ao vivo em: [superfrango.grdev.app.br](https://superfrango.grdev.app.br)
+API para gestão de treinos que começou como projeto de portfólio e evoluiu para resolver minha própria necessidade de organização na academia. A aplicação gera treinos automaticamente, gerencia uma biblioteca de exercícios e rastreia a evolução de cargas (PR). A stack conta com validação via Zod, autenticação JWT, proteção com Rate Limit e envio de e-mails pelo Brevo. Recentemente integrada a um frontend em React. Confira o projeto em produção: [superfrango.grdev.app.br](https://superfrango.grdev.app.br)
 
 ---
 
