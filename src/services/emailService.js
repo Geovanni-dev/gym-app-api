@@ -18,32 +18,35 @@ const sendEmail = async (to, subject, htmlContent) => {
       {
         subject: subject,
         htmlContent: htmlContent,
-        sender: { 
-          name: "EQUIPE SUPER FRANGO", 
-          email: process.env.BREVO_EMAIL 
+        sender: {
+          name: 'EQUIPE SUPER FRANGO',
+          email: process.env.BREVO_EMAIL,
         },
-        to: [{ email: to }]
+        to: [{ email: to }],
       },
       {
         headers: {
           'api-key': process.env.BREVO_API_KEY,
-          'Content-Type': 'application/json'
-        }
-      }
+          'Content-Type': 'application/json',
+        },
+      },
     );
 
-    console.log("E-mail enviado com sucesso! ID:", response.data?.messageId); // Imprime o ID do email
+    console.log('E-mail enviado com sucesso! ID:', response.data?.messageId); // Imprime o ID do email
     return response;
   } catch (error) {
     // Em caso de erro, loga o erro e lança a exceção para ser tratada pelo chamador
-    console.error("Erro ao enviar e-mail:", error.response?.data || error.message);
+    console.error(
+      'Erro ao enviar e-mail:',
+      error.response?.data || error.message,
+    );
     throw error;
   }
 };
 
 //====================================== /* FUNÇÃO PARA ENVIAR EMAIL COM CODIGO DE VERIFICAÇÃO DE RECUPERAÇÃO DE SENHA ESTILIZADO, OPCIONAL, MAS VAI SER DO MEU USO PESSOAL O APP ENTÃO TO CAPRICHANDO*/
 
-// Função para enviar email de verificação 
+// Função para enviar email de verificação
 const sendVerificationEmail = async (to, code, name) => {
   const html = `
     <!DOCTYPE html>
@@ -91,7 +94,7 @@ const sendVerificationEmail = async (to, code, name) => {
     </html>
   `;
 
-  await sendEmail(to, "Verifique seu acesso - Super Frango", html);
+  await sendEmail(to, 'Verifique seu acesso - Super Frango', html);
 };
 
 // Função para redefinição de senha
@@ -142,12 +145,13 @@ const sendPasswordResetEmail = async (to, code, name) => {
     </html>
   `;
 
-  await sendEmail(to, "Recuperação de senha - Super Frango", html);
+  await sendEmail(to, 'Recuperação de senha - Super Frango', html);
 };
 
-// 
-module.exports = { // Exporta as funções para serem usadas em outros arquivos
-  generateVerificationCode, 
+//
+module.exports = {
+  // Exporta as funções para serem usadas em outros arquivos
+  generateVerificationCode,
   sendVerificationEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 };

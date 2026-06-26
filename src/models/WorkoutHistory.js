@@ -1,19 +1,19 @@
 // Importa o mongoose para modelar documentos no MongoDB
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 // Schema responsável por armazenar o histórico de execução dos exercícios
 const workoutHistorySchema = new mongoose.Schema({
   user: {
     // referência ao usuário que realizou o treino
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
 
   plan: {
     // plano de treino ao qual esse exercício pertence
     type: mongoose.Schema.Types.ObjectId,
-    ref: "WorkoutPlan",
+    ref: 'WorkoutPlan',
     required: false,
   },
 
@@ -57,4 +57,4 @@ workoutHistorySchema.index({ user: 1, exerciseName: 1, date: -1 });
 workoutHistorySchema.index({ user: 1, workoutName: 1, date: -1 }); // índice para buscar por workoutName
 
 // Exporta o model para ser utilizado pelos controllers da aplicação
-module.exports = mongoose.model("WorkoutHistory", workoutHistorySchema);
+module.exports = mongoose.model('WorkoutHistory', workoutHistorySchema);

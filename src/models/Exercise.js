@@ -1,5 +1,5 @@
 // Importa o Mongoose q é o responsável por modelar os dados do MongoDB
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 // Schema que define a estrutura de um exercício no banco
 const exerciseSchema = new mongoose.Schema({
@@ -7,7 +7,7 @@ const exerciseSchema = new mongoose.Schema({
     /* Referência ao usuário dono do exercício.
     Cada exercício pertence a um usuário específico*/
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
 
@@ -31,4 +31,4 @@ const exerciseSchema = new mongoose.Schema({
 });
 
 // Exporta o model para ser utilizado nos controllers
-module.exports = mongoose.model("Exercise", exerciseSchema);
+module.exports = mongoose.model('Exercise', exerciseSchema);

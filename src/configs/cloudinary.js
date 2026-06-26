@@ -1,8 +1,9 @@
 // Configuração do upload de img do cloudinary
-const { v2: cloudinary } = require("cloudinary");
-require("dotenv").config(); 
+const { v2: cloudinary } = require('cloudinary');
+require('dotenv').config();
 
-cloudinary.config({ // Configurações do cloudinary
+cloudinary.config({
+  // Configurações do cloudinary
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,

@@ -1,12 +1,11 @@
 // Importa o mongoose, responsável por modelar os dados no MongoDB
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 // Schema que define a estrutura de um usuário no sistema
 const userSchema = new mongoose.Schema({
- 
-  profileImg:{
+  profileImg: {
     type: String,
-    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+    default: 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
   },
 
   name: String, // Nome do usuário
@@ -34,4 +33,4 @@ const userSchema = new mongoose.Schema({
 
 /* Exporta o model para ser usado pelos controllers da aplicação,
  permitindo criar, ler, atualizar e deletar usuários no banco de dados etc etc */
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);

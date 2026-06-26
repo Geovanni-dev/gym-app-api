@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 // SCHEMA DE SÉRIES
 const setSchema = new mongoose.Schema({
@@ -26,7 +26,7 @@ const exerciseSchema = new mongoose.Schema({
   },
   reps: {
     type: String,
-    default: "8-12",
+    default: '8-12',
   },
   weight: {
     type: Number,
@@ -48,13 +48,13 @@ const daySchema = new mongoose.Schema({
 const workoutSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   goal: {
     type: String,
-    enum: ["força", "resistência", "hipertrofia"],
-    default: "hipertrofia",
+    enum: ['força', 'resistência', 'hipertrofia'],
+    default: 'hipertrofia',
   },
   days: {
     type: Number,
@@ -68,7 +68,7 @@ const workoutSchema = new mongoose.Schema({
   },
   reps: {
     type: String,
-    default: "8-12",
+    default: '8-12',
   },
   split: [daySchema], // Usa o daySchema com exercises como objetos
   exercises: [exerciseSchema], // Mantido para compatibilidade
@@ -82,4 +82,4 @@ const workoutSchema = new mongoose.Schema({
 workoutSchema.index({ user: 1, createdAt: -1 });
 workoutSchema.index({ user: 1, goal: 1 });
 
-module.exports = mongoose.model("Workout", workoutSchema);
+module.exports = mongoose.model('Workout', workoutSchema);
