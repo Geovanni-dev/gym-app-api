@@ -22,7 +22,7 @@
 
 ## 📋 About
 
-A RESTful API for gym workout management, originally built as a **freelance project** and later extended to cover my own personal training needs. The API handles automatic workout generation, an exercise library, and personal record (PR) tracking.
+A RESTful API for gym workout management, originally built as a **portfolio project** and later extended to cover my own personal training needs. The API handles automatic workout generation, an exercise library, and personal record (PR) tracking.
 
 Built with Node.js and TypeScript, it features schema validation via Zod, JWT authentication, rate limiting, and transactional email via Brevo. Code quality is enforced through ESLint, Prettier, and EditorConfig. Integrated with a React frontend — check it out live: [superfrango.grdev.app.br](https://superfrango.grdev.app.br)
 
