@@ -4,10 +4,8 @@ const axios = require('axios');
 //=========================================Configuração do transporte de email, agora com brevo
 
 // Função para gerar um código de verificação aleatório
-const generateVerificationCode = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString(); // Gera 6 dígitos
-};
-
+const generateVerificationCode = () =>
+  Math.floor(100000 + Math.random() * 900000).toString(); // Gera 6 dígitos
 /*Função responsável por enviar emails da aplicação, 
 tbm pode ser usada para verificação de conta, recuperação de senha, etc etc*/
 const sendEmail = async (to, subject, htmlContent) => {
@@ -16,8 +14,8 @@ const sendEmail = async (to, subject, htmlContent) => {
     const response = await axios.post(
       'https://api.brevo.com/v3/smtp/email',
       {
-        subject: subject,
-        htmlContent: htmlContent,
+        subject,
+        htmlContent,
         sender: {
           name: 'EQUIPE SUPER FRANGO',
           email: process.env.BREVO_EMAIL,

@@ -28,8 +28,8 @@ function getRandomExercisesAsObjects(exerciseArray, count, sets, reps) {
   // Pega os primeiros count exercícios da lista embaralhada e transforma em objetos
   return shuffled.slice(0, count).map((ex) => ({
     name: ex.name,
-    sets: sets,
-    reps: reps,
+    sets,
+    reps,
     weight: 0, // Começa com pr zero pois e individual
   }));
 }

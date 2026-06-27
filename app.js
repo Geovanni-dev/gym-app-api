@@ -1,6 +1,10 @@
 // Carrega variáveis de ambiente do arquivo .env
 require('dotenv').config();
 
+if (process.env.NODE_ENV === 'production') {
+  console.log = () => {};
+}
+
 // Importa bibliotecas principais da aplicação
 const express = require('express');
 const cors = require('cors');

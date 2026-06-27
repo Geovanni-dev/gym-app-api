@@ -674,20 +674,16 @@ exports.copyPlan = async (req, res) => {
         .json({ message: 'Plano de treino nao encontrado' });
     }
     // cria uma copia de plano de trei no para o usuario atual
-    const daysCopy = workoutPlan.days.map((day) => {
-      return {
-        name: day.name,
-        exercises: day.exercises.map((exer) => {
-          return {
-            name: exer.name,
-            sets: exer.sets,
-            reps: exer.reps,
-            weight: exer.weight,
-            pr: null, // tirei o PR (Personal Record) da copia pq e algo individual de pessoa pra pessoa
-          };
-        }),
-      };
-    });
+    const daysCopy = workoutPlan.days.map((day) => ({
+      name: day.name,
+      exercises: day.exercises.map((exer) => ({
+        name: exer.name,
+        sets: exer.sets,
+        reps: exer.reps,
+        weight: exer.weight,
+        pr: null, // tirei o PR (Personal Record) da copia pq e algo individual de pessoa pra pessoa
+      })),
+    }));
     let codigoUnico;
     let codigoExiste = true;
 
