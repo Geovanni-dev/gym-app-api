@@ -1,8 +1,9 @@
 // Carrega variáveis de ambiente do arquivo .env
 require('dotenv').config();
 
+// Verifica se estamos em ambiente de produção
 if (process.env.NODE_ENV === 'production') {
-  console.log = () => {};
+  console.log = () => {}; // desativa o console.log
 }
 
 // Importa bibliotecas principais da aplicação
