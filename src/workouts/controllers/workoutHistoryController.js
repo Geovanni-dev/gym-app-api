@@ -66,7 +66,7 @@ exports.getExerciseHistory = async (req, res) => {
 // DELETAR HISTÓRICO DE UM EXERCÍCIO (validado com zod)
 exports.deleteWorkoutHistory = async (req, res) => {
   try {
-    const { confirm } = deleteWorkoutHistorySchema.parse(req.body); // validação com zod
+    deleteWorkoutHistorySchema.parse(req.body); // validação com zod
     await WorkoutHistory.deleteMany({ user: req.user.id });
     res.json({ message: 'Histórico de exercícios deletado com sucesso' });
   } catch (error) {

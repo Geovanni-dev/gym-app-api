@@ -1,16 +1,10 @@
 // Importação do modelo de usuário responsável por interagir com o banco de dados
 const User = require('../../models/User');
-
 // Biblioteca utilizada para gerar e validar tokens de autenticação (JWT)
 const jwt = require('jsonwebtoken');
-
 // Biblioteca para criptografia segura das senhas
 const bcrypt = require('bcrypt');
-
 const { z } = require('zod'); // Biblioteca para validação de dados (opcional, mas recomendado para garantir a integridade dos dados recebidos)
-
-// Módulo nativo do Node.js utilizado para gerar tokens seguros
-const crypto = require('crypto');
 
 // Serviço responsável pelo envio de emails (verificação e recuperação de senha)
 const emailService = require('../../services/emailService');
@@ -32,14 +26,6 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'A senha deve conter pelo menos 6 caracteres'),
-});
-
-// Schema de validação para a listagem de usuários
-const userSchema = z.object({
-  _id: z.any(),
-  name: z.string(),
-  email: z.string().email(),
-  isVerified: z.boolean(),
 });
 
 // schema para verificçao de email

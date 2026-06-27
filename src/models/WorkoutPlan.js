@@ -1,6 +1,5 @@
 // Importa o mongoose para criar schemas e models no MongoDB
 const mongoose = require('mongoose');
-const { required } = require('zod/mini');
 
 // SCHEMA DE EXERCÍCIO
 const exerciseSchema = new mongoose.Schema({

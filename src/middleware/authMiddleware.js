@@ -21,7 +21,7 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded; /* Salva os dados do usuário dentro da requisição,
      assim outras partes da aplicação conseguem acessar */
     next(); // Passa o controle para o próximo middleware ou controller
-  } catch (error) {
+  } catch {
     return res.status(401).json({
       // Se o token estiver inválido ou expirado a requisição vai ser bloqueada
       message: 'Token inválido',

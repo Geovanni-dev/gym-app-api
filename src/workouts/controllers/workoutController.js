@@ -9,11 +9,6 @@ const { z } = require('zod');
 
 //====================================== FUNÇÕES AUXILIARES
 
-/* Função que pega exercícios aleatórios usada para montar os treinos automáticos */
-function getRandomExercises(list, count) {
-  return list.sort(() => 0.5 - Math.random()).slice(0, count);
-}
-
 // Função que pega exercícios aleatórios e transforma em objetos
 function getRandomExercisesAsObjects(exerciseArray, count, sets, reps) {
   if (!exerciseArray || exerciseArray.length === 0) return [];
@@ -328,7 +323,7 @@ exports.getMyWorkouts = async (req, res) => {
   try {
     const workouts = await Workout.find({ user: req.user.id });
     res.json(workouts);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erro ao buscar treinos' });
   }
 };
@@ -342,7 +337,7 @@ exports.getWorkoutHistory = async (req, res) => {
       .sort({ date: -1 }) // Os mais recentes primeiro
       .limit(20); // Limitei em 20 para não sobrecarregar
     res.json(workouts);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'Erro ao buscar histórico de treinos' });
   }
 };
@@ -529,7 +524,7 @@ exports.updatePR = async (req, res) => {
       return res.status(404).json({ message: 'Treino não encontrado' });
     }
 
-    // Procura o exercício pelo nome e atualiza o peso
+    // procura o exercício pelo nome e atualiza o peso
     let exerciseFound = false;
 
     workout.split.forEach((day) => {

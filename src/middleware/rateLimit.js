@@ -15,7 +15,7 @@ exports.globalLimiter = rateLimit({
     if (blockedIps[ip] && now < blockedIps[ip]) {
       const secondsLeft = Math.ceil((blockedIps[ip] - now) / 1000);
       return res.status(429).json({
-        error: 'Ainda bloqueado. Por favor, tente novamente mais tarde.',
+        error: `Ainda bloqueado. Por favor, tente novamente em ${secondsLeft} segundos.`,
       });
     }
 
@@ -40,7 +40,7 @@ exports.loginLimiter = rateLimit({
     if (blockedIps[ip] && now < blockedIps[ip]) {
       const secondsLeft = Math.ceil((blockedIps[ip] - now) / 1000);
       return res.status(429).json({
-        error: 'Ainda bloqueado. Por favor, tente novamente mais tarde.',
+        error: `Ainda bloqueado. Por favor, tente novamente em ${secondsLeft} segundos.`,
       });
     }
     blockedIps[ip] = now + 5 * 60 * 1000; // bloqueia por 5 minutos
