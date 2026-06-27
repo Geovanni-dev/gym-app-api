@@ -22,7 +22,7 @@
 
 ## 📋 Sobre
 
-Uma API RESTful para gestão de treinos na academia, originalmente desenvolvida como **projeto freelance** e posteriormente expandida para atender às minhas próprias necessidades de organização. A API realiza geração automática de treinos, gerencia uma biblioteca de exercícios e rastreia recordes pessoais (PR).
+Uma API RESTful para gestão de treinos na academia, originalmente desenvolvida como **projeto de portfólio** e posteriormente expandida para atender às minhas próprias necessidades de organização. A API realiza geração automática de treinos, gerencia uma biblioteca de exercícios e rastreia recordes pessoais (PR).
 
 Construída com Node.js e TypeScript, conta com validação de schemas via Zod, autenticação JWT, rate limiting e envio de e-mails transacionais via Brevo. A qualidade do código é garantida por ESLint, Prettier e EditorConfig. Integrada a um frontend em React — confira em produção: [superfrango.grdev.app.br](https://superfrango.grdev.app.br)
 
