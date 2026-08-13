@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// SCHEMA DE SÉRIES
 const setSchema = new mongoose.Schema({
   reps: {
     type: Number,
@@ -14,7 +13,6 @@ const setSchema = new mongoose.Schema({
   },
 });
 
-// SCHEMA DE EXERCÍCIOS
 const exerciseSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,19 +30,17 @@ const exerciseSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  setsCompleted: [setSchema], // opcional: para tracking de séries
+  setsCompleted: [setSchema],
 });
 
-// SCHEMA DE DIAS DE TREINO
 const daySchema = new mongoose.Schema({
   day: {
     type: String,
     required: true,
   },
-  exercises: [exerciseSchema], //  usa o exerciseSchema para definir os exercícios de cada dia, permitindo uma estrutura mais flexível e detalhada para cada exercício, incluindo suas séries, repetições e pesos.
+  exercises: [exerciseSchema],
 });
 
-// SCHEMA DE TREINOS
 const workoutSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -56,6 +52,7 @@ const workoutSchema = new mongoose.Schema({
     enum: ['força', 'resistência', 'hipertrofia'],
     default: 'hipertrofia',
   },
+  // Quantidade de dias, não a lista deles. A lista fica em split
   days: {
     type: Number,
     min: 1,
@@ -70,15 +67,13 @@ const workoutSchema = new mongoose.Schema({
     type: String,
     default: '8-12',
   },
-  split: [daySchema], // Usa o daySchema com exercises como objetos
-  exercises: [exerciseSchema], // Mantido para compatibilidade
+  split: [daySchema],
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-// Índices para performance
 workoutSchema.index({ user: 1, createdAt: -1 });
 workoutSchema.index({ user: 1, goal: 1 });
 
