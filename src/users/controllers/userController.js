@@ -1,34 +1,19 @@
-// Importação do modelo de usuário responsável por interagir com o banco de dados
 const User = require('../../models/User');
-// Biblioteca utilizada para gerar e validar tokens de autenticação (JWT)
 const jwt = require('jsonwebtoken');
-// Biblioteca para criptografia segura das senhas
 const bcrypt = require('bcrypt');
-const { z } = require('zod'); // Biblioteca para validação de dados (opcional, mas recomendado para garantir a integridade dos dados recebidos)
-
-// Serviço responsável pelo envio de emails (verificação e recuperação de senha)
+const { z } = require('zod');
 const emailService = require('../../services/emailService');
 const cloudinary = require('../../configs/cloudinary');
-
-// Chave secreta utilizada para assinar os tokens JWT
 const SECRET = process.env.JWT_SECRET;
-
-//==================================================schemas de validação de dados
-
-// Schema de validação de dados utilizando a biblioteca Zod
 const registerSchema = z.object({
   name: z.string().min(2, 'O nome deve conter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'A senha deve conter pelo menos 6 caracteres'),
 });
-
-// Schema de validação para o login, garantindo que o email seja válido e a senha tenha um comprimento mínimo de 6 caracteres
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'A senha deve conter pelo menos 6 caracteres'),
 });
-
-// schema para verificçao de email
 const verifyEmailSchema = z.object({
   email: z.string().email('Email inválido'),
   code: z
@@ -59,24 +44,18 @@ const updatePasswordSchema = z.object({
     .string()
     .min(6, 'A nova senha deve conter pelo menos 6 caracteres'),
 });
-
-//====================================================controllers de usuário
-
-// REGISTRO DE USUÁRIO
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password } = registerSchema.parse(req.body); // Valida os dados recebidos
-    const userExists = await User.findOne({ email }); // Verifica se o email ja existe no banco de dados
+    const { name, email, password } = registerSchema.parse(req.body);
+    const userExists = await User.findOne({ email });
     if (userExists) {
-      // Se o email já estiver cadastrado, retorna um erro
       return res.status(400).json({
         message: 'Email já cadastrado',
       });
     }
-    const hashedPassword = await bcrypt.hash(password, 10); // Criptografia da senha utilizando bcrypt com um salt de 10 rounds
-    const verificationCode = emailService.generateVerificationCode(); // Gera um código de verificação
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationCode = emailService.generateVerificationCode();
     const newUser = new User({
-      // Cria um novo usuário com os dados fornecidos e o código de verificação gerado
       name,
       email,
       password: hashedPassword,
@@ -85,12 +64,10 @@ exports.registerUser = async (req, res) => {
     });
     await newUser.save();
     try {
-      // coloquei um try/catch para tratar erros de envio de email separadamente
       await emailService.sendVerificationEmail(
-        // Envia um email de verificação estilizado
         email,
         verificationCode,
-        newUser.name, // nome do novo usuario ainda não verificado
+        newUser.name,
       );
     } catch (emailError) {
       console.log('Erro ao enviar email:', emailError);
@@ -100,36 +77,31 @@ exports.registerUser = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // se o erro for do zod
       return res.status(400).json({
         error: 'Erro de validação',
-        detalhes: error.flatten().fieldErrors, // funçao para imprimir os erros
+        detalhes: error.flatten().fieldErrors,
       });
     }
-    console.log(error); // se n for do zod
+    console.log(error);
     res.status(500).json({ error: 'Erro ao criar o usuario' });
   }
 };
-
-// VERIFICAÇÃO DE CODIGO DE VERIFICAÇÃO PELO EMAIL
 exports.verifyEmail = async (req, res) => {
   try {
-    const { email, code } = verifyEmailSchema.parse(req.body); // Valida os dados recebidos
-    const user = await User.findOne({ email }); // Busca o usuário pelo email fornecido
+    const { email, code } = verifyEmailSchema.parse(req.body);
+    const user = await User.findOne({ email });
     if (!user) {
-      // Se o usuário não for encontrado, retorna um erro
       return res.status(404).json({
         message: 'Usuário não encontrado',
       });
     }
     if (user.verificationCode !== code) {
-      // Compara o código fornecido com o código armazenado no banco de dados
       return res.status(400).json({
         message: 'Código inválido',
       });
     }
-    user.isVerified = true; // Marca o usuário como verificado
-    user.verificationCode = null; // Remove o código de verificação após o uso
+    user.isVerified = true;
+    user.verificationCode = null;
     await user.save();
     const token = jwt.sign(
       { id: user._id },
@@ -137,7 +109,6 @@ exports.verifyEmail = async (req, res) => {
       { expiresIn: '365d' }, // token válido por 1 ano
     );
     res.json({
-      // Retorna o token e os dados do usuário logado
       message: 'Email verificado com sucesso, bem-vindo!',
       token,
       user: {
@@ -148,35 +119,29 @@ exports.verifyEmail = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // se o erro for do zod
       return res.status(400).json({
         error: 'Erro de validação',
-        detalhes: error.flatten().fieldErrors, // funçao para imprimir os erros
+        detalhes: error.flatten().fieldErrors,
       });
     }
-    console.log(error); // se n for do zod
+    console.log(error);
     res.status(500).json({ error: 'Erro ao verificar o email' });
   }
 };
-
-// LOGIN DO USUÁRIO.
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
     const user = await User.findOne({ email });
     if (!user) {
-      // Se o email não for encontrado, retorna um erro de autenticação
       return res.status(401).json({
         message: 'Email ou senha inválidos',
       });
     }
     if (!user.isVerified) {
-      // Verifica se o email do usuário foi verificado
       const newCode = emailService.generateVerificationCode();
       user.verificationCode = newCode;
       await user.save();
       try {
-        // coloquei um try/catch para tratar erros de envio de email separadamente
         await emailService.sendVerificationEmail(email, newCode, user.name);
       } catch (emailError) {
         console.log('Erro ao enviar email:', emailError);
@@ -187,7 +152,7 @@ exports.loginUser = async (req, res) => {
         email: user.email,
       });
     }
-    const isMatch = await bcrypt.compare(password, user.password); // Compara a senha fornecida com a senha armazenada no banco de dados utilizando bcrypt
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
         message: 'Email ou senha inválidos',
@@ -199,7 +164,6 @@ exports.loginUser = async (req, res) => {
       { expiresIn: '365d' }, // token válido por 1 ano
     );
     res.json({
-      // Retorna o token e os dados do usuário logado
       message: 'Login realizado com sucesso',
       token,
       user: {
@@ -210,38 +174,33 @@ exports.loginUser = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // se o erro for do zod
       return res.status(400).json({
         error: 'Erro de validação',
-        detalhes: error.flatten().fieldErrors, // funçao para imprimir os erros
+        detalhes: error.flatten().fieldErrors,
       });
     }
-    console.log(error); // se n for do zod
+    console.log(error);
     res.status(500).json({ error: 'Erro ao realizar o login' });
   }
 };
-
-// SOLICITAÇÃO DE RECUPERAÇÃO DE SENHA PUBLICO
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = forgotPasswordSchema.parse(req.body);
-    const user = await User.findOne({ email }); // Busca o usuário pelo email fornecido
+    const user = await User.findOne({ email });
     if (!user) {
-      // Se o usuário nao for encontrado, retorna um erro
       return res.status(200).json({
         message:
           'Se o email estiver cadastrado, um codigo de recuperação será enviado.',
       });
     }
 
-    const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera um código de recuperação aleatório
-    user.resetPasswordCode = resetCode; // Armazena o código de recuperação no banco de dados
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordCode = resetCode;
     user.resetPasswordExpires = Date.now() + 300000; // tempo de redefiniçao de 5 minutos
     await user.save();
 
     try {
-      // coloquei um try/catch para tratar erros de envio de email separadamente
-      await emailService.sendPasswordResetEmail(email, resetCode, user.name); // Envia o email de recuperação de senha utilizando o serviço de email(estilizado)
+      await emailService.sendPasswordResetEmail(email, resetCode, user.name);
     } catch (emailError) {
       console.log('Erro ao enviar email de recuperação:', emailError);
     }
@@ -250,21 +209,18 @@ exports.forgotPassword = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // se o erro for do zod
       return res.status(400).json({
         error: 'Erro de validação',
-        detalhes: error.flatten().fieldErrors, // funçao para imprimir os erros
+        detalhes: error.flatten().fieldErrors,
       });
     }
-    console.log(error); // se n for do zod
+    console.log(error);
     res.status(500).json({ error: 'Erro ao recuperar senha' });
   }
 };
-
-// REDEFINIÇÃO DE SENHA PUBLICO
 exports.resetPassword = async (req, res) => {
   try {
-    const { password, email, code } = resetPasswordSchema.parse(req.body); // Validação dos dados recebidos e extração da senha
+    const { password, email, code } = resetPasswordSchema.parse(req.body);
     const user = await User.findOne({
       // busca o usuário pelo email fornecido e codigo de recuperação nao expirado
       email,
@@ -279,14 +235,13 @@ exports.resetPassword = async (req, res) => {
     }
     const isSamePassword = await bcrypt.compare(password, user.password);
     if (isSamePassword) {
-      // Verifica se a nova senha eh igual a senha atual
       return res.status(400).json({
         message: 'A nova senha deve ser diferente da senha atual',
       });
     }
-    const hashedPassword = await bcrypt.hash(password, 10); // Criptografa a nova senha
-    user.password = hashedPassword; // Atualiza a senha do usuário
-    user.resetPasswordCode = null; // Remove o token de recuperação de senha após o uso
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.resetPasswordCode = null;
     user.resetPasswordExpires = null;
     await user.save();
     res.json({
@@ -294,56 +249,49 @@ exports.resetPassword = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // se o erro for do zod
       return res.status(400).json({
         error: 'Erro de validação',
-        detalhes: error.flatten().fieldErrors, // funçao para imprimir os erros
+        detalhes: error.flatten().fieldErrors,
       });
     }
-    console.log(error); // se n for do zod
+    console.log(error);
     res.status(500).json({ error: 'Erro ao redefinir senha' });
   }
 };
-
-// redefiniçao de senha logado
 exports.updatePassword = async (req, res) => {
   try {
-    const { oldPassword, newPassword } = updatePasswordSchema.parse(req.body); // Validação dos dados recebidos e extração da senha
-    const user = await User.findById(req.user.id); // Busca usuário com token válido e n expirado (1hr)
+    const { oldPassword, newPassword } = updatePasswordSchema.parse(req.body);
+    const user = await User.findById(req.user.id);
 
     if (!user) {
-      // Adicionado: Garantia que o usuário logado existe no banco
       return res.status(404).json({
         message: 'Usuário não encontrado',
       });
     }
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password); // Compara a senha fornecida com a senha armazenada no banco de dados utilizando bcrypt
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       return res.status(401).json({
         message: 'Senha antiga incorreta',
       });
     }
-    const hashedPassword = await bcrypt.hash(newPassword, 10); // Criptografa a nova senha
-    user.password = hashedPassword; // Atualiza a senha do usuário
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
     await user.save();
     res.json({
       message: 'Senha redefinida com sucesso',
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // se o erro for do zod
       return res.status(400).json({
         error: 'Erro de validação',
         detalhes: error.flatten().fieldErrors,
       });
     }
-    console.log(error); // se n for do zod
+    console.log(error);
     res.status(500).json({ error: 'Erro ao redefinir senha' });
   }
 };
-
-// ADICIONAR IMG AO PERFIL
 exports.addToImg = async (req, res) => {
   try {
     if (!req.file) {
@@ -351,7 +299,6 @@ exports.addToImg = async (req, res) => {
         message: 'Nenhuma imagem fornecida',
       });
     }
-    // upload pra Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: 'profile_images' },
@@ -368,8 +315,8 @@ exports.addToImg = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { profileImg: imageUrl }, // Atualiza o campo profileImg com a URL da imagem
-      { new: true }, // Retorna o documento atualizado
+      { profileImg: imageUrl },
+      { new: true },
     );
     if (!user) {
       return res.status(404).json({
@@ -377,7 +324,7 @@ exports.addToImg = async (req, res) => {
       });
     }
     res.json({
-      message: 'Imagem adicionada ao perfil com sucesso', // envia uma mensagem de sucesso para o frontend
+      message: 'Imagem adicionada ao perfil com sucesso',
       profileImg: user.profileImg,
     });
   } catch (error) {
@@ -387,7 +334,6 @@ exports.addToImg = async (req, res) => {
         detalhes: error.flatten().fieldErrors,
       });
     }
-    //logs de erro
     console.log('=== ERRO NO UPLOAD ===');
     console.log('Mensagem:', error.message);
     console.log('Stack:', error.stack);
@@ -399,7 +345,7 @@ exports.addToImg = async (req, res) => {
 
     res.status(500).json({
       error: 'Erro ao adicionar imagem ao perfil',
-      details: error.message, // envia o erro para o frontend tbm
+      details: error.message,
     });
   }
 };

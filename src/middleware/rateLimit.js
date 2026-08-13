@@ -1,17 +1,15 @@
-const rateLimit = require('express-rate-limit'); // importa a biblioteca express-rate-limit
+const rateLimit = require('express-rate-limit');
 
-const blockedIps = {}; // cria um objeto para armazenar os IPs bloqueados
+const blockedIps = {};
 
-// cria limite de reqs para usar em rotas globais
 exports.globalLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minuto
-  max: 100, // Limite de solicitações por minuto
+  windowMs: 60 * 1000,
+  max: 100,
 
   handler: (req, res) => {
-    // Função pra lidar com o bloqueio
     const ip = req.ip;
     const now = Date.now();
-    // Verifica se o IP foi bloqueado
+
     if (blockedIps[ip] && now < blockedIps[ip]) {
       const secondsLeft = Math.ceil((blockedIps[ip] - now) / 1000);
       return res.status(429).json({
@@ -19,7 +17,7 @@ exports.globalLimiter = rateLimit({
       });
     }
 
-    blockedIps[ip] = now + 5 * 60 * 1000; // bloqueia por 5 minutos
+    blockedIps[ip] = now + 5 * 60 * 1000;
 
     return res.status(429).json({
       error: 'Muitas solicitações. Por favor, tente novamente mais tarde.',
@@ -27,26 +25,35 @@ exports.globalLimiter = rateLimit({
   },
 });
 
-// cria limite de reqs para usar em rotas de login, register, etc
 exports.loginLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minuto
-  max: 5, // Limite de solicitações por minuto
+  windowMs: 60 * 1000,
+  max: 5,
 
   handler: (req, res) => {
-    // Função pra lidar com o bloqueio
     const ip = req.ip;
     const now = Date.now();
-    // Verifica se o IP foi bloqueado
+
     if (blockedIps[ip] && now < blockedIps[ip]) {
       const secondsLeft = Math.ceil((blockedIps[ip] - now) / 1000);
       return res.status(429).json({
         error: `Ainda bloqueado. Por favor, tente novamente em ${secondsLeft} segundos.`,
       });
     }
-    blockedIps[ip] = now + 5 * 60 * 1000; // bloqueia por 5 minutos
-    // Retorna uma resposta de erro
+
+    blockedIps[ip] = now + 5 * 60 * 1000;
+
     return res.status(429).json({
       error: 'Muitas solicitações. Por favor, tente novamente mais tarde.',
     });
   },
+});
+
+exports.aiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 3,
+  keyGenerator: (req) => req.user.id,
+  handler: (req, res) =>
+    res.status(429).json({
+      error: 'Muitas gerações. Por favor, tente novamente mais tarde.',
+    }),
 });
