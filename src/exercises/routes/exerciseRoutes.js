@@ -1,13 +1,15 @@
 const { Router } = require('express');
 const router = Router();
-
-const exerciseController = require('../controllers/exerciseController');
+const { requireApiKey } = require('../../middleware/middleware');
 const authMiddleware = require('../../middleware/authMiddleware');
+const exerciseController = require('../controllers/exerciseController');
 
-router.post('/', authMiddleware, exerciseController.createExercise);
+router.post('/bulk', requireApiKey, exerciseController.createMultipleExercises);
+
+router.post('/', requireApiKey, exerciseController.createExercise);
 
 router.get('/', authMiddleware, exerciseController.getExercises);
 
-router.delete('/:id', authMiddleware, exerciseController.deleteExercise);
+router.delete('/:id', requireApiKey, exerciseController.deleteExercise);
 
 module.exports = router;

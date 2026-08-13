@@ -148,7 +148,6 @@ exports.createWorkoutPlan = async (req, res) => {
     let codigoUnico;
     let codigoExiste = true;
 
-    // Gera e regera até achar um código que ainda não existe no banco
     while (codigoExiste) {
       codigoUnico = gerarCodigoFormatado();
       const planoExistente = await WorkoutPlan.findOne({
@@ -393,7 +392,6 @@ exports.updateDayInPlan = async (req, res) => {
     const { planId, dayName } = updateDayParamsSchema.parse(req.params);
     const { name: newDayName } = updateDaySchema.parse(req.body);
 
-    // Impede dois dias com o mesmo nome no mesmo plano
     const existingPlan = await WorkoutPlan.findOne({
       _id: planId,
       user: req.user.id,

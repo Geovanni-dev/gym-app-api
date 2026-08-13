@@ -1,7 +1,5 @@
 const rateLimit = require('express-rate-limit');
 
-/* Em memória: reinicia junto com o processo e não é compartilhado
-entre instâncias. */
 const blockedIps = {};
 
 exports.globalLimiter = rateLimit({

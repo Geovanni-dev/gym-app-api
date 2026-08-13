@@ -76,7 +76,6 @@ exports.generateWorkout = async (req, res) => {
     let sets;
     let reps;
 
-    // Define séries e repetições baseado no objetivo do usuário
     if (goal === 'força') {
       sets = 5;
       reps = '3-5'; // Poucas repetições, muito peso
