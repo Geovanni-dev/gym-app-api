@@ -1,7 +1,7 @@
 const WorkoutPlan = require('../../models/WorkoutPlan');
 const { z } = require('zod');
 const mongoose = require('mongoose');
-const promptSystem = require('../prompts/prompt');
+const { prompt: promptSystem } = require('../prompts/prompt');
 const { GoogleGenAI } = require('@google/genai');
 const User = require('../../models/User');
 const Exercise = require('../../models/Exercise');
@@ -189,6 +189,9 @@ exports.generatePlan = async (req, res) => {
     const response = await genAI.models.generateContent({
       model: 'gemini-3.5-flash-lite',
       contents: fullPrompt,
+      config: {
+        responseMimeType: 'application/json',
+      },
     });
     const planData = JSON.parse(response.text);
     const parsedResponse = createPlanSchema.parse(planData);

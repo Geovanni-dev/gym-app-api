@@ -36,8 +36,8 @@ router.put(
 
 router.post(
   '/generate',
-  aiLimiter,
   authMiddleware,
+  aiLimiter,
   workoutPlanController.generatePlan,
 );
 
