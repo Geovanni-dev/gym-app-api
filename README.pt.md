@@ -30,19 +30,19 @@ Construída com Node.js e Express, conta com validação de schemas via Zod, aut
 
 ## 🛠 Tecnologias
 
-| Camada | Tecnologia |
-|---|---|
-| Runtime | Node.js (JavaScript) |
-| Framework | Express.js |
-| Banco de dados | MongoDB + Mongoose |
-| Autenticação | JSON Web Token (JWT) |
-| Validação | Zod |
-| IA | Google Gemini (`@google/genai`) |
-| E-mail | Brevo API (via Axios) |
-| Upload de imagens | Cloudinary |
-| Segurança | Express Rate Limit + Bcrypt.js |
-| Containerização | Docker + Docker Compose |
-| CI/CD | GitHub Actions |
+| Camada              | Tecnologia                       |
+| ------------------- | -------------------------------- |
+| Runtime             | Node.js (JavaScript)             |
+| Framework           | Express.js                       |
+| Banco de dados      | MongoDB + Mongoose               |
+| Autenticação        | JSON Web Token (JWT)             |
+| Validação           | Zod                              |
+| IA                  | Google Gemini (`@google/genai`)  |
+| E-mail              | Brevo API (via Axios)            |
+| Upload de imagens   | Cloudinary                       |
+| Segurança           | Express Rate Limit + Bcrypt.js   |
+| Containerização     | Docker + Docker Compose          |
+| CI/CD               | GitHub Actions                   |
 | Qualidade de código | ESLint + Prettier + EditorConfig |
 
 ---
@@ -120,55 +120,55 @@ gym-app-api/
 
 ### Autenticação e Usuários — `/users`
 
-| Rota | Método | Auth | Payload | Descrição |
-|---|---|---|---|---|
-| `/register` | POST | ❌ | `{"name","email","password"}` | Cria nova conta |
-| `/verify-email` | POST | ❌ | `{"email","code"}` | Valida o e-mail |
-| `/login` | POST | ❌ | `{"email","password"}` | Retorna o Token JWT |
-| `/forgot-password` | POST | ❌ | `{"email"}` | Envia código de recuperação |
-| `/reset-password` | POST | ❌ | `{"code","email","password"}` | Define nova senha |
-| `/update-password` | POST | 🔒 | `{"oldPassword","newPassword"}` | Troca a senha logado |
-| `/upload-profile-image` | POST | 🔒 | `multipart/form-data` (`profileImg`) | Envia foto de perfil pro Cloudinary |
+| Rota                    | Método | Auth | Payload                              | Descrição                           |
+| ----------------------- | ------ | ---- | ------------------------------------ | ----------------------------------- |
+| `/register`             | POST   | ❌   | `{"name","email","password"}`        | Cria nova conta                     |
+| `/verify-email`         | POST   | ❌   | `{"email","code"}`                   | Valida o e-mail                     |
+| `/login`                | POST   | ❌   | `{"email","password"}`               | Retorna o Token JWT                 |
+| `/forgot-password`      | POST   | ❌   | `{"email"}`                          | Envia código de recuperação         |
+| `/reset-password`       | POST   | ❌   | `{"code","email","password"}`        | Define nova senha                   |
+| `/update-password`      | POST   | 🔒   | `{"oldPassword","newPassword"}`      | Troca a senha logado                |
+| `/upload-profile-image` | POST   | 🔒   | `multipart/form-data` (`profileImg`) | Envia foto de perfil pro Cloudinary |
 
 ### Planos de Treino — `/workout-plans`
 
-| Rota | Método | Auth | Payload | Descrição |
-|---|---|---|---|---|
-| `/` | POST | 🔒 | `{"name","days":[...]}` | Cria um plano manualmente |
-| `/` | GET | 🔒 | — | Lista todos os planos do usuário |
-| `/:planId` | DELETE | 🔒 | — | Exclui um plano |
-| `/:planId/name` | PUT | 🔒 | `{"name"}` | Altera o nome do plano |
-| `/:planId/reorder` | PUT | 🔒 | `{"daysOrder":[...]}` | Reordena os dias |
-| `/:planId/days` | POST | 🔒 | `{"name","exercises":[]}` | Adiciona um dia |
-| `/:planId/days/:dayName` | PUT | 🔒 | `{"name"}` | Renomeia um dia |
-| `/:planId/days/:dayName` | DELETE | 🔒 | — | Remove um dia |
-| `/:planId/days/:dayName/reorder` | PUT | 🔒 | `{"exercisesOrder":[...]}` | Reordena os exercícios dentro de um dia |
-| `/:planId/days/:dayName/exercises` | POST | 🔒 | `{"name","sets","reps","weight"}` | Adiciona um exercício a um dia |
-| `/:planId/days/:dayName/exercises/:exerciseName` | PUT | 🔒 | `{"name"?,"sets"?,"reps"?,"weight"?}` | Edita um exercício (atualização parcial) |
-| `/:planId/days/:dayName/exercises/:exerciseName` | DELETE | 🔒 | — | Remove um exercício |
-| `/copy/:shareCode` | POST | 🔒 | — | Copia um plano compartilhado para a própria conta |
-| `/generate` | POST | 🔒 | `{"dias","foco","genero"}` | Gera um plano por IA (veja abaixo) — **não é persistido**, devolve `{"plan"}` pro cliente revisar e salvar via `POST /` |
+| Rota                                             | Método | Auth | Payload                               | Descrição                                                                                                               |
+| ------------------------------------------------ | ------ | ---- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `/`                                              | POST   | 🔒   | `{"name","days":[...]}`               | Cria um plano manualmente                                                                                               |
+| `/`                                              | GET    | 🔒   | —                                     | Lista todos os planos do usuário                                                                                        |
+| `/:planId`                                       | DELETE | 🔒   | —                                     | Exclui um plano                                                                                                         |
+| `/:planId/name`                                  | PUT    | 🔒   | `{"name"}`                            | Altera o nome do plano                                                                                                  |
+| `/:planId/reorder`                               | PUT    | 🔒   | `{"daysOrder":[...]}`                 | Reordena os dias                                                                                                        |
+| `/:planId/days`                                  | POST   | 🔒   | `{"name","exercises":[]}`             | Adiciona um dia                                                                                                         |
+| `/:planId/days/:dayName`                         | PUT    | 🔒   | `{"name"}`                            | Renomeia um dia                                                                                                         |
+| `/:planId/days/:dayName`                         | DELETE | 🔒   | —                                     | Remove um dia                                                                                                           |
+| `/:planId/days/:dayName/reorder`                 | PUT    | 🔒   | `{"exercisesOrder":[...]}`            | Reordena os exercícios dentro de um dia                                                                                 |
+| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"name","sets","reps","weight"}`     | Adiciona um exercício a um dia                                                                                          |
+| `/:planId/days/:dayName/exercises/:exerciseName` | PUT    | 🔒   | `{"name"?,"sets"?,"reps"?,"weight"?}` | Edita um exercício (atualização parcial)                                                                                |
+| `/:planId/days/:dayName/exercises/:exerciseName` | DELETE | 🔒   | —                                     | Remove um exercício                                                                                                     |
+| `/copy/:shareCode`                               | POST   | 🔒   | —                                     | Copia um plano compartilhado para a própria conta                                                                       |
+| `/generate`                                      | POST   | 🔒   | `{"dias","foco","genero"}`            | Gera um plano por IA (veja abaixo) — **não é persistido**, devolve `{"plan"}` pro cliente revisar e salvar via `POST /` |
 
 `/generate` é limitado a **3 requisições por minuto por usuário**. `dias` aceita de 3 a 6, `foco` é um de `hipertrofia`/`força`/`resistência`, `genero` é `masculino`/`feminino`.
 
 ### Treinos (histórico e PRs) — `/workouts`
 
-| Rota | Método | Auth | Payload | Descrição |
-|---|---|---|---|---|
-| `/log` | POST | 🔒 | `{"exercises":[...]}` | Registra uma sessão de treino concluída |
-| `/pr` | GET | 🔒 | — | Recorde pessoal de um exercício (`?exercise=`) |
-| `/history` | GET | 🔒 | — | Últimas 20 sessões registradas |
-| `/history/:exerciseName` | GET | 🔒 | — | Histórico completo de um exercício |
-| `/history` | DELETE | 🔒 | `{"confirm":"CONFIRM"}` | Exclui permanentemente todo o histórico do usuário |
+| Rota                     | Método | Auth | Payload                 | Descrição                                          |
+| ------------------------ | ------ | ---- | ----------------------- | -------------------------------------------------- |
+| `/log`                   | POST   | 🔒   | `{"exercises":[...]}`   | Registra uma sessão de treino concluída            |
+| `/pr`                    | GET    | 🔒   | —                       | Recorde pessoal de um exercício (`?exercise=`)     |
+| `/history`               | GET    | 🔒   | —                       | Últimas 20 sessões registradas                     |
+| `/history/:exerciseName` | GET    | 🔒   | —                       | Histórico completo de um exercício                 |
+| `/history`               | DELETE | 🔒   | `{"confirm":"CONFIRM"}` | Exclui permanentemente todo o histórico do usuário |
 
 ### Exercícios — `/exercises`
 
-| Rota | Método | Auth | Payload | Descrição |
-|---|---|---|---|---|
-| `/` | GET | 🔒 | — | Lista o catálogo completo de exercícios |
-| `/` | POST | 🔑 | `{"name","muscle"}` | Cadastra um exercício |
-| `/bulk` | POST | 🔑 | `[{"name","muscle"}, ...]` | Cadastra vários exercícios de uma vez |
-| `/:id` | DELETE | 🔑 | — | Remove um exercício |
+| Rota    | Método | Auth | Payload                    | Descrição                               |
+| ------- | ------ | ---- | -------------------------- | --------------------------------------- |
+| `/`     | GET    | 🔒   | —                          | Lista o catálogo completo de exercícios |
+| `/`     | POST   | 🔑   | `{"name","muscle"}`        | Cadastra um exercício                   |
+| `/bulk` | POST   | 🔑   | `[{"name","muscle"}, ...]` | Cadastra vários exercícios de uma vez   |
+| `/:id`  | DELETE | 🔑   | —                          | Remove um exercício                     |
 
 ---
 
@@ -191,13 +191,13 @@ SSH na VPS → pull da nova imagem → recriação do container
 
 ### Secrets necessários no repositório
 
-| Secret | Descrição |
-|---|---|
-| `DOCKERHUB_USERNAME` | Usuário no Docker Hub |
-| `DOCKERHUB_TOKEN` | Token de acesso do Docker Hub |
-| `SSH_HOST` | IP público da VPS |
-| `SSH_USER` | Usuário SSH da VPS |
-| `SSH_KEY` | Chave privada SSH completa |
+| Secret               | Descrição                     |
+| -------------------- | ----------------------------- |
+| `DOCKERHUB_USERNAME` | Usuário no Docker Hub         |
+| `DOCKERHUB_TOKEN`    | Token de acesso do Docker Hub |
+| `SSH_HOST`           | IP público da VPS             |
+| `SSH_USER`           | Usuário SSH da VPS            |
+| `SSH_KEY`            | Chave privada SSH completa    |
 
 Cadastre em **Settings → Secrets and variables → Actions**.
 
