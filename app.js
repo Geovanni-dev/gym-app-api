@@ -25,7 +25,7 @@ app.use(
 app.use(globalLimiter);
 
 const userRoutes = require('./src/users/routes/userRoutes');
-const workoutRoutes = require('./src/workouts/routes/workoutsRoutes');
+const workoutRoutes = require('./src/history/routes/workoutsRoutes');
 const exerciseRoutes = require('./src/exercises/routes/exerciseRoutes');
 const workoutPlanRoutes = require('./src/workoutPlans/routes/workoutPlanRoutes');
 

@@ -47,3 +47,13 @@ exports.loginLimiter = rateLimit({
     });
   },
 });
+
+exports.aiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 3,
+  keyGenerator: (req) => req.user.id,
+  handler: (req, res) =>
+    res.status(429).json({
+      error: 'Muitas gerações. Por favor, tente novamente mais tarde.',
+    }),
+});

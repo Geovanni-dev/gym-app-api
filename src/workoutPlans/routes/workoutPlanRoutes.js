@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const { aiLimiter } = require('../../middleware/rateLimit');
 const workoutPlanController = require('../controllers/workoutPlanController');
 const authMiddleware = require('../../middleware/authMiddleware');
 
@@ -32,6 +32,13 @@ router.put(
   '/:planId/days/:dayName/exercises/:exerciseName',
   authMiddleware,
   workoutPlanController.updateExerciseInPlan,
+);
+
+router.post(
+  '/generate',
+  aiLimiter,
+  authMiddleware,
+  workoutPlanController.generatePlan,
 );
 
 router.post(

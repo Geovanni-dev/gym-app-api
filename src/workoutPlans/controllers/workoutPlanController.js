@@ -1,6 +1,12 @@
 const WorkoutPlan = require('../../models/WorkoutPlan');
 const { z } = require('zod');
 const mongoose = require('mongoose');
+const promptSystem = require('../prompts/prompt');
+const { GoogleGenAI } = require('@google/genai');
+const User = require('../../models/User');
+const Exercise = require('../../models/Exercise');
+
+//----- funçoes auxiliares
 
 /* O model não aceita função assíncrona em "default", e gerar um valor temporário
 para atualizar depois não garantiria unicidade. Por isso o código é gerado aqui,
@@ -30,6 +36,7 @@ function escapeRegex(str) {
 function nomeExato(valor) {
   return { $regex: new RegExp(`^${escapeRegex(valor)}$`, 'i') };
 }
+//-------- schemas zod
 
 const createPlanSchema = z
   .object({
@@ -140,6 +147,69 @@ const reorderExSchema = z.object({
     'Array com a nova ordem dos IDs dos exercícios',
   ),
 });
+
+const payloadSchema = z.object({
+  dias: z
+    .number()
+    .min(3, 'O plano de treino deve ter pelo menos 3 dia')
+    .max(6, 'O plano de treino deve ter no máximo 6 dias'),
+  foco: z.enum(['força', 'resistência', 'hipertrofia']),
+  genero: z.enum(['masculino', 'feminino']),
+});
+
+// ---- funções
+
+exports.generatePlan = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+    const payload = payloadSchema.parse(req.body);
+    const exercises = await Exercise.find();
+    const fullPrompt = `
+   Usuário:
+   ${user.name}
+
+   Banco de exercicios:
+   ${JSON.stringify(exercises)}
+
+   Dias: ${payload.dias}
+   Foco: ${payload.foco}
+   Genero: ${payload.genero}
+
+   Instruções:
+   ${promptSystem}
+   `;
+    const ApiKey = process.env.API_AI_KEY;
+    if (!ApiKey) {
+      return res.status(503).json({ message: 'Chave de API indisponível' });
+    }
+    const genAI = new GoogleGenAI({ apiKey: ApiKey });
+    const response = await genAI.models.generateContent({
+      model: 'gemini-3.5-flash-lite',
+      contents: fullPrompt,
+    });
+    const planData = JSON.parse(response.text);
+    const parsedResponse = createPlanSchema.parse(planData);
+    return res.json({ plan: parsedResponse });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        error: 'Erro de validação',
+        detalhes: error.flatten().fieldErrors,
+      });
+    }
+    if (error instanceof SyntaxError) {
+      console.log(error);
+      return res
+        .status(502)
+        .json({ message: 'IA retornou um formato inválido' });
+    }
+    console.log(error);
+    return res.status(500).json({ message: 'Erro ao gerar plano de treino' });
+  }
+};
 
 exports.createWorkoutPlan = async (req, res) => {
   try {
