@@ -40,7 +40,7 @@ Built with Node.js and Express, it features schema validation via Zod, JWT authe
 | AI               | Google Gemini (`@google/genai`)  |
 | Email            | Brevo API (via Axios)            |
 | Image Upload     | Cloudinary                       |
-| Security         | Express Rate Limit + Bcrypt.js   |
+| Security         | Express Rate Limit + bcrypt      |
 | Containerization | Docker + Docker Compose          |
 | CI/CD            | GitHub Actions                   |
 | Code Quality     | ESLint + Prettier + EditorConfig |
@@ -118,6 +118,13 @@ gym-app-api/
 > 🔒 Routes marked with this lock require the header: `Authorization: Bearer <jwt_token>`
 > 🔑 Routes marked with this key require the header: `x-api-key: <api_key>`
 
+All request and response bodies use JSON unless otherwise noted. The API also exposes two public service endpoints:
+
+| Route     | Method | Description                                           |
+| --------- | ------ | ----------------------------------------------------- |
+| `/`       | GET    | Confirms that the API is running                      |
+| `/health` | GET    | Health check with `status` and a Unix timestamp in ms |
+
 ### Authentication & Users — `/users`
 
 | Route                   | Method | Auth | Payload                              | Description                          |
@@ -142,14 +149,16 @@ gym-app-api/
 | `/:planId/days`                                  | POST   | 🔒   | `{"name","exercises":[]}`             | Add a day                                                                                                             |
 | `/:planId/days/:dayName`                         | PUT    | 🔒   | `{"name"}`                            | Rename a day                                                                                                          |
 | `/:planId/days/:dayName`                         | DELETE | 🔒   | —                                     | Remove a day                                                                                                          |
-| `/:planId/days/:dayName/reorder`                 | PUT    | 🔒   | `{"exercisesOrder":[...]}`            | Reorder exercises within a day                                                                                        |
-| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"name","sets","reps","weight"}`     | Add an exercise to a day                                                                                              |
+| `/:planId/days/:dayName/reorder`                 | PUT    | 🔒   | `{"dayName","exercisesOrder":[...]}`  | Reorder exercises within a day by exercise IDs                                                                        |
+| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"dayName","name","sets","reps","weight"}` | Add an exercise to a day                                                                                     |
 | `/:planId/days/:dayName/exercises/:exerciseName` | PUT    | 🔒   | `{"name"?,"sets"?,"reps"?,"weight"?}` | Edit an exercise (partial update)                                                                                     |
 | `/:planId/days/:dayName/exercises/:exerciseName` | DELETE | 🔒   | —                                     | Remove an exercise                                                                                                    |
 | `/copy/:shareCode`                               | POST   | 🔒   | —                                     | Copy a shared plan into your own account                                                                              |
 | `/generate`                                      | POST   | 🔒   | `{"dias","foco","genero"}`            | AI-generate a plan (see below) — **not persisted**, returns `{"plan"}` for the client to review and save via `POST /` |
 
 `/generate` is limited to **3 requests per minute per user**. `dias` accepts 3–6, `foco` is one of `hipertrofia`/`força`/`resistência`, `genero` is `masculino`/`feminino`.
+
+> The current add-exercise and exercise-reordering handlers read `dayName` from the JSON body as well as exposing it in the URL, so clients must send both values.
 
 ### Workouts (history & PRs) — `/workouts`
 
@@ -169,6 +178,27 @@ gym-app-api/
 | `/`     | POST   | 🔑   | `{"name","muscle"}`        | Register a single exercise       |
 | `/bulk` | POST   | 🔑   | `[{"name","muscle"}, ...]` | Bulk-register exercises          |
 | `/:id`  | DELETE | 🔑   | —                          | Remove an exercise               |
+
+---
+
+## 🔧 Environment Variables
+
+| Variable                | Required | Purpose                                                    |
+| ----------------------- | -------- | ---------------------------------------------------------- |
+| `PORT`                  | Yes      | HTTP port used by the server                               |
+| `DATABASE_URL`          | Yes      | MongoDB connection string                                  |
+| `JWT_SECRET`            | Yes      | Secret used to sign and verify JWTs                        |
+| `CLIENT_URL`            | Yes      | Allowed CORS origin; accepts comma-separated URLs          |
+| `API_KEY`               | Yes¹     | Protects exercise catalogue write operations               |
+| `API_AI_KEY`            | Yes²     | Google Gemini API key used to generate plans               |
+| `BREVO_API_KEY`         | Yes³     | Brevo API key for verification and recovery emails        |
+| `BREVO_EMAIL`           | Yes³     | Verified sender address used by Brevo                     |
+| `CLOUDINARY_CLOUD_NAME` | Yes⁴     | Cloudinary cloud identifier                               |
+| `CLOUDINARY_API_KEY`    | Yes⁴     | Cloudinary API key                                        |
+| `CLOUDINARY_API_SECRET` | Yes⁴     | Cloudinary API secret                                     |
+| `NODE_ENV`              | No       | Set to `production` to suppress application console output |
+
+¹ Required for catalogue writes. ² Required for AI generation. ³ Required for email flows. ⁴ Required for profile-image uploads.
 
 ---
 
@@ -207,7 +237,7 @@ Add them under **Settings → Secrets and variables → Actions**.
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+ (the Docker image uses Node.js 22 Alpine)
 - MongoDB running locally or a connection string (e.g. MongoDB Atlas)
 - Accounts for Brevo, Cloudinary and Google AI Studio (Gemini) — optional for full feature coverage
 
@@ -223,24 +253,24 @@ npm install
 
 # 3. Create your .env file from the template
 cp .env.example .env
-# Fill in the values below:
-#   PORT=3000
-#   DATABASE_URL=mongodb://127.0.0.1:27017/workout-api
-#   JWT_SECRET=your_secret_key
-#   CLIENT_URL=http://localhost:5173
-#   API_KEY=your_own_api_key            # protects the exercise catalog's write routes
-#   API_AI_KEY=your_gemini_api_key      # used for AI plan generation
-#   BREVO_API_KEY=xkeysib-...
-#   BREVO_EMAIL=your@email.com
-#   CLOUDINARY_CLOUD_NAME=...
-#   CLOUDINARY_API_KEY=...
-#   CLOUDINARY_API_SECRET=...
+# Add CLIENT_URL, API_KEY and API_AI_KEY to the copied file;
+# the current template does not include them yet.
 
 # 4. Start the development server
 npm run dev
 ```
 
-> ⚠️ `CLIENT_URL`, `API_KEY` and `API_AI_KEY` are required by the code but currently missing from `.env.example` — add them there too.
+Once started, open `http://localhost:3000/health` to verify that the API's HTTP layer is available independently of the database connection.
+
+### Available scripts
+
+| Command            | Purpose                                    |
+| ------------------ | ------------------------------------------ |
+| `npm run dev`      | Start the API with Nodemon                 |
+| `npm test`         | Run the Jest test suite                    |
+| `npm run lint`     | Check the codebase with ESLint             |
+| `npm run lint:fix` | Automatically fix supported lint issues    |
+| `npm run format`   | Format the codebase with Prettier          |
 
 ### 🐳 Docker
 

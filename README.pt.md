@@ -40,7 +40,7 @@ Construída com Node.js e Express, conta com validação de schemas via Zod, aut
 | IA                  | Google Gemini (`@google/genai`)  |
 | E-mail              | Brevo API (via Axios)            |
 | Upload de imagens   | Cloudinary                       |
-| Segurança           | Express Rate Limit + Bcrypt.js   |
+| Segurança           | Express Rate Limit + bcrypt      |
 | Containerização     | Docker + Docker Compose          |
 | CI/CD               | GitHub Actions                   |
 | Qualidade de código | ESLint + Prettier + EditorConfig |
@@ -118,6 +118,13 @@ gym-app-api/
 > 🔒 Rotas com este ícone exigem o header: `Authorization: Bearer <token_jwt>`
 > 🔑 Rotas com este ícone exigem o header: `x-api-key: <sua_api_key>`
 
+Todos os corpos de requisição e resposta usam JSON, exceto quando indicado. A API também oferece dois endpoints públicos de serviço:
+
+| Rota      | Método | Descrição                                                   |
+| --------- | ------ | ----------------------------------------------------------- |
+| `/`       | GET    | Confirma que a API está em execução                         |
+| `/health` | GET    | Health check com `status` e timestamp Unix em milissegundos |
+
 ### Autenticação e Usuários — `/users`
 
 | Rota                    | Método | Auth | Payload                              | Descrição                           |
@@ -142,14 +149,16 @@ gym-app-api/
 | `/:planId/days`                                  | POST   | 🔒   | `{"name","exercises":[]}`             | Adiciona um dia                                                                                                         |
 | `/:planId/days/:dayName`                         | PUT    | 🔒   | `{"name"}`                            | Renomeia um dia                                                                                                         |
 | `/:planId/days/:dayName`                         | DELETE | 🔒   | —                                     | Remove um dia                                                                                                           |
-| `/:planId/days/:dayName/reorder`                 | PUT    | 🔒   | `{"exercisesOrder":[...]}`            | Reordena os exercícios dentro de um dia                                                                                 |
-| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"name","sets","reps","weight"}`     | Adiciona um exercício a um dia                                                                                          |
+| `/:planId/days/:dayName/reorder`                 | PUT    | 🔒   | `{"dayName","exercisesOrder":[...]}`  | Reordena os exercícios de um dia pelos IDs                                                                              |
+| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"dayName","name","sets","reps","weight"}` | Adiciona um exercício a um dia                                                                                |
 | `/:planId/days/:dayName/exercises/:exerciseName` | PUT    | 🔒   | `{"name"?,"sets"?,"reps"?,"weight"?}` | Edita um exercício (atualização parcial)                                                                                |
 | `/:planId/days/:dayName/exercises/:exerciseName` | DELETE | 🔒   | —                                     | Remove um exercício                                                                                                     |
 | `/copy/:shareCode`                               | POST   | 🔒   | —                                     | Copia um plano compartilhado para a própria conta                                                                       |
 | `/generate`                                      | POST   | 🔒   | `{"dias","foco","genero"}`            | Gera um plano por IA (veja abaixo) — **não é persistido**, devolve `{"plan"}` pro cliente revisar e salvar via `POST /` |
 
 `/generate` é limitado a **3 requisições por minuto por usuário**. `dias` aceita de 3 a 6, `foco` é um de `hipertrofia`/`força`/`resistência`, `genero` é `masculino`/`feminino`.
+
+> Atualmente, os handlers de adição e reordenação de exercícios leem `dayName` no corpo JSON mesmo com o valor presente na URL. Por isso, o cliente deve enviar os dois valores.
 
 ### Treinos (histórico e PRs) — `/workouts`
 
@@ -169,6 +178,27 @@ gym-app-api/
 | `/`     | POST   | 🔑   | `{"name","muscle"}`        | Cadastra um exercício                   |
 | `/bulk` | POST   | 🔑   | `[{"name","muscle"}, ...]` | Cadastra vários exercícios de uma vez   |
 | `/:id`  | DELETE | 🔑   | —                          | Remove um exercício                     |
+
+---
+
+## 🔧 Variáveis de Ambiente
+
+| Variável                | Obrigatória | Finalidade                                                    |
+| ----------------------- | ----------- | ------------------------------------------------------------- |
+| `PORT`                  | Sim         | Porta HTTP usada pelo servidor                                |
+| `DATABASE_URL`          | Sim         | String de conexão com o MongoDB                               |
+| `JWT_SECRET`            | Sim         | Segredo usado para assinar e validar JWTs                     |
+| `CLIENT_URL`            | Sim         | Origem permitida pelo CORS; aceita URLs separadas por vírgula |
+| `API_KEY`               | Sim¹        | Protege operações de escrita no catálogo de exercícios       |
+| `API_AI_KEY`            | Sim²        | Chave do Google Gemini usada para gerar planos                |
+| `BREVO_API_KEY`         | Sim³        | Chave da API Brevo para emails de verificação e recuperação   |
+| `BREVO_EMAIL`           | Sim³        | Endereço remetente verificado no Brevo                        |
+| `CLOUDINARY_CLOUD_NAME` | Sim⁴        | Identificador da conta Cloudinary                             |
+| `CLOUDINARY_API_KEY`    | Sim⁴        | Chave da API Cloudinary                                       |
+| `CLOUDINARY_API_SECRET` | Sim⁴        | Segredo da API Cloudinary                                     |
+| `NODE_ENV`              | Não         | Use `production` para suprimir logs da aplicação no console   |
+
+¹ Exigida para escritas no catálogo. ² Exigida para geração por IA. ³ Exigidas nos fluxos de email. ⁴ Exigidas no upload de imagem de perfil.
 
 ---
 
@@ -207,7 +237,7 @@ Cadastre em **Settings → Secrets and variables → Actions**.
 
 ### Pré-requisitos
 
-- Node.js 18+
+- Node.js 22+ (a imagem Docker usa Node.js 22 Alpine)
 - MongoDB local ou uma connection string (ex: MongoDB Atlas)
 - Contas no Brevo, Cloudinary e Google AI Studio (Gemini) — opcional para cobertura completa de funcionalidades
 
@@ -223,24 +253,24 @@ npm install
 
 # 3. Crie seu arquivo .env a partir do template
 cp .env.example .env
-# Preencha as variáveis:
-#   PORT=3000
-#   DATABASE_URL=mongodb://127.0.0.1:27017/workout-api
-#   JWT_SECRET=sua_chave_secreta
-#   CLIENT_URL=http://localhost:5173
-#   API_KEY=sua_api_key_propria          # protege as rotas de escrita do catálogo
-#   API_AI_KEY=sua_chave_do_gemini       # usada na geração de treino por IA
-#   BREVO_API_KEY=xkeysib-...
-#   BREVO_EMAIL=seuemail@gmail.com
-#   CLOUDINARY_CLOUD_NAME=...
-#   CLOUDINARY_API_KEY=...
-#   CLOUDINARY_API_SECRET=...
+# Adicione CLIENT_URL, API_KEY e API_AI_KEY ao arquivo copiado;
+# o template atual ainda não inclui essas variáveis.
 
 # 4. Inicie o servidor em modo desenvolvimento
 npm run dev
 ```
 
-> ⚠️ `CLIENT_URL`, `API_KEY` e `API_AI_KEY` são exigidas pelo código mas ainda não estão no `.env.example` — vale adicioná-las lá também.
+Após iniciar, acesse `http://localhost:3000/health` para confirmar que a camada HTTP da API está disponível, independentemente da conexão com o banco.
+
+### Scripts disponíveis
+
+| Comando            | Finalidade                                      |
+| ------------------ | ----------------------------------------------- |
+| `npm run dev`      | Inicia a API com Nodemon                        |
+| `npm test`         | Executa a suíte de testes com Jest              |
+| `npm run lint`     | Verifica o código com ESLint                    |
+| `npm run lint:fix` | Corrige automaticamente problemas suportados   |
+| `npm run format`   | Formata o código com Prettier                   |
 
 ### 🐳 Docker
 
