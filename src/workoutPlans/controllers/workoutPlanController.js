@@ -36,6 +36,14 @@ function escapeRegex(str) {
 function nomeExato(valor) {
   return { $regex: new RegExp(`^${escapeRegex(valor)}$`, 'i') };
 }
+
+function normalizeExerciseName(value = '') {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
 //-------- schemas zod
 
 const createPlanSchema = z
@@ -46,7 +54,9 @@ const createPlanSchema = z
         name: z.string(),
         exercises: z.array(
           z.object({
+            exerciseId: z.string().optional(),
             name: z.string(),
+            muscle: z.string().optional(),
             sets: z.coerce.number(),
             reps: z.string(),
             weight: z.coerce.number(),
@@ -57,8 +67,11 @@ const createPlanSchema = z
   })
   .passthrough();
 
-const exerciseSchema = z.object({
-  name: z.string().min(1, 'O nome do exercício é obrigatório'),
+const addExerciseSchema = z.object({
+  dayName: z.string().min(1, 'O nome do dia é obrigatório'),
+  exerciseId: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: 'ID de exercício inválido',
+  }),
   sets: z.number().min(1, 'O número de séries deve ser pelo menos 1'),
   reps: z.string().min(1, 'O número de repetições é obrigatório'),
   weight: z.number().min(0, 'O peso deve ser um número positivo'),
@@ -82,7 +95,6 @@ const updatePlanNameSchema = z.object({
 
 const updateExerciseSchema = z
   .object({
-    name: z.string().min(1, 'O nome do exercício é obrigatório').optional(),
     sets: z
       .number()
       .min(1, 'O número de séries deve ser pelo menos 1')
@@ -217,6 +229,52 @@ exports.generatePlan = async (req, res) => {
 exports.createWorkoutPlan = async (req, res) => {
   try {
     const validateData = createPlanSchema.parse(req.body);
+    const exercisesToResolve = validateData.days.flatMap(
+      (day) => day.exercises,
+    );
+    let normalizedDays = validateData.days;
+
+    if (exercisesToResolve.length > 0) {
+      const catalog = await Exercise.find().lean();
+      const catalogById = new Map(
+        catalog.map((exercise) => [exercise._id.toString(), exercise]),
+      );
+      const catalogByName = new Map(
+        catalog.map((exercise) => [
+          normalizeExerciseName(exercise.name),
+          exercise,
+        ]),
+      );
+      const unknownExercise = exercisesToResolve.find(
+        (exercise) =>
+          !catalogById.has(exercise.exerciseId) &&
+          !catalogByName.has(normalizeExerciseName(exercise.name)),
+      );
+
+      if (unknownExercise) {
+        return res.status(400).json({
+          message: `Exercício fora da biblioteca: ${unknownExercise.name}`,
+        });
+      }
+
+      normalizedDays = validateData.days.map((day) => ({
+        ...day,
+        exercises: day.exercises.map((exercise) => {
+          const catalogExercise =
+            catalogById.get(exercise.exerciseId) ||
+            catalogByName.get(normalizeExerciseName(exercise.name));
+
+          return {
+            exerciseId: catalogExercise._id,
+            name: catalogExercise.name,
+            muscle: catalogExercise.muscle,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight: exercise.weight,
+          };
+        }),
+      }));
+    }
 
     let codigoUnico;
     let codigoExiste = true;
@@ -232,7 +290,7 @@ exports.createWorkoutPlan = async (req, res) => {
     const plan = await WorkoutPlan.create({
       user: req.user.id,
       name: validateData.name,
-      days: validateData.days,
+      days: normalizedDays,
       shareCode: codigoUnico,
     });
 
@@ -265,27 +323,57 @@ exports.getWorkoutPlans = async (req, res) => {
 exports.addExerciseToPlan = async (req, res) => {
   try {
     const { planId } = req.params;
-    const { dayName, ...exerciseData } = req.body;
-    const result = exerciseSchema.parse(exerciseData);
+    const result = addExerciseSchema.parse(req.body);
+    const { dayName } = result;
 
-    const workoutPlan = await WorkoutPlan.findOneAndUpdate(
-      {
-        _id: planId,
-        user: req.user.id,
-        'days.name': nomeExato(dayName),
-      },
-      {
-        // O $ posicional aponta para o dia que casou no filtro acima
-        $push: {
-          'days.$.exercises': result,
-        },
-      },
-      { returnDocument: 'after', runValidators: true },
-    );
+    const catalogExercise = await Exercise.findById(result.exerciseId);
+    if (!catalogExercise) {
+      return res
+        .status(404)
+        .json({ message: 'Exercício não encontrado na biblioteca' });
+    }
+
+    const workoutPlan = await WorkoutPlan.findOne({
+      _id: planId,
+      user: req.user.id,
+      'days.name': nomeExato(dayName),
+    });
 
     if (!workoutPlan) {
       return res.status(404).json({ message: 'Plano ou dia não encontrado' });
     }
+
+    const day = workoutPlan.days.find(
+      (item) =>
+        item.name.localeCompare(dayName, 'pt-BR', { sensitivity: 'base' }) ===
+        0,
+    );
+    if (!day) {
+      return res.status(404).json({ message: 'Dia não encontrado' });
+    }
+    const alreadyAdded = day.exercises.some(
+      (item) =>
+        item.exerciseId?.toString() === catalogExercise._id.toString() ||
+        item.name?.localeCompare(catalogExercise.name, 'pt-BR', {
+          sensitivity: 'base',
+        }) === 0,
+    );
+
+    if (alreadyAdded) {
+      return res
+        .status(409)
+        .json({ message: 'Este exercício já está neste dia' });
+    }
+
+    day.exercises.push({
+      exerciseId: catalogExercise._id,
+      name: catalogExercise.name,
+      muscle: catalogExercise.muscle,
+      sets: result.sets,
+      reps: result.reps,
+      weight: result.weight,
+    });
+    await workoutPlan.save();
 
     res.json({ message: 'Exercício adicionado!', workoutPlan });
   } catch (error) {
@@ -409,11 +497,7 @@ exports.updateExerciseInPlan = async (req, res) => {
     );
     const updateData = updateExerciseSchema.parse(req.body);
 
-    // Só entra no $set o que veio no body, para não sobrescrever campo omitido
     const updateFields = {};
-    if (updateData.name !== undefined) {
-      updateFields['days.$[day].exercises.$[exercise].name'] = updateData.name;
-    }
     if (updateData.sets !== undefined) {
       updateFields['days.$[day].exercises.$[exercise].sets'] = updateData.sets;
     }
@@ -647,7 +731,9 @@ exports.copyPlan = async (req, res) => {
     const daysCopy = workoutPlan.days.map((day) => ({
       name: day.name,
       exercises: day.exercises.map((exer) => ({
+        exerciseId: exer.exerciseId,
         name: exer.name,
+        muscle: exer.muscle,
         sets: exer.sets,
         reps: exer.reps,
         weight: exer.weight,

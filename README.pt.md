@@ -150,15 +150,15 @@ Todos os corpos de requisição e resposta usam JSON, exceto quando indicado. A 
 | `/:planId/days/:dayName`                         | PUT    | 🔒   | `{"name"}`                            | Renomeia um dia                                                                                                         |
 | `/:planId/days/:dayName`                         | DELETE | 🔒   | —                                     | Remove um dia                                                                                                           |
 | `/:planId/days/:dayName/reorder`                 | PUT    | 🔒   | `{"dayName","exercisesOrder":[...]}`  | Reordena os exercícios de um dia pelos IDs                                                                              |
-| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"dayName","name","sets","reps","weight"}` | Adiciona um exercício a um dia                                                                                |
-| `/:planId/days/:dayName/exercises/:exerciseName` | PUT    | 🔒   | `{"name"?,"sets"?,"reps"?,"weight"?}` | Edita um exercício (atualização parcial)                                                                                |
+| `/:planId/days/:dayName/exercises`               | POST   | 🔒   | `{"dayName","exerciseId","sets","reps","weight"}` | Adiciona um exercício da biblioteca a um dia                                                                 |
+| `/:planId/days/:dayName/exercises/:exerciseName` | PUT    | 🔒   | `{"sets"?,"reps"?,"weight"?}` | Edita os parâmetros de treino do exercício                                                                                     |
 | `/:planId/days/:dayName/exercises/:exerciseName` | DELETE | 🔒   | —                                     | Remove um exercício                                                                                                     |
 | `/copy/:shareCode`                               | POST   | 🔒   | —                                     | Copia um plano compartilhado para a própria conta                                                                       |
 | `/generate`                                      | POST   | 🔒   | `{"dias","foco","genero"}`            | Gera um plano por IA (veja abaixo) — **não é persistido**, devolve `{"plan"}` pro cliente revisar e salvar via `POST /` |
 
 `/generate` é limitado a **3 requisições por minuto por usuário**. `dias` aceita de 3 a 6, `foco` é um de `hipertrofia`/`força`/`resistência`, `genero` é `masculino`/`feminino`.
 
-> Atualmente, os handlers de adição e reordenação de exercícios leem `dayName` no corpo JSON mesmo com o valor presente na URL. Por isso, o cliente deve enviar os dois valores.
+> Para adicionar um exercício é necessário enviar um `exerciseId` válido do catálogo. A API resolve o nome e o grupo muscular oficiais, rejeita duplicatas no mesmo dia e mantém compatibilidade com planos antigos sem ID. Novos planos também são validados contra o catálogo antes de serem salvos.
 
 ### Treinos (histórico e PRs) — `/workouts`
 

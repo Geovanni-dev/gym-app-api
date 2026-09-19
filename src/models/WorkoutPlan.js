@@ -1,7 +1,13 @@
 const mongoose = require('mongoose');
 
 const exerciseSchema = new mongoose.Schema({
+  exerciseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Exercise',
+    required: false,
+  },
   name: String,
+  muscle: String,
   sets: Number,
   reps: String, // String porque é faixa, não número exato. Ex: "6-8"
   weight: Number,
