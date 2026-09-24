@@ -199,7 +199,7 @@ exports.generatePlan = async (req, res) => {
     }
     const genAI = new GoogleGenAI({ apiKey: ApiKey });
     const response = await genAI.models.generateContent({
-      model: 'gemini-3.5-flash-lite',
+      model: 'gemini-3.1-flash-lite',
       contents: fullPrompt,
       config: {
         responseMimeType: 'application/json',
