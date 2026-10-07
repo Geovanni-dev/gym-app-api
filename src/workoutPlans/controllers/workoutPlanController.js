@@ -71,9 +71,12 @@ const exerciseToAddSchema = z.object({
   exerciseId: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
     message: 'ID de exercício inválido',
   }),
-  sets: z.number().min(1, 'O número de séries deve ser pelo menos 1'),
-  reps: z.string().min(1, 'O número de repetições é obrigatório'),
-  weight: z.number().min(0, 'O peso deve ser um número positivo'),
+  sets: z
+    .number()
+    .min(1, 'O número de séries deve ser pelo menos 1')
+    .optional(),
+  reps: z.string().min(1, 'O número de repetições é obrigatório').optional(),
+  weight: z.number().min(0, 'O peso deve ser um número positivo').optional(),
 });
 
 const addExerciseSchema = z.union([
@@ -106,6 +109,12 @@ const updatePlanNameSchema = z.object({
 
 const updateExerciseSchema = z
   .object({
+    exerciseId: z
+      .string()
+      .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+        message: 'ID de exercício inválido',
+      })
+      .optional(),
     sets: z
       .number()
       .min(1, 'O número de séries deve ser pelo menos 1')
@@ -397,9 +406,9 @@ exports.addExerciseToPlan = async (req, res) => {
         exerciseId: catalogExercise._id,
         name: catalogExercise.name,
         muscle: catalogExercise.muscle,
-        sets: item.sets,
-        reps: item.reps,
-        weight: item.weight,
+        sets: item.sets ?? catalogExercise.sets ?? 4,
+        reps: item.reps ?? catalogExercise.reps ?? '8-12',
+        weight: item.weight ?? 0,
       });
     });
     await workoutPlan.save();
@@ -532,30 +541,10 @@ exports.updateExerciseInPlan = async (req, res) => {
     );
     const updateData = updateExerciseSchema.parse(req.body);
 
-    const updateFields = {};
-    if (updateData.sets !== undefined) {
-      updateFields['days.$[day].exercises.$[exercise].sets'] = updateData.sets;
-    }
-    if (updateData.reps !== undefined) {
-      updateFields['days.$[day].exercises.$[exercise].reps'] = updateData.reps;
-    }
-    if (updateData.weight !== undefined) {
-      updateFields['days.$[day].exercises.$[exercise].weight'] =
-        updateData.weight;
-    }
-
-    const workoutPlan = await WorkoutPlan.findOneAndUpdate(
-      { _id: planId, user: req.user.id },
-      { $set: updateFields },
-      {
-        arrayFilters: [
-          { 'day.name': nomeExato(dayName) },
-          { 'exercise.name': nomeExato(exerciseName) },
-        ],
-        returnDocument: 'after',
-        runValidators: true,
-      },
-    );
+    const workoutPlan = await WorkoutPlan.findOne({
+      _id: planId,
+      user: req.user.id,
+    });
 
     if (!workoutPlan) {
       return res.status(404).json({
@@ -563,8 +552,65 @@ exports.updateExerciseInPlan = async (req, res) => {
       });
     }
 
+    const day = workoutPlan.days.find(
+      (item) =>
+        item.name.localeCompare(dayName, 'pt-BR', { sensitivity: 'base' }) ===
+        0,
+    );
+    if (!day) {
+      return res.status(404).json({ message: 'Dia não encontrado' });
+    }
+
+    const exercise = day.exercises.find(
+      (item) =>
+        item.name.localeCompare(exerciseName, 'pt-BR', {
+          sensitivity: 'base',
+        }) === 0,
+    );
+    if (!exercise) {
+      return res.status(404).json({ message: 'Exercício não encontrado' });
+    }
+
+    if (updateData.exerciseId) {
+      const catalogExercise = await Exercise.findById(updateData.exerciseId);
+      if (!catalogExercise) {
+        return res
+          .status(404)
+          .json({ message: 'Exercício não encontrado na biblioteca' });
+      }
+
+      const alreadyAdded = day.exercises.some(
+        (item) =>
+          item._id.toString() !== exercise._id.toString() &&
+          (item.exerciseId?.toString() === catalogExercise._id.toString() ||
+            item.name.localeCompare(catalogExercise.name, 'pt-BR', {
+              sensitivity: 'base',
+            }) === 0),
+      );
+      if (alreadyAdded) {
+        return res
+          .status(409)
+          .json({ message: `${catalogExercise.name} já está neste dia` });
+      }
+
+      exercise.exerciseId = catalogExercise._id;
+      exercise.name = catalogExercise.name;
+      exercise.muscle = catalogExercise.muscle;
+      exercise.sets = catalogExercise.sets ?? 4;
+      exercise.reps = catalogExercise.reps ?? '8-12';
+      exercise.weight = 0;
+    }
+
+    if (updateData.sets !== undefined) exercise.sets = updateData.sets;
+    if (updateData.reps !== undefined) exercise.reps = updateData.reps;
+    if (updateData.weight !== undefined) exercise.weight = updateData.weight;
+
+    await workoutPlan.save();
+
     res.json({
-      message: 'Exercício atualizado com sucesso!',
+      message: updateData.exerciseId
+        ? 'Exercício substituído com sucesso!'
+        : 'Exercício atualizado com sucesso!',
       workoutPlan,
     });
   } catch (error) {

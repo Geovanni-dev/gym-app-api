@@ -4,18 +4,24 @@ const { z } = require('zod');
 const createExerciseSchema = z.object({
   name: z.string().min(1, 'O nome do exercício é obrigatório'),
   muscle: z.string().optional(),
+  sets: z.coerce.number().min(1).optional(),
+  reps: z.string().min(1).optional(),
 });
 
 const exerciseOutputSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'O nome do exercício é obrigatório'),
   muscle: z.string().optional(),
+  sets: z.number().min(1),
+  reps: z.string().min(1),
 });
 
 const exerciseMultSchema = z.array(
   z.object({
     name: z.string().min(1, 'O nome do exercício é obrigatório'),
     muscle: z.string().optional(),
+    sets: z.coerce.number().min(1).optional(),
+    reps: z.string().min(1).optional(),
   }),
 );
 
