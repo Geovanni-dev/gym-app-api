@@ -67,8 +67,7 @@ const createPlanSchema = z
   })
   .passthrough();
 
-const addExerciseSchema = z.object({
-  dayName: z.string().min(1, 'O nome do dia é obrigatório'),
+const exerciseToAddSchema = z.object({
   exerciseId: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
     message: 'ID de exercício inválido',
   }),
@@ -76,6 +75,18 @@ const addExerciseSchema = z.object({
   reps: z.string().min(1, 'O número de repetições é obrigatório'),
   weight: z.number().min(0, 'O peso deve ser um número positivo'),
 });
+
+const addExerciseSchema = z.union([
+  exerciseToAddSchema.extend({
+    dayName: z.string().min(1, 'O nome do dia é obrigatório'),
+  }),
+  z.object({
+    dayName: z.string().min(1, 'O nome do dia é obrigatório'),
+    exercises: z
+      .array(exerciseToAddSchema)
+      .min(1, 'Selecione pelo menos um exercício'),
+  }),
+]);
 
 const deletePlanSchema = z.object({
   planId: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
@@ -325,12 +336,23 @@ exports.addExerciseToPlan = async (req, res) => {
     const { planId } = req.params;
     const result = addExerciseSchema.parse(req.body);
     const { dayName } = result;
+    const exercisesToAdd = 'exercises' in result ? result.exercises : [result];
+    const exerciseIds = exercisesToAdd.map((item) => item.exerciseId);
 
-    const catalogExercise = await Exercise.findById(result.exerciseId);
-    if (!catalogExercise) {
+    if (new Set(exerciseIds).size !== exerciseIds.length) {
       return res
-        .status(404)
-        .json({ message: 'Exercício não encontrado na biblioteca' });
+        .status(400)
+        .json({ message: 'A seleção contém exercícios repetidos' });
+    }
+
+    const catalogExercises = await Exercise.find({ _id: { $in: exerciseIds } });
+    const catalogById = new Map(
+      catalogExercises.map((exercise) => [exercise._id.toString(), exercise]),
+    );
+    if (catalogExercises.length !== exerciseIds.length) {
+      return res.status(404).json({
+        message: 'Um ou mais exercícios não foram encontrados na biblioteca',
+      });
     }
 
     const workoutPlan = await WorkoutPlan.findOne({
@@ -351,31 +373,44 @@ exports.addExerciseToPlan = async (req, res) => {
     if (!day) {
       return res.status(404).json({ message: 'Dia não encontrado' });
     }
-    const alreadyAdded = day.exercises.some(
-      (item) =>
-        item.exerciseId?.toString() === catalogExercise._id.toString() ||
-        item.name?.localeCompare(catalogExercise.name, 'pt-BR', {
-          sensitivity: 'base',
-        }) === 0,
-    );
+    const duplicateExercise = exercisesToAdd
+      .map((item) => catalogById.get(item.exerciseId))
+      .find((catalogExercise) =>
+        day.exercises.some(
+          (item) =>
+            item.exerciseId?.toString() === catalogExercise._id.toString() ||
+            item.name?.localeCompare(catalogExercise.name, 'pt-BR', {
+              sensitivity: 'base',
+            }) === 0,
+        ),
+      );
 
-    if (alreadyAdded) {
+    if (duplicateExercise) {
       return res
         .status(409)
-        .json({ message: 'Este exercício já está neste dia' });
+        .json({ message: `${duplicateExercise.name} já está neste dia` });
     }
 
-    day.exercises.push({
-      exerciseId: catalogExercise._id,
-      name: catalogExercise.name,
-      muscle: catalogExercise.muscle,
-      sets: result.sets,
-      reps: result.reps,
-      weight: result.weight,
+    exercisesToAdd.forEach((item) => {
+      const catalogExercise = catalogById.get(item.exerciseId);
+      day.exercises.push({
+        exerciseId: catalogExercise._id,
+        name: catalogExercise.name,
+        muscle: catalogExercise.muscle,
+        sets: item.sets,
+        reps: item.reps,
+        weight: item.weight,
+      });
     });
     await workoutPlan.save();
 
-    res.json({ message: 'Exercício adicionado!', workoutPlan });
+    res.json({
+      message:
+        exercisesToAdd.length === 1
+          ? 'Exercício adicionado!'
+          : `${exercisesToAdd.length} exercícios adicionados!`,
+      workoutPlan,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
